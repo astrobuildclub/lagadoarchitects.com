@@ -30,3 +30,5 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 ### Onderhoud
 - `.gitignore` aangescherpt (`.env.*`, `.netlify`, `.claude/`, …); `TODO.md` toegevoegd.
 - GitHub-repo `astrobuildclub/lagadoarchitects.com` aangemaakt; scaffold op `feat/scaffold`.
+- Netlify (All This) gekoppeld: https://lagadoarchitects.netlify.app/
+- README afgestemd op `~/Code/_standards/README.template.md`; GitHub About ingevuld.

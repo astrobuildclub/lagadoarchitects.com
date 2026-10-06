@@ -4,8 +4,8 @@ Openstaande projecttaken. Afgeronde items → regel in `CHANGELOG.md` onder `[Un
 
 ## Setup
 - [x] GitHub-repo `astrobuildclub/lagadoarchitects.com` (remote + eerste push)
-- [ ] Netlify-site (team All This), `main` → productie, PR → preview
-- [ ] DNS bij cloud86 koppelen (alleen A/CNAME)
+- [x] Netlify-site (team All This): https://lagadoarchitects.netlify.app/
+- [ ] DNS bij cloud86 koppelen (alleen A/CNAME) → `lagadoarchitects.com`
 - [ ] Notion-pagina / SLA (optioneel)
 
 ## Content & ontwerp
