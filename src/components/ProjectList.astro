@@ -1,0 +1,59 @@
+---
+import ProjectCard from './ProjectCard.astro';
+import type { Project } from '../lib/schema';
+
+interface Props {
+  projects: Project[];
+  headingLevel?: 2 | 3;
+  id?: string;
+  /** Homepage: s/m/l kaarten in een bento-raster. */
+  sized?: boolean;
+}
+const { projects, headingLevel, id, sized = false } = Astro.props;
+---
+
+<ul role="list" class:list={['project-list', sized && 'project-list--sized']} id={id}>
+  {projects.map((project, i) => (
+    <ProjectCard project={project} headingLevel={headingLevel} priority={i < 2} sized={sized} />
+  ))}
+</ul>
+
+<style>
+  .project-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    gap: var(--space-l) var(--space-s);
+  }
+
+  .project-list--sized {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .project-list--sized :global(.project-card) {
+    grid-column: span 6;
+  }
+
+  @media (min-width: 36rem) {
+    .project-list--sized :global(.project-card--s) {
+      grid-column: span 3;
+    }
+    .project-list--sized :global(.project-card--m) {
+      grid-column: span 3;
+    }
+    .project-list--sized :global(.project-card--l) {
+      grid-column: span 6;
+    }
+  }
+
+  @media (min-width: 60rem) {
+    .project-list--sized :global(.project-card--s) {
+      grid-column: span 2;
+    }
+    .project-list--sized :global(.project-card--m) {
+      grid-column: span 3;
+    }
+    .project-list--sized :global(.project-card--l) {
+      grid-column: span 4;
+    }
+  }
+</style>

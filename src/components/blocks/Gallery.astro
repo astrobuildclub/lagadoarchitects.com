@@ -1,0 +1,166 @@
+---
+// Raster met lightbox. Zonder JS is elk beeld een link naar het grote bestand;
+// met JS opent een <dialog> met vorige/volgende (pijltjestoetsen) en Escape om te sluiten.
+import { getImage } from 'astro:assets';
+import Img from '../Img.astro';
+import { resolveImage } from '../../lib/images';
+import { has, type BlockProps } from './scope';
+
+type Props = BlockProps<'gallery'>;
+const { block, scope } = Astro.props;
+const items = await Promise.all(
+  block.images.map(async (item) => {
+    const image = resolveImage(scope, item.src)!;
+    const large = await getImage({ src: image, width: Math.min(image.width, 2400) });
+    return { ...item, image, large: large.src };
+  }),
+);
+const sizes = block.kolommen === 2 ? '(min-width: 48rem) 50vw, 100vw' : '(min-width: 48rem) 33vw, 100vw';
+---
+
+{
+  items.length > 0 && (
+    <section class="gallery feature" data-gallery>
+      <ul role="list" class="gallery__grid" style={`--kolommen: ${block.kolommen}`}>
+        {items.map((item, i) => (
+          <li>
+            <figure>
+              <a href={item.large} data-index={i} aria-label={`Vergroot beeld ${i + 1} van ${items.length}`}>
+                <Img src={item.image} alt={item.alt} sizes={sizes} />
+              </a>
+              {has(item.caption) && <figcaption>{item.caption}</figcaption>}
+            </figure>
+          </li>
+        ))}
+      </ul>
+
+      <dialog class="lightbox" aria-label="Beeldviewer">
+        <div class="lightbox__stage">
+          {items.map((item, i) => (
+            <figure hidden data-slide={i}>
+              <img data-src={item.large} alt={item.alt} />
+              {has(item.caption) && <figcaption>{item.caption}</figcaption>}
+            </figure>
+          ))}
+        </div>
+        <div class="lightbox__controls">
+          <button type="button" data-prev>Vorige</button>
+          <span aria-live="polite" data-counter></span>
+          <button type="button" data-next>Volgende</button>
+          <button type="button" data-close autofocus>Sluiten</button>
+        </div>
+      </dialog>
+    </section>
+  )
+}
+
+<script>
+  function initGalleries() {
+    document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((gallery) => {
+      const dialog = gallery.querySelector('dialog')!;
+      const slides = [...dialog.querySelectorAll<HTMLElement>('[data-slide]')];
+      const counter = dialog.querySelector('[data-counter]')!;
+      let current = 0;
+      let opener: HTMLElement | null = null;
+
+      const show = (i: number) => {
+        current = (i + slides.length) % slides.length;
+        slides.forEach((slide, n) => {
+          slide.hidden = n !== current;
+          const img = slide.querySelector('img')!;
+          if (n === current && !img.src) img.src = img.dataset.src!;
+        });
+        counter.textContent = `${current + 1} / ${slides.length}`;
+      };
+
+      gallery.querySelectorAll<HTMLAnchorElement>('a[data-index]').forEach((link) => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          opener = link;
+          show(Number(link.dataset.index));
+          dialog.showModal();
+        });
+      });
+      dialog.querySelector('[data-prev]')!.addEventListener('click', () => show(current - 1));
+      dialog.querySelector('[data-next]')!.addEventListener('click', () => show(current + 1));
+      dialog.querySelector('[data-close]')!.addEventListener('click', () => dialog.close());
+      dialog.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') show(current - 1);
+        if (e.key === 'ArrowRight') show(current + 1);
+      });
+      // Klik op de achtergrond sluit; focus terug naar het aangeklikte beeld.
+      dialog.addEventListener('click', (e) => e.target === dialog && dialog.close());
+      dialog.addEventListener('close', () => opener?.focus());
+    });
+  }
+
+  document.addEventListener('astro:page-load', initGalleries);
+</script>
+
+<style>
+  .gallery__grid {
+    display: grid;
+    gap: var(--space-xs);
+  }
+  @media (min-width: 48rem) {
+    .gallery__grid {
+      grid-template-columns: repeat(var(--kolommen), 1fr);
+    }
+  }
+  .gallery__grid a {
+    display: block;
+    cursor: zoom-in;
+  }
+  .gallery__grid :global(img) {
+    inline-size: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+
+  .lightbox {
+    inline-size: 100vw;
+    max-inline-size: 100vw;
+    block-size: 100dvh;
+    max-block-size: 100dvh;
+    padding: var(--space-s);
+    border: 0;
+    background: var(--color-bg);
+    color: var(--color-fg);
+  }
+  .lightbox[open] {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    gap: var(--space-s);
+  }
+  .lightbox::backdrop {
+    background: oklch(0% 0 0 / 0.6);
+  }
+  .lightbox__stage {
+    display: grid;
+    place-items: center;
+    min-block-size: 0;
+  }
+  .lightbox__stage figure {
+    display: grid;
+    justify-items: center;
+    max-block-size: 100%;
+    min-block-size: 0;
+  }
+  .lightbox__stage img {
+    max-block-size: calc(100dvh - 8rem);
+    object-fit: contain;
+  }
+  .lightbox__controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-s);
+  }
+  .lightbox__controls button {
+    padding: var(--space-3xs) var(--space-s);
+    border: var(--border-width) solid currentColor;
+    background: none;
+    cursor: pointer;
+  }
+</style>

@@ -1,0 +1,56 @@
+---
+// Opening van een pagina: kop (h1) + 1–5 beelden. Eerste beeld is het LCP-beeld.
+import Img from '../Img.astro';
+import { resolveImage } from '../../lib/images';
+import { has, type BlockProps } from './scope';
+
+type Props = BlockProps<'hero'>;
+const { block, scope } = Astro.props;
+const images = block.beelden.map((b) => ({ ...b, image: resolveImage(scope, b.src, b.project) })).filter((b) => b.image);
+---
+
+<section class="hero full">
+  <div class="wrapper">
+    <h1 class="hero__kop">{block.kop}</h1>
+    {has(block.subkop) && <p class="hero__subkop">{block.subkop}</p>}
+  </div>
+  {
+    images.length > 0 && (
+      <div class="hero__beelden" data-count={images.length}>
+        {images.map((b, i) => (
+          <Img src={b.image!} alt={b.alt} priority={i === 0} sizes={i === 0 ? '100vw' : '50vw'} />
+        ))}
+      </div>
+    )
+  }
+</section>
+
+<style>
+  .hero {
+    padding-block-start: var(--space-4xl);
+  }
+  .hero__kop {
+    font-size: var(--step-6);
+    max-inline-size: 18ch;
+  }
+  .hero__subkop {
+    margin-block-start: var(--space-s);
+    font-size: var(--step-1);
+    color: var(--color-muted);
+  }
+  .hero__beelden {
+    display: grid;
+    gap: var(--space-2xs);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    margin-block-start: var(--space-l);
+  }
+  .hero__beelden :global(img) {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+  .hero__beelden :global(img:first-child) {
+    grid-column: 1 / -1;
+    aspect-ratio: 16 / 9;
+  }
+</style>

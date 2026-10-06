@@ -1,0 +1,63 @@
+---
+// Voor/na-vergelijking met een schuifregelaar (<input type="range">, toetsenbord werkt vanzelf).
+import Img from '../Img.astro';
+import { resolveImage } from '../../lib/images';
+import { has, type BlockProps } from './scope';
+
+type Props = BlockProps<'beforeAfter'>;
+const { block, scope } = Astro.props;
+const voor = resolveImage(scope, block.voor.src);
+const na = resolveImage(scope, block.na.src);
+---
+
+{
+  voor && na && (
+    <figure class="before-after feature" data-before-after>
+      <div class="before-after__stage" style="--pos: 50%">
+        <Img src={na} alt={block.na.alt} sizes="(min-width: 80rem) 66rem, 100vw" />
+        <div class="before-after__voor">
+          <Img src={voor} alt={block.voor.alt} sizes="(min-width: 80rem) 66rem, 100vw" />
+        </div>
+        <input type="range" min="0" max="100" value="50" aria-label="Verschuif tussen voor en na" />
+      </div>
+      <figcaption>
+        <span>Voor</span> / <span>Na</span>
+        {has(block.caption) && <> — {block.caption}</>}
+      </figcaption>
+    </figure>
+  )
+}
+
+<script>
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll<HTMLElement>('[data-before-after]').forEach((el) => {
+      const stage = el.querySelector<HTMLElement>('.before-after__stage')!;
+      el.querySelector('input')!.addEventListener('input', (e) => {
+        stage.style.setProperty('--pos', `${(e.target as HTMLInputElement).value}%`);
+      });
+    });
+  });
+</script>
+
+<style>
+  .before-after__stage {
+    position: relative;
+    display: grid;
+  }
+  .before-after__stage > :global(img),
+  .before-after__voor {
+    grid-area: 1 / 1;
+  }
+  .before-after__voor {
+    clip-path: inset(0 calc(100% - var(--pos)) 0 0);
+  }
+  .before-after__stage :global(img) {
+    inline-size: 100%;
+  }
+  input {
+    position: absolute;
+    inset: auto 0 var(--space-s);
+    inline-size: calc(100% - var(--space-s) * 2);
+    margin-inline: auto;
+  }
+</style>

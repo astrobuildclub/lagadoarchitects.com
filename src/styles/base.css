@@ -1,0 +1,49 @@
+html { scroll-padding-block-start: var(--space-xl); }
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  font-size: var(--step-0);
+  line-height: var(--leading-normal);
+}
+
+h1, h2, h3, h4 { line-height: var(--leading-tight); font-weight: 600; }
+h1 { font-size: var(--step-5); }
+h2 { font-size: var(--step-3); }
+h3 { font-size: var(--step-1); }
+
+a { color: inherit; text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
+a:hover { text-decoration-thickness: 2px; }
+
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+::selection { background: var(--accent); color: var(--color-on-accent); }
+
+figcaption { font-size: var(--step--1); color: var(--color-muted); margin-block-start: var(--space-2xs); }
+
+hr { border: 0; border-block-start: var(--border-width) solid var(--color-line); }
+
+/* Lopende tekst uit `tekst`-velden */
+.prose > * + * { margin-block-start: 1em; }
+.prose { max-inline-size: var(--measure); }
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  padding: var(--space-2xs) var(--space-s);
+  border: var(--border-width) solid currentColor;
+  border-radius: var(--radius);
+  background: transparent;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--duration) var(--ease), color var(--duration) var(--ease);
+}
+.button:hover { background: var(--color-fg); color: var(--color-bg); }

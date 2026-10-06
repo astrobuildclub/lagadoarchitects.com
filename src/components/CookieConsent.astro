@@ -1,0 +1,37 @@
+---
+// Laadt cookie-consent + iframemanager (zie src/lib/consent.ts). Draait opnieuw na elke
+// page swap van de ClientRouter, zodat nieuwe video-embeds de juiste status krijgen.
+---
+
+<script>
+  import 'vanilla-cookieconsent/dist/cookieconsent.css';
+  import '@orestbida/iframemanager/dist/iframemanager.css';
+  import { initConsent } from '../lib/consent';
+
+  document.addEventListener('astro:page-load', () => initConsent());
+</script>
+
+<style is:global>
+  /* Consent-UI volgt de site-tokens (ook in donkere modus). */
+  #cc-main {
+    --cc-font-family: var(--font-sans);
+    --cc-bg: var(--color-bg);
+    --cc-primary-color: var(--color-fg);
+    --cc-secondary-color: var(--color-muted);
+    --cc-btn-primary-bg: var(--color-fg);
+    --cc-btn-primary-color: var(--color-bg);
+    --cc-btn-primary-border-color: var(--color-fg);
+    --cc-btn-primary-hover-bg: var(--color-muted);
+    --cc-btn-primary-hover-border-color: var(--color-muted);
+    --cc-btn-secondary-bg: var(--color-surface);
+    --cc-btn-secondary-color: var(--color-fg);
+    --cc-btn-secondary-border-color: var(--color-line);
+    --cc-btn-secondary-hover-bg: var(--color-line);
+    --cc-separator-border-color: var(--color-line);
+    --cc-toggle-on-bg: var(--color-fg);
+    --cc-cookie-category-block-bg: var(--color-surface);
+    --cc-cookie-category-block-border: var(--color-line);
+    --cc-modal-border-radius: var(--radius);
+    --cc-btn-border-radius: var(--radius);
+  }
+</style>

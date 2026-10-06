@@ -1,0 +1,82 @@
+---
+// Credits, fotografie, pers & awards en press-kit onderaan een project.
+import { cleanItems } from '../lib/content';
+import { downloadUrl } from '../lib/images';
+import { label } from '../lib/labels';
+import type { Project } from '../lib/schema';
+
+interface Props {
+  project: Project;
+}
+const { project: p } = Astro.props;
+
+const credits = p.credits
+  .map((c) => ({ ...c, personen: c.personen.filter((x) => x.naam) }))
+  .filter((c) => c.personen.length);
+const fotografie = p.fotografie.filter((f) => f.naam);
+const pers = cleanItems(p.pers);
+const awards = cleanItems(p.awards);
+const pressKit = downloadUrl(p.pressKit);
+const hasAny = credits.length || fotografie.length || pers.length || awards.length || pressKit;
+---
+
+{
+  hasAny && (
+    <section class="credits feature" aria-labelledby="credits-kop">
+      <h2 id="credits-kop" class="visually-hidden">Credits</h2>
+      <dl>
+        {credits.map((c) => (
+          <div>
+            <dt>{c.rol}</dt>
+            {c.personen.map((x) => <dd>{x.url ? <a href={x.url} rel="noopener">{x.naam}</a> : x.naam}</dd>)}
+          </div>
+        ))}
+        {fotografie.length > 0 && (
+          <div>
+            <dt>Fotografie</dt>
+            {fotografie.map((x) => <dd>{x.url ? <a href={x.url} rel="noopener">{x.naam}</a> : x.naam}</dd>)}
+          </div>
+        )}
+        {awards.length > 0 && (
+          <div>
+            <dt>Awards</dt>
+            {awards.map((a) => <dd>{[a.jaar, a.naam, a.resultaat && label(a.resultaat)].filter(Boolean).join(' · ')}</dd>)}
+          </div>
+        )}
+        {pers.length > 0 && (
+          <div>
+            <dt>Pers</dt>
+            {pers.map((x) => {
+              const text = [x.jaar, x.medium, x.titel].filter(Boolean).join(' · ');
+              return <dd>{x.url ? <a href={x.url} rel="noopener">{text}</a> : text}</dd>;
+            })}
+          </div>
+        )}
+      </dl>
+      {pressKit && (
+        <p>
+          <a class="button" href={pressKit} download>Download press-kit</a>
+        </p>
+      )}
+    </section>
+  )
+}
+
+<style>
+  dl {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: var(--space-m);
+    font-size: var(--step--1);
+  }
+  dt {
+    color: var(--color-muted);
+    margin-block-end: var(--space-3xs);
+  }
+  dd {
+    margin: 0;
+  }
+  p {
+    margin-block-start: var(--space-m);
+  }
+</style>

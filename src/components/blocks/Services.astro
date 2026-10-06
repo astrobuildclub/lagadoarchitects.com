@@ -1,0 +1,35 @@
+---
+import { md } from '../../lib/markdown';
+import { has, type BlockProps } from './scope';
+
+type Props = BlockProps<'services'>;
+const { block } = Astro.props;
+---
+
+{
+  block.items.length > 0 && (
+    <section class="services popout">
+      {has(block.kop) && <h2>{block.kop}</h2>}
+      <ul role="list">
+        {block.items.map((item) => (
+          <li>
+            <h3>{item.titel}</h3>
+            {has(item.tekst) && <div class="prose" set:html={md(item.tekst)} />}
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+<style>
+  ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-l);
+    margin-block-start: var(--space-m);
+  }
+  h3 {
+    margin-block-end: var(--space-2xs);
+  }
+</style>

@@ -1,0 +1,62 @@
+---
+// Pers of awards. `toonUit: bureau` haalt de items uit de list-blokken van bureau.md.
+// Placeholder-items uit het sjabloon (jaar 0000, lege velden) worden niet getoond.
+import { cleanItems, getProjects, itemsFromPage } from '../../lib/content';
+import { label } from '../../lib/labels';
+import { has, type BlockProps } from './scope';
+
+type Props = BlockProps<'list'>;
+const { block } = Astro.props;
+const source = has(block.toonUit) ? await itemsFromPage(block.toonUit as 'bureau', block.soort) : cleanItems(block.items);
+const items = block.limit ? source.slice(0, block.limit) : source;
+const projects = await getProjects();
+const projectTitle = (slug?: string) => projects.find((p) => p.slug === slug);
+---
+
+{
+  items.length > 0 && (
+    <section class="list">
+      {has(block.kop) && <h2>{block.kop}</h2>}
+      <ul role="list">
+        {items.map((item) => {
+          const project = projectTitle(item.project);
+          const titel = block.soort === 'pers' ? [item.medium, item.titel].filter(has).join(' — ') : item.naam;
+          return (
+            <li>
+              {item.jaar ? <span class="list__jaar">{item.jaar}</span> : null}
+              <span class="list__titel">
+                {has(item.url) ? <a href={item.url} rel="noopener">{titel}</a> : titel}
+                {block.soort === 'awards' && item.resultaat && <span class="muted"> ({label(item.resultaat)})</span>}
+              </span>
+              {project && <a class="list__project muted" href={`/projecten/${project.slug}`}>{project.title}</a>}
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  )
+}
+
+<style>
+  ul {
+    margin-block-start: var(--space-s);
+  }
+  li {
+    display: grid;
+    grid-template-columns: 4rem 1fr;
+    gap: var(--space-2xs) var(--space-s);
+    padding-block: var(--space-2xs);
+    border-block-end: var(--border-width) solid var(--color-line);
+  }
+  .list__jaar {
+    color: var(--color-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .list__titel {
+    grid-column: 2;
+  }
+  .list__project {
+    grid-column: 2;
+    font-size: var(--step--1);
+  }
+</style>

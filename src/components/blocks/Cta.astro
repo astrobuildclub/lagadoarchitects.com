@@ -1,0 +1,23 @@
+---
+import type { BlockProps } from './scope';
+
+type Props = BlockProps<'cta'>;
+const { block } = Astro.props;
+---
+
+<section class="cta">
+  <p class="cta__tekst">{block.tekst}</p>
+  <a class="button" href={block.href}>{block.label}</a>
+</section>
+
+<style>
+  .cta {
+    padding-block: var(--space-l);
+    border-block: var(--border-width) solid var(--color-line);
+  }
+  .cta__tekst {
+    font-size: var(--step-3);
+    line-height: var(--leading-tight);
+    margin-block-end: var(--space-s);
+  }
+</style>

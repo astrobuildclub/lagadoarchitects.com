@@ -1,0 +1,32 @@
+// Leesbare labels voor de vaste waarden uit het contentmodel.
+const LABELS: Record<string, string> = {
+  binnenkant: 'Binnenkant',
+  buitenkant: 'Buitenkant',
+  beide: 'Beide',
+  woning: 'Woning',
+  winkel: 'Winkel',
+  horeca: 'Horeca',
+  kantoor: 'Kantoor',
+  publiek: 'Publiek',
+  'openbare-ruimte': 'Openbare ruimte',
+  meubel: 'Meubel',
+  gerealiseerd: 'Gerealiseerd',
+  'in-uitvoering': 'In uitvoering',
+  ontwerp: 'Ontwerp',
+  concept: 'Concept',
+  prive: 'Privé',
+  zakelijk: 'Zakelijk',
+  speels: 'Speels',
+  serieus: 'Serieus',
+  gelaagdheid: 'Gelaagdheid',
+  vorm: 'Vorm',
+  kleur: 'Kleur',
+  laag: '€',
+  midden: '€€',
+  hoog: '€€€',
+  winnaar: 'Winnaar',
+  genomineerd: 'Genomineerd',
+  finalist: 'Finalist',
+};
+
+export const label = (value: string) => LABELS[value] ?? value.charAt(0).toUpperCase() + value.slice(1).replace(/-/g, ' ');

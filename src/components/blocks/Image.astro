@@ -1,0 +1,33 @@
+---
+import Img from '../Img.astro';
+import { resolveImage } from '../../lib/images';
+import { has, type BlockProps } from './scope';
+
+type Props = BlockProps<'image'>;
+const { block, scope, index } = Astro.props;
+const image = resolveImage(scope, block.src);
+const sizes = {
+  content: '(min-width: 48rem) 42rem, 100vw',
+  popout: '(min-width: 60rem) 54rem, 100vw',
+  feature: '(min-width: 80rem) 66rem, 100vw',
+  full: '100vw',
+}[block.breedte];
+---
+
+{
+  image && (
+    <figure class:list={['image', block.breedte]}>
+      <Img src={image} alt={block.alt} sizes={sizes} priority={index === 0} />
+      {has(block.caption) && <figcaption>{block.caption}</figcaption>}
+    </figure>
+  )
+}
+
+<style>
+  .image :global(img) {
+    inline-size: 100%;
+  }
+  .full figcaption {
+    padding-inline: var(--gutter);
+  }
+</style>

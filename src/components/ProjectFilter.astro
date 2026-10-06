@@ -1,0 +1,136 @@
+---
+// Filters voor /projecten. Progressive enhancement: zonder JS staat alles zichtbaar en zijn
+// de filters verborgen. Met JS: kaarten krijgen `hidden`, keuze staat in de querystring
+// (deelbaar, werkt met terug-knop), aantal resultaten wordt voorgelezen.
+// Binnen één groep = OF, tussen groepen = EN.
+import { label } from '../lib/labels';
+import type { Project } from '../lib/schema';
+
+interface Props {
+  projects: Project[];
+  toonPrijs: boolean;
+  target: string;
+}
+const { projects, toonPrijs, target } = Astro.props;
+
+const groups: { key: string; legend: string; values: string[] }[] = [
+  { key: 'type', legend: 'Binnen / buiten', values: projects.map((p) => p.type) },
+  { key: 'programma', legend: 'Programma', values: projects.map((p) => p.programma) },
+  { key: 'status', legend: 'Status', values: projects.map((p) => p.status) },
+  { key: 'stijl', legend: 'Stijl', values: projects.flatMap((p) => (p.stijl ? [p.stijl] : [])) },
+  { key: 'themas', legend: 'Thema', values: projects.flatMap((p) => p.themas) },
+  { key: 'doelgroep', legend: 'Doelgroep', values: projects.flatMap((p) => p.doelgroep) },
+  ...(toonPrijs ? [{ key: 'prijsklasse', legend: 'Prijsklasse', values: projects.flatMap((p) => (p.prijsklasse ? [p.prijsklasse] : [])) }] : []),
+]
+  .map((g) => ({ ...g, values: [...new Set(g.values)].sort() }))
+  // Een filter met één waarde filtert niets.
+  .filter((g) => g.values.length > 1);
+---
+
+<form class="project-filter" data-project-filter data-target={target} hidden aria-label="Projecten filteren">
+  {
+    groups.length > 0 ? (
+      groups.map((g) => (
+        <fieldset>
+          <legend>{g.legend}</legend>
+          {g.values.map((v) => (
+            <label>
+              <input type="checkbox" name={g.key} value={v} />
+              {label(v)}
+            </label>
+          ))}
+        </fieldset>
+      ))
+    ) : (
+      <p class="muted">Filters verschijnen zodra er meer projecten zijn.</p>
+    )
+  }
+  <div class="project-filter__footer">
+    <p aria-live="polite" data-count></p>
+    <button type="reset" class="button">Wis filters</button>
+  </div>
+</form>
+
+<script>
+  function initFilter() {
+    const form = document.querySelector<HTMLFormElement>('[data-project-filter]');
+    if (!form) return;
+    const list = document.getElementById(form.dataset.target!)!;
+    const cards = [...list.querySelectorAll<HTMLElement>('.project-card')];
+    const count = form.querySelector('[data-count]')!;
+    form.hidden = false;
+
+    const apply = (updateUrl: boolean) => {
+      const data = new FormData(form);
+      const active = new Map<string, string[]>();
+      for (const [k, v] of data) active.set(k, [...(active.get(k) ?? []), String(v)]);
+
+      let visible = 0;
+      for (const card of cards) {
+        const match = [...active].every(([key, values]) => {
+          const own = (card.dataset[key] ?? '').split(' ');
+          return values.some((v) => own.includes(v));
+        });
+        card.hidden = !match;
+        if (match) visible++;
+      }
+      count.textContent = `${visible} ${visible === 1 ? 'project' : 'projecten'}`;
+
+      if (updateUrl) {
+        const params = new URLSearchParams(data as unknown as Record<string, string>);
+        history.replaceState(history.state, '', params.size ? `?${params}` : location.pathname);
+      }
+    };
+
+    // Startwaarden uit de URL
+    const params = new URLSearchParams(location.search);
+    form.querySelectorAll<HTMLInputElement>('input[type=checkbox]').forEach((input) => {
+      input.checked = params.getAll(input.name).includes(input.value);
+    });
+
+    form.addEventListener('change', () => apply(true));
+    form.addEventListener('reset', () => setTimeout(() => apply(true)));
+    form.addEventListener('submit', (e) => e.preventDefault());
+    apply(false);
+  }
+
+  document.addEventListener('astro:page-load', initFilter);
+</script>
+
+<style>
+  .project-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-s) var(--space-l);
+    padding-block: var(--space-s);
+    border-block: var(--border-width) solid var(--color-line);
+    font-size: var(--step--1);
+  }
+  .project-filter[hidden] {
+    display: none;
+  }
+  fieldset {
+    border: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs) var(--space-s);
+  }
+  legend {
+    font-weight: 600;
+    margin-block-end: var(--space-3xs);
+    inline-size: 100%;
+  }
+  label {
+    display: inline-flex;
+    gap: var(--space-3xs);
+    align-items: center;
+    min-block-size: 1.5rem;
+  }
+  .project-filter__footer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+    inline-size: 100%;
+  }
+</style>

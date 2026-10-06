@@ -1,0 +1,101 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlockRenderer from '../../components/BlockRenderer.astro';
+import Img from '../../components/Img.astro';
+import NextProject from '../../components/NextProject.astro';
+import ProjectCredits from '../../components/ProjectCredits.astro';
+import ProjectFacts from '../../components/ProjectFacts.astro';
+import { getNextProject, getProjects, getSettings } from '../../lib/content';
+import { hexToOklch } from '../../lib/color';
+import { projectImage } from '../../lib/images';
+import { md } from '../../lib/markdown';
+import { pageDescription, pageTitle } from '../../lib/seo';
+import type { Project } from '../../lib/schema';
+import { cleanPath } from '../../lib/url';
+
+export const getStaticPaths = (async () => {
+  const projects = await getProjects();
+  return projects.map((project) => ({ params: { slug: project.slug }, props: { project } }));
+}) satisfies GetStaticPaths;
+
+const { project } = Astro.props as { project: Project };
+const settings = await getSettings();
+const next = await getNextProject(project);
+const hero = projectImage(project.slug, project.hero.src);
+const url = new URL(cleanPath(Astro.url.pathname), settings.url).href;
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: project.title,
+    headline: project.tagline,
+    description: project.intro.trim(),
+    url,
+    creator: { '@id': `${settings.url}/#organisatie` },
+    locationCreated: { '@type': 'Place', name: [project.locatie.wijk, project.locatie.plaats].filter(Boolean).join(', ') },
+    ...(project.jaarOplevering && { dateCreated: String(project.jaarOplevering) }),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Projecten', item: new URL('/projecten', settings.url).href },
+      { '@type': 'ListItem', position: 2, name: project.title, item: url },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title={pageTitle(settings, project)}
+  description={pageDescription(settings, { ...project, fallbackDescription: `${project.tagline} ${project.intro}` })}
+  image={hero}
+  imageAlt={project.hero.alt}
+  type="article"
+  accent={hexToOklch(project.accentkleur)}
+  jsonLd={jsonLd}
+>
+  <article class="layout flow">
+    <header class="project-hero full">
+      <div class="wrapper">
+        <p class="project-hero__crumb"><a href="/projecten">Projecten</a></p>
+        <h1>{project.title}</h1>
+        <p class="project-hero__tagline">{project.tagline}</p>
+      </div>
+      <Img src={hero} alt={project.hero.alt} priority sizes="100vw" class="project-hero__image" />
+    </header>
+
+    <div class="project-intro prose" set:html={md(project.intro)} />
+    <div class="feature"><ProjectFacts project={project} /></div>
+
+    <BlockRenderer blocks={project.blocks} scope={{ project: project.slug, kleurpalet: project.kleurpalet }} />
+
+    <ProjectCredits project={project} />
+    {next && <NextProject project={next} />}
+  </article>
+</BaseLayout>
+
+<style>
+  .project-hero h1 {
+    font-size: var(--step-6);
+    color: var(--accent);
+  }
+  .project-hero__crumb {
+    font-size: var(--step--1);
+    padding-block-start: var(--space-l);
+  }
+  .project-hero__tagline {
+    font-size: var(--step-1);
+    margin-block: var(--space-2xs) var(--space-l);
+  }
+  .project-hero :global(.project-hero__image) {
+    inline-size: 100%;
+    max-block-size: 85svh;
+    object-fit: cover;
+  }
+  .project-intro {
+    font-size: var(--step-1);
+  }
+</style>

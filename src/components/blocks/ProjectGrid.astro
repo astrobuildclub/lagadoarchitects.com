@@ -1,0 +1,29 @@
+---
+import ProjectList from '../ProjectList.astro';
+import { selectProjects } from '../../lib/content';
+import { has, type BlockProps } from './scope';
+
+type Props = BlockProps<'projectGrid'>;
+const { block } = Astro.props;
+const projects = await selectProjects(block);
+---
+
+{
+  projects.length > 0 && (
+    <section class="project-grid feature">
+      {has(block.kop) && <h2>{block.kop}</h2>}
+      <ProjectList projects={projects} headingLevel={has(block.kop) ? 3 : 2} sized />
+      {block.linkNaarOverzicht && (
+        <p>
+          <a class="button" href={block.linkNaarOverzicht.href}>{block.linkNaarOverzicht.label}</a>
+        </p>
+      )}
+    </section>
+  )
+}
+
+<style>
+  .project-grid > * + * {
+    margin-block-start: var(--space-m);
+  }
+</style>

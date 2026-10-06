@@ -1,0 +1,26 @@
+---
+import { md } from '../lib/markdown';
+
+interface Props {
+  title: string;
+  intro?: string;
+}
+const { title, intro } = Astro.props;
+---
+
+<header class="page-header">
+  <h1>{title}</h1>
+  {intro && <div class="page-header__intro" set:html={md(intro)} />}
+</header>
+
+<style>
+  .page-header {
+    padding-block-start: var(--space-xl);
+  }
+  .page-header__intro {
+    margin-block-start: var(--space-s);
+    font-size: var(--step-2);
+    line-height: 1.3;
+    max-inline-size: 32ch;
+  }
+</style>

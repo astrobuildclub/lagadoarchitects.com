@@ -1,0 +1,31 @@
+---
+import { has, type BlockProps } from './scope';
+
+type Props = BlockProps<'quote'>;
+const { block } = Astro.props;
+---
+
+<figure class="quote popout">
+  <blockquote>
+    <p>{block.tekst}</p>
+  </blockquote>
+  <figcaption>
+    <span class="quote__naam">{block.naam}</span>{has(block.rol) && <>, {block.rol}</>}
+  </figcaption>
+</figure>
+
+<style>
+  blockquote {
+    font-size: var(--step-3);
+    line-height: var(--leading-tight);
+  }
+  blockquote p::before {
+    content: '“';
+  }
+  blockquote p::after {
+    content: '”';
+  }
+  .quote__naam {
+    color: var(--color-fg);
+  }
+</style>

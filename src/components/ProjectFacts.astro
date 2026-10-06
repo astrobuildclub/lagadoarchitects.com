@@ -1,0 +1,54 @@
+---
+// Feitenblok bovenaan een project. Lege velden worden weggelaten; prijsklasse nooit.
+import { label } from '../lib/labels';
+import type { Project } from '../lib/schema';
+
+interface Props {
+  project: Project;
+}
+const { project: p } = Astro.props;
+
+const jaar =
+  p.jaarOpdracht && p.jaarOplevering && p.jaarOpdracht !== p.jaarOplevering
+    ? `${p.jaarOpdracht}–${p.jaarOplevering}`
+    : String(p.jaarOplevering || p.jaarOpdracht || '');
+
+const facts = [
+  ['Locatie', [p.locatie.wijk, p.locatie.plaats].filter(Boolean).join(', ')],
+  ['Programma', label(p.programma)],
+  ['Functie', p.functie],
+  ['Oppervlakte', p.oppervlakte ? `${p.oppervlakte} m²` : ''],
+  ['Status', label(p.status)],
+  ['Jaar', jaar],
+  ['Opdrachtgever', p.opdrachtgever],
+].filter((f): f is [string, string] => !!f[1]);
+---
+
+<dl class="facts">
+  {
+    facts.map(([term, value]) => (
+      <div>
+        <dt>{term}</dt>
+        <dd>{value}</dd>
+      </div>
+    ))
+  }
+</dl>
+
+<style>
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: var(--space-s);
+    padding-block: var(--space-s);
+    border-block: var(--border-width) solid var(--color-line);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+  dt {
+    color: var(--color-muted);
+  }
+  dd {
+    margin: 0;
+  }
+</style>

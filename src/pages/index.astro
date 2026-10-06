@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BlockRenderer from '../components/BlockRenderer.astro';
+import { getPage, getSettings } from '../lib/content';
+import { pageDescription, pageTitle } from '../lib/seo';
+
+const settings = await getSettings();
+const page = await getPage('home');
+const hasHero = page.blocks[0]?.type === 'hero';
+---
+
+<BaseLayout title={pageTitle(settings, page, true)} description={pageDescription(settings, page)}>
+  <div class="layout flow">
+    {!hasHero && <h1 class="visually-hidden">{settings.siteNaam}</h1>}
+    <BlockRenderer blocks={page.blocks} />
+  </div>
+</BaseLayout>

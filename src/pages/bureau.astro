@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BlockRenderer from '../components/BlockRenderer.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { getPage, getSettings } from '../lib/content';
+import { pageDescription, pageTitle } from '../lib/seo';
+
+const settings = await getSettings();
+const page = await getPage('bureau');
+---
+
+<BaseLayout title={pageTitle(settings, page)} description={pageDescription(settings, { ...page, fallbackDescription: page.intro })}>
+  <div class="layout flow">
+    <PageHeader title={page.title} intro={page.intro} />
+    <BlockRenderer blocks={page.blocks} />
+  </div>
+</BaseLayout>

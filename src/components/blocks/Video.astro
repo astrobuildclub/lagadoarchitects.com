@@ -1,0 +1,48 @@
+---
+// YouTube/Vimeo via iframemanager: er wordt niets van de dienst geladen tot de bezoeker
+// toestemming geeft (klik of cookie-instellingen). Poster = eigen beeld, geen externe thumbnail.
+import { getImage } from 'astro:assets';
+import { resolveImage } from '../../lib/images';
+import { has, type BlockProps } from './scope';
+
+type Props = BlockProps<'video'>;
+const { block, scope } = Astro.props;
+
+function parse(url: string): { service: 'youtube' | 'vimeo'; id: string } | undefined {
+  const yt = url.match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
+  if (yt) return { service: 'youtube', id: yt[1] };
+  const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vimeo) return { service: 'vimeo', id: vimeo[1] };
+  return undefined;
+}
+
+const video = parse(block.url);
+if (!video && block.url) console.warn(`[video] Onbekende video-url: ${block.url}`);
+const posterImage = resolveImage(scope, block.poster);
+const poster = posterImage ? (await getImage({ src: posterImage, width: 1600 })).src : undefined;
+---
+
+{
+  video && (
+    <figure class="video feature">
+      <div
+        class="video__frame"
+        data-service={video.service}
+        data-id={video.id}
+        data-title={block.titel}
+        data-thumbnail={poster}
+        data-autoscale
+      />
+      {has(block.caption) && <figcaption>{block.caption}</figcaption>}
+      <noscript>
+        <a href={block.url}>{block.titel} bekijken op {video.service === 'youtube' ? 'YouTube' : 'Vimeo'}</a>
+      </noscript>
+    </figure>
+  )
+}
+
+<style>
+  .video__frame {
+    background: var(--color-surface);
+  }
+</style>

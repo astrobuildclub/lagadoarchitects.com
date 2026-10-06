@@ -1,0 +1,48 @@
+---
+// <head>-meta: titel, beschrijving, canonical, Open Graph, Twitter, JSON-LD.
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { pageImage } from '../lib/images';
+import { cleanPath } from '../lib/url';
+import type { Settings } from '../lib/schema';
+
+interface Props {
+  settings: Settings;
+  title: string;
+  description: string;
+  image?: ImageMetadata;
+  imageAlt?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  jsonLd?: object[];
+}
+
+const { settings, title, description, image, imageAlt, type = 'website', noindex = false, jsonLd = [] } = Astro.props;
+const site = settings.url;
+const canonical = new URL(cleanPath(Astro.url.pathname), site).href;
+
+// Deelbeeld: pagina → site-instellingen → /og-default.png (1200×630)
+const shareSrc = image ?? (settings.seo.deelAfbeelding?.src ? pageImage(settings.seo.deelAfbeelding.src) : undefined);
+const shareAlt = image ? imageAlt : settings.seo.deelAfbeelding?.alt;
+const og = shareSrc ? await getImage({ src: shareSrc, width: 1200, height: 630, fit: 'cover', format: 'jpg' }) : undefined;
+const ogUrl = new URL(og?.src ?? '/og-default.png', site).href;
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+{!noindex && <link rel="canonical" href={canonical} />}
+{noindex && <meta name="robots" content="noindex, follow" />}
+
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={settings.siteNaam} />
+<meta property="og:locale" content="nl_NL" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogUrl} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+{shareAlt && <meta property="og:image:alt" content={shareAlt} />}
+<meta name="twitter:card" content="summary_large_image" />
+
+{jsonLd.map((data) => <script type="application/ld+json" set:html={JSON.stringify(data)} />)}

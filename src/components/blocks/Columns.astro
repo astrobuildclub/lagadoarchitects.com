@@ -1,0 +1,51 @@
+---
+// Beeld naast tekst (bv. verhaal per ruimte). Op smalle schermen beeld boven tekst.
+import Img from '../Img.astro';
+import { resolveImage } from '../../lib/images';
+import { md } from '../../lib/markdown';
+import { has, type BlockProps } from './scope';
+
+type Props = BlockProps<'columns'>;
+const { block, scope } = Astro.props;
+const image = resolveImage(scope, block.image.src);
+---
+
+<section class:list={['columns', 'feature', { 'columns--links': block.beeldPositie === 'links' }]}>
+  <div class="columns__tekst">
+    {has(block.kop) && <h2 class="columns__kop">{block.kop}</h2>}
+    <div class="prose" set:html={md(block.tekst)} />
+  </div>
+  {
+    image && (
+      <figure class="columns__beeld">
+        <Img src={image} alt={block.image.alt} sizes="(min-width: 48rem) 50vw, 100vw" />
+        {has(block.image.caption) && <figcaption>{block.image.caption}</figcaption>}
+      </figure>
+    )
+  }
+</section>
+
+<style>
+  .columns {
+    display: grid;
+    gap: var(--space-m-xl);
+    align-items: center;
+  }
+  .columns__kop {
+    font-size: var(--step-2);
+    margin-block-end: var(--space-s);
+  }
+  @media (min-width: 48rem) {
+    .columns {
+      grid-template-columns: 1fr 1fr;
+    }
+    .columns--links .columns__beeld {
+      order: -1;
+    }
+  }
+  @media (max-width: 47.99rem) {
+    .columns__beeld {
+      order: -1;
+    }
+  }
+</style>

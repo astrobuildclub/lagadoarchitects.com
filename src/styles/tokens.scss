@@ -1,0 +1,105 @@
+/*
+ * Design-tokens. Bewust neutraal: dit is de basis die in Figma wordt ontworpen.
+ * Typografie en ruimte: utopia-core-scss (tweaken via de params hieronder).
+ * Kleur: OKLCH. Licht/donker via [data-theme] of prefers-color-scheme.
+ *
+ * Type: https://utopia.fyi/type/calculator?c=360,16,1.2,2560,18,1.333,8,3,&s=0.75|0.5|0.25|0.1,1.5|2|3|4|6|7,s-l&g=s,l,xl,12
+ * Space: https://utopia.fyi/space/calculator?c=360,16,1.2,2560,18,1.333,8,3,&s=0.75|0.5|0.25|0.1,1.5|2|3|4|6|7,s-l&g=s,l,xl,12
+ */
+@use 'utopia-core-scss/src/utopia' as utopia;
+
+:root {
+  color-scheme: light dark;
+  interpolate-size: allow-keywords;
+
+  /* Typografie */
+  --font-sans: 'Instrument Sans Variable', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'DM Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --leading-tight: 1.1;
+  --leading-normal: 1.55;
+  --measure: 65ch;
+
+  @include utopia.generateTypeScale((
+    'minWidth': 360,
+    'maxWidth': 2560,
+    'minFontSize': 16,
+    'maxFontSize': 18,
+    'minTypeScale': 1.2,
+    'maxTypeScale': 1.333,
+    'positiveSteps': 8,
+    'negativeSteps': 3,
+    'prefix': 'step-',
+    'relativeTo': 'viewport-width',
+  ));
+
+  @include utopia.generateSpaceScale((
+    'minWidth': 360,
+    'maxWidth': 2560,
+    'minSize': 16,
+    'maxSize': 18,
+    'positiveSteps': (1.5, 2, 3, 4, 6, 7),
+    'negativeSteps': (0.75, 0.5, 0.25, 0.1),
+    'customSizes': ('s-l', 'm-xl', 'l-2xl', 'xl-3xl'),
+    'prefix': 'space-',
+    'relativeTo': 'viewport-width',
+  ));
+
+  /* Layout (breakout-grid, zie layout.css) */
+  --gutter: var(--space-s-l);
+  --content-width: 42rem;
+  --popout-width: 6rem;
+  --feature-width: 12rem;
+
+  /* Vormen & beweging */
+  --radius: 0;
+  --border-width: 1px;
+  --duration: 200ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Kleur: licht */
+  --color-bg: oklch(99% 0 0);
+  --color-surface: oklch(96% 0.003 90);
+  --color-fg: oklch(18% 0 0);
+  --color-muted: oklch(45% 0 0);
+  --color-line: oklch(85% 0 0);
+  --color-accent: oklch(50% 0.17 255);
+  --color-on-accent: oklch(99% 0 0);
+  --color-focus: var(--color-accent);
+  /* Projectpagina's overschrijven --accent met de accentkleur van het project. */
+  --accent: var(--color-accent);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-bg: oklch(17% 0 0);
+    --color-surface: oklch(22% 0.003 90);
+    --color-fg: oklch(95% 0 0);
+    --color-muted: oklch(72% 0 0);
+    --color-line: oklch(35% 0 0);
+    --color-accent: oklch(72% 0.14 255);
+    --color-on-accent: oklch(17% 0 0);
+  }
+}
+
+:root[data-theme='dark'] {
+  --color-bg: oklch(17% 0 0);
+  --color-surface: oklch(22% 0.003 90);
+  --color-fg: oklch(95% 0 0);
+  --color-muted: oklch(72% 0 0);
+  --color-line: oklch(35% 0 0);
+  --color-accent: oklch(72% 0.14 255);
+  --color-on-accent: oklch(17% 0 0);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration: 0ms;
+  }
+}

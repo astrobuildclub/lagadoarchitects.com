@@ -1,0 +1,79 @@
+---
+// Licht/donker. Zonder keuze volgt de site prefers-color-scheme.
+// Klik cyclus: system → tegenovergesteld van systeem → andere modus → weer system.
+---
+
+<button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false">
+  <span class="visually-hidden">Donkere modus</span>
+  <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20">
+    <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
+    <path d="M10 2a8 8 0 0 1 0 16z" fill="currentColor"></path>
+  </svg>
+</button>
+
+<script>
+  const media = () => matchMedia('(prefers-color-scheme: dark)');
+  const systemDark = () => media().matches;
+
+  function stored() {
+    try {
+      const v = localStorage.getItem('theme');
+      if (v === 'light' || v === 'dark') return v;
+    } catch {}
+    return 'system';
+  }
+
+  /** @param {'light' | 'dark' | 'system'} theme */
+  function apply(theme, doc = document) {
+    if (theme === 'system') doc.documentElement.removeAttribute('data-theme');
+    else doc.documentElement.dataset.theme = theme;
+  }
+
+  function isDark(doc = document) {
+    const t = doc.documentElement.dataset.theme;
+    if (t === 'dark' || t === 'light') return t === 'dark';
+    return systemDark();
+  }
+
+  function bind() {
+    const button = document.querySelector('[data-theme-toggle]');
+    if (!button || button.dataset.bound) return;
+    button.dataset.bound = 'true';
+
+    const syncPressed = () => button.setAttribute('aria-pressed', String(isDark()));
+    syncPressed();
+
+    button.addEventListener('click', () => {
+      const current = stored();
+      const next = current === 'system' ? (systemDark() ? 'light' : 'dark') : current === 'light' ? 'dark' : 'system';
+      try {
+        if (next === 'system') localStorage.removeItem('theme');
+        else localStorage.setItem('theme', next);
+      } catch {}
+      apply(next);
+      syncPressed();
+    });
+
+    media().addEventListener('change', () => {
+      if (stored() === 'system') {
+        apply('system');
+        syncPressed();
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', bind);
+</script>
+
+<style>
+  .theme-toggle {
+    display: grid;
+    place-items: center;
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+</style>

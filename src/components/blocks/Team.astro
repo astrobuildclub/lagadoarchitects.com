@@ -1,0 +1,58 @@
+---
+import Img from '../Img.astro';
+import { resolveImage } from '../../lib/images';
+import { md } from '../../lib/markdown';
+import { has, type BlockProps } from './scope';
+
+type Props = BlockProps<'team'>;
+const { block, scope } = Astro.props;
+const personen = block.personen.map((p) => ({ ...p, image: p.foto ? resolveImage(scope, p.foto.src) : undefined }));
+---
+
+<section class="team popout">
+  {has(block.kop) && <h2>{block.kop}</h2>}
+  <ul role="list">
+    {
+      personen.map((p) => (
+        <li class="persoon">
+          {p.image && <Img src={p.image} alt={p.foto!.alt} sizes="(min-width: 48rem) 20rem, 100vw" widths={[400, 800]} />}
+          <div>
+            <h3>{p.naam}</h3>
+            {has(p.rol) && <p class="muted">{p.rol}</p>}
+            {has(p.bio) && <div class="prose" set:html={md(p.bio)} />}
+            {has(p.linkedin) && <p><a href={p.linkedin} rel="noopener">LinkedIn</a></p>}
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  ul {
+    display: grid;
+    gap: var(--space-l);
+    margin-block-start: var(--space-m);
+  }
+  .persoon {
+    display: grid;
+    gap: var(--space-m);
+  }
+  @media (min-width: 48rem) {
+    .persoon {
+      grid-template-columns: 20rem 1fr;
+      align-items: start;
+    }
+  }
+  .persoon :global(img) {
+    inline-size: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+  .persoon h3 {
+    font-size: var(--step-2);
+  }
+  .persoon .prose {
+    margin-block-start: var(--space-s);
+  }
+</style>

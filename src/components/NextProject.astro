@@ -1,0 +1,55 @@
+---
+// Doorkijk naar het volgende (of gerelateerde) project, zoals op de huidige site.
+import Img from './Img.astro';
+import { projectImage } from '../lib/images';
+import type { Project } from '../lib/schema';
+
+interface Props {
+  project: Project;
+}
+const { project: p } = Astro.props;
+---
+
+<aside class="next-project full" aria-label="Volgend project">
+  <a href={`/projecten/${p.slug}`}>
+    <Img src={projectImage(p.slug, p.hero.src)} alt="" sizes="100vw" />
+    <span class="next-project__text wrapper">
+      <span class="next-project__label">Volgend project</span>
+      <span class="next-project__title">{p.title}</span>
+    </span>
+  </a>
+</aside>
+
+<style>
+  a {
+    display: grid;
+    text-decoration: none;
+    color: var(--color-fg);
+  }
+  a > :global(*) {
+    grid-area: 1 / 1;
+  }
+  a :global(img) {
+    inline-size: 100%;
+    aspect-ratio: 21 / 9;
+    object-fit: cover;
+    opacity: 0.35;
+    transition: opacity var(--duration) var(--ease);
+  }
+  a:hover :global(img),
+  a:focus-visible :global(img) {
+    opacity: 0.6;
+  }
+  .next-project__text {
+    align-self: end;
+    padding-block: var(--space-l);
+  }
+  .next-project__label {
+    display: block;
+    font-size: var(--step--1);
+  }
+  .next-project__title {
+    font-size: var(--step-5);
+    font-weight: 600;
+  }
+</style>

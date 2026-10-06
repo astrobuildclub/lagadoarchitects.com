@@ -1,0 +1,54 @@
+---
+// Rendert `blocks` uit de content in volgorde. Nieuw bloktype? Eerst lagado-content/README.md,
+// dan src/lib/schema.ts, dan hier een case en een component in ./blocks.
+import type { Block } from '../lib/schema';
+import { assertNever, type BlockScope } from './blocks/scope';
+import BeforeAfter from './blocks/BeforeAfter.astro';
+import Colors from './blocks/Colors.astro';
+import Columns from './blocks/Columns.astro';
+import Cta from './blocks/Cta.astro';
+import Downloads from './blocks/Downloads.astro';
+import Gallery from './blocks/Gallery.astro';
+import Hero from './blocks/Hero.astro';
+import ImageBlock from './blocks/Image.astro';
+import List from './blocks/List.astro';
+import Logos from './blocks/Logos.astro';
+import ProjectGrid from './blocks/ProjectGrid.astro';
+import Quote from './blocks/Quote.astro';
+import Services from './blocks/Services.astro';
+import Team from './blocks/Team.astro';
+import Text from './blocks/Text.astro';
+import Video from './blocks/Video.astro';
+
+interface Props {
+  blocks: Block[];
+  scope?: BlockScope;
+}
+
+const { blocks, scope = {} } = Astro.props;
+---
+
+{
+  blocks.map((block, index) => {
+    const props = { scope, index };
+    switch (block.type) {
+      case 'hero': return <Hero block={block} {...props} />;
+      case 'text': return <Text block={block} {...props} />;
+      case 'image': return <ImageBlock block={block} {...props} />;
+      case 'gallery': return <Gallery block={block} {...props} />;
+      case 'columns': return <Columns block={block} {...props} />;
+      case 'quote': return <Quote block={block} {...props} />;
+      case 'video': return <Video block={block} {...props} />;
+      case 'colors': return <Colors block={block} {...props} />;
+      case 'beforeAfter': return <BeforeAfter block={block} {...props} />;
+      case 'projectGrid': return <ProjectGrid block={block} {...props} />;
+      case 'team': return <Team block={block} {...props} />;
+      case 'list': return <List block={block} {...props} />;
+      case 'cta': return <Cta block={block} {...props} />;
+      case 'services': return <Services block={block} {...props} />;
+      case 'logos': return <Logos block={block} {...props} />;
+      case 'downloads': return <Downloads block={block} {...props} />;
+      default: return assertNever(block);
+    }
+  })
+}

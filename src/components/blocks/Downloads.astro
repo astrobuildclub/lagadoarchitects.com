@@ -1,0 +1,23 @@
+---
+import { downloadUrl } from '../../lib/images';
+import { has, type BlockProps } from './scope';
+
+type Props = BlockProps<'downloads'>;
+const { block } = Astro.props;
+const items = block.items.map((d) => ({ ...d, url: downloadUrl(d.bestand) })).filter((d) => d.url);
+---
+
+{
+  items.length > 0 && (
+    <section class="downloads">
+      {has(block.kop) && <h2>{block.kop}</h2>}
+      <ul role="list">
+        {items.map((d) => (
+          <li>
+            <a href={d.url} download>{d.label}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}

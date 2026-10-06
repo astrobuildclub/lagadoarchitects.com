@@ -1,0 +1,47 @@
+---
+// Kleurpalet van het project. Leeg blok → kleurpalet uit de projectgegevens.
+// Kleuren zonder hex (nog niet ingevuld) worden overgeslagen.
+import { hexToOklch } from '../../lib/color';
+import type { BlockProps } from './scope';
+
+type Props = BlockProps<'colors'>;
+const { block, scope } = Astro.props;
+const source = block.kleuren.length ? block.kleuren : (scope.kleurpalet ?? []);
+const kleuren = source.map((k) => ({ ...k, oklch: hexToOklch(k.hex) })).filter((k) => k.oklch);
+---
+
+{
+  kleuren.length > 0 && (
+    <section class="colors full" aria-label="Kleurpalet">
+      <ul role="list">
+        {kleuren.map((k) => (
+          <li style={`--swatch: ${k.oklch}`}>
+            <span class="colors__label">{k.label}</span>
+            <span class="colors__hex">{k.hex.toUpperCase()}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+<style>
+  ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  }
+  li {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-block-size: 14rem;
+    padding: var(--space-s);
+    background: var(--swatch);
+    /* Leesbare tekst op elke kleur: wit of zwart op basis van de lichtheid. */
+    color: oklch(from var(--swatch) clamp(0, (0.62 - l) * 1000, 1) 0 0);
+    font-size: var(--step--1);
+  }
+  .colors__hex {
+    font-family: var(--font-mono);
+  }
+</style>

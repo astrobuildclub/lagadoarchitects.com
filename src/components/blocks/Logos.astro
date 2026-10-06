@@ -1,0 +1,39 @@
+---
+// Klant- of perslogo's. Zonder logo wordt de naam getoond.
+import Img from '../Img.astro';
+import { resolveImage } from '../../lib/images';
+import { has, type BlockProps } from './scope';
+
+type Props = BlockProps<'logos'>;
+const { block, scope } = Astro.props;
+const items = block.items.map((item) => ({ ...item, image: item.logo ? resolveImage(scope, item.logo.src) : undefined }));
+---
+
+{
+  items.length > 0 && (
+    <section class="logos feature">
+      {has(block.kop) && <h2>{block.kop}</h2>}
+      <ul role="list">
+        {items.map((item) => {
+          const content = item.image ? <Img src={item.image} alt={item.logo!.alt || item.naam} sizes="10rem" widths={[200, 400]} /> : item.naam;
+          return <li>{has(item.href) ? <a href={item.href} rel="noopener">{content}</a> : content}</li>;
+        })}
+      </ul>
+    </section>
+  )
+}
+
+<style>
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-m) var(--space-l);
+    margin-block-start: var(--space-m);
+  }
+  li :global(img) {
+    max-inline-size: 10rem;
+    max-block-size: 4rem;
+    object-fit: contain;
+  }
+</style>

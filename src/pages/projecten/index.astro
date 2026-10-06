@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import ProjectFilter from '../../components/ProjectFilter.astro';
+import ProjectList from '../../components/ProjectList.astro';
+import { getProjects, getSettings } from '../../lib/content';
+import { pageDescription, pageTitle } from '../../lib/seo';
+
+const settings = await getSettings();
+const projects = await getProjects();
+const page = { title: 'Projecten', fallbackDescription: `Architectuur en interieur van ${settings.siteNaam}: ${settings.payoff.toLowerCase()}.` };
+---
+
+<BaseLayout title={pageTitle(settings, page)} description={pageDescription(settings, page)}>
+  <div class="layout flow" style="--flow-space: var(--space-l)">
+    <PageHeader title="Projecten" />
+    <div class="feature">
+      <ProjectFilter projects={projects} toonPrijs={settings.projecten.toonPrijsfilter} target="projecten" />
+    </div>
+    <div class="feature">
+      <ProjectList projects={projects} headingLevel={2} id="projecten" />
+    </div>
+  </div>
+</BaseLayout>

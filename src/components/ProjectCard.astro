@@ -1,0 +1,84 @@
+---
+// Kaart in een projectraster. De data-*-attributen voeden de filters op /projecten.
+import Img from './Img.astro';
+import { projectImage } from '../lib/images';
+import { label } from '../lib/labels';
+import type { Project } from '../lib/schema';
+
+interface Props {
+  project: Project;
+  headingLevel?: 2 | 3;
+  priority?: boolean;
+  /** Homepage-raster: s/m/l spanning. */
+  sized?: boolean;
+}
+const { project: p, headingLevel = 3, priority = false, sized = false } = Astro.props;
+const Heading = `h${headingLevel}` as 'h2' | 'h3';
+const grootte = sized ? p.homepageGrootte : undefined;
+const filters = {
+  type: p.type,
+  programma: p.programma,
+  status: p.status,
+  stijl: p.stijl ?? '',
+  themas: p.themas.join(' '),
+  doelgroep: p.doelgroep.join(' '),
+  prijsklasse: p.prijsklasse ?? '',
+};
+---
+
+<li
+  class:list={['project-card', grootte && `project-card--${grootte}`]}
+  {...Object.fromEntries(Object.entries(filters).map(([k, v]) => [`data-${k}`, v]))}
+>
+  <a href={`/projecten/${p.slug}`}>
+    <Img
+      src={projectImage(p.slug, p.hero.src)}
+      alt={p.hero.alt}
+      sizes={
+        grootte === 'l'
+          ? '(min-width: 60rem) 66vw, 100vw'
+          : grootte === 's'
+            ? '(min-width: 60rem) 25vw, (min-width: 36rem) 50vw, 100vw'
+            : '(min-width: 60rem) 33vw, (min-width: 36rem) 50vw, 100vw'
+      }
+      priority={priority}
+    />
+    <Heading class="project-card__title">{p.title}</Heading>
+  </a>
+  <p class="project-card__tagline">{p.tagline}</p>
+  <p class="project-card__meta muted">
+    {p.locatie.plaats} · {label(p.programma)}{p.jaarOplevering ? ` · ${p.jaarOplevering}` : ''}
+  </p>
+</li>
+
+<style>
+  .project-card a {
+    display: block;
+    text-decoration: none;
+  }
+  .project-card :global(img) {
+    inline-size: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+  .project-card--l :global(img) {
+    aspect-ratio: 16 / 9;
+  }
+  .project-card--s :global(img) {
+    aspect-ratio: 1 / 1;
+  }
+  .project-card__title {
+    margin-block-start: var(--space-xs);
+    font-size: var(--step-1);
+  }
+  .project-card a:hover .project-card__title {
+    text-decoration: underline;
+  }
+  .project-card__tagline {
+    margin-block-start: var(--space-3xs);
+  }
+  .project-card__meta {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+</style>
