@@ -8,7 +8,7 @@ Lees eerst `README.md` voor context en `CHANGELOG.md` voor recente wijzigingen.
 - Stack: Astro 7.3, geen CMS (Sanity volgt), Node 22 (zie `.nvmrc`)
 
 ## Werkwijze
-- Werk nooit direct op `main`. Branch → PR → deploy preview → merge.
+- Werk nooit direct op `main`. Branch vanaf `staging` → PR naar `staging` → deploy preview → merge. Naar `main` alleen gebundelde releases en hotfixes, volgens `~/Code/_standards/DEPLOY.md` (elke productiedeploy kost Netlify-credits).
 - Branchnamen: `feat/…`, `fix/…`, `chore/…`, `docs/…`.
 - Commit nooit `.env`-bestanden of tokens. Nieuwe variabelen: naam toevoegen aan `.env.example` en de README-tabel.
 - Variabelen met `PUBLIC_` komen in de browser terecht: nooit voor tokens.
@@ -16,7 +16,7 @@ Lees eerst `README.md` voor context en `CHANGELOG.md` voor recente wijzigingen.
 
 ## Documentatie bijhouden (verplicht)
 - Elke wijziging die je commit: voeg een regel toe onder `## [Unreleased]` in `CHANGELOG.md`.
-- Bij een merge naar `main`: zet `[Unreleased]` om naar een datumkop.
+- Bij een release (`staging → main`): zet `[Unreleased]` om naar een datumkop.
 - Verandert setup, env, stack of deploy? Werk `README.md` bij.
 
 ## Conventies
