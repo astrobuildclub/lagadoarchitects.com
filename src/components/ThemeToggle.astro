@@ -23,8 +23,7 @@
     return 'system';
   }
 
-  /** @param {'light' | 'dark' | 'system'} theme */
-  function apply(theme, doc = document) {
+  function apply(theme: 'light' | 'dark' | 'system', doc = document) {
     if (theme === 'system') doc.documentElement.removeAttribute('data-theme');
     else doc.documentElement.dataset.theme = theme;
   }
@@ -36,7 +35,7 @@
   }
 
   function bind() {
-    const button = document.querySelector('[data-theme-toggle]');
+    const button = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
     if (!button || button.dataset.bound) return;
     button.dataset.bound = 'true';
 
