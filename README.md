@@ -76,8 +76,18 @@ TODO.md              Openstaande projecttaken
 
 ## Deploy
 
-- `main` → productie (Netlify) · pull requests → deploy preview
-- Werkwijze: branch → PR → preview checken → merge
+### Branches
+
+| Branch | Deploy | URL |
+|---|---|---|
+| `main` | Productie | https://lagadoarchitects.netlify.app |
+| `staging` | Branch deploy (goedgekeurde features, nog niet live) | https://staging--lagadoarchitects.netlify.app |
+| PR's | Deploy preview | link in de PR |
+
+Features gaan via een PR naar `staging`. Naar `main` alleen gebundelde releases (PR `staging → main`) en hotfixes. Commits met alleen documentatie (`*.md` in de root, `.github/`) starten geen build; Markdown-content in `lagado-content/` wel. Zie `~/Code/_standards/DEPLOY.md`.
+
+### Netlify
+
 - Node 22 via `.nvmrc` + `NODE_VERSION` in `netlify.toml`
 
 ## Bekende issues en afspraken
