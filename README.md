@@ -18,7 +18,7 @@
 
 - Astro 7.3 · Node 22 (`.nvmrc`) · static
 - Styling: CSS + SCSS-tokens via `utopia-core-scss` (OKLCH, fluid type/space, cascade layers). Fonts: Instrument Sans + DM Mono (self-hosted). Geen Tailwind.
-- Animatie: geen (alleen view transitions via `<ClientRouter />`)
+- Animatie: GSAP (gebundeld, alleen core) voor de wisseltekst in de hero (`src/scripts/rotating-text.ts`) + view transitions via `<ClientRouter />`
 - Consent: `vanilla-cookieconsent` v3 + `@orestbida/iframemanager` (gebundeld, geen CDN) · Hosting: Netlify
 
 ## Lokaal starten
@@ -46,6 +46,7 @@ Waarden staan nooit in git. Productiewaarden: Netlify → Site configuration →
 
 ```
 lagado-content/      Content (.md) + beelden + downloads. Zie lagado-content/README.md
+                     (input/ = brondocumenten van de klant, niet in git)
 scripts/             placeholders.mjs (overschrijft nooit bestaand beeld)
 src/
   content.config.ts  Content collections (glob op lagado-content/)
@@ -53,7 +54,8 @@ src/
   components/blocks/ Eén component per bloktype
   layouts/           BaseLayout.astro
   lib/               schema, content (enige datalaag), images, seo, consent, …
-  pages/             Routes
+  pages/             Routes (/wat, /waarom, /contact …)
+  scripts/           Client-side scripts (rotating-text.ts)
   styles/            tokens.scss (Utopia), layout, base, reset
 public/              favicon, og-default
 TODO.md              Openstaande projecttaken
@@ -63,7 +65,7 @@ TODO.md              Openstaande projecttaken
 
 - **Nu:** content in `lagado-content/`. Victor levert Word-sjabloon + beeldmap; wij zetten om naar `projecten/<slug>.md` volgens `_template.md`. Bouwfout = ontbrekend verplicht veld of beeld.
 - **Contentmodel:** `lagado-content/README.md` is leidend; `src/lib/schema.ts` volgt 1-op-1.
-- **Pagina's:** Home, Projecten (filters), Project, Bureau, Contact (geen formulier), Privacy.
+- **Pagina's:** Home, Wat (`/wat`, projecten met filters), Project (`/wat/<slug>`), Waarom (`/waarom`, content in `bureau.md`), Contact (geen formulier), Privacy.
 - **Bouwstenen:** hero, text, image, gallery, columns, quote, video, colors, beforeAfter, projectGrid, team, list, cta, services, logos, downloads.
 - **Straks Sanity:**zelfde veldnamen; alleen `src/lib/content.ts` (en `images.ts`) wisselt.
 
