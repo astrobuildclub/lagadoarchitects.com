@@ -21,28 +21,30 @@
   --leading-normal: 1.55;
   --measure: 65ch;
 
-  @include utopia.generateTypeScale(('minWidth': 360,
-      'maxWidth': 2560,
-      'minFontSize': 16,
-      'maxFontSize': 18,
-      'minTypeScale': 1.2,
-      'maxTypeScale': 1.333,
-      'positiveSteps': 8,
-      'negativeSteps': 3,
-      'prefix': 'step-',
-      'relativeTo': 'viewport-width',
-    ));
+  @include utopia.generateTypeScale((
+    'minWidth': 360,
+    'maxWidth': 2560,
+    'minFontSize': 16,
+    'maxFontSize': 18,
+    'minTypeScale': 1.2,
+    'maxTypeScale': 1.333,
+    'positiveSteps': 8,
+    'negativeSteps': 3,
+    'prefix': 'step-',
+    'relativeTo': 'viewport-width',
+  ));
 
-  @include utopia.generateSpaceScale(('minWidth': 360,
-      'maxWidth': 2560,
-      'minSize': 16,
-      'maxSize': 18,
-      'positiveSteps': (1.5, 2, 3, 4, 6, 7),
-      'negativeSteps': (0.75, 0.5, 0.25, 0.1),
-      'customSizes': ('s-l', 'm-xl', 'l-2xl', 'xl-3xl'),
-      'prefix': 'space-',
-      'relativeTo': 'viewport-width',
-    ));
+  @include utopia.generateSpaceScale((
+    'minWidth': 360,
+    'maxWidth': 2560,
+    'minSize': 16,
+    'maxSize': 18,
+    'positiveSteps': (1.5, 2, 3, 4, 6, 7),
+    'negativeSteps': (0.75, 0.5, 0.25, 0.1),
+    'customSizes': ('s-l', 'm-xl', 'l-2xl', 'xl-3xl'),
+    'prefix': 'space-',
+    'relativeTo': 'viewport-width',
+  ));
 
   /* Layout (breakout-grid, zie layout.css) */
   --gutter: var(--space-s-l);
@@ -96,7 +98,6 @@
 :root[data-theme='light'] {
   color-scheme: light;
 }
-
 :root[data-theme='dark'] {
   color-scheme: dark;
 }
