@@ -2,9 +2,10 @@
 // Filters voor /wat. Progressive enhancement: zonder JS staat alles zichtbaar en zijn
 // de filters verborgen. Met JS: kaarten krijgen `hidden`, keuze staat in de querystring
 // (deelbaar, werkt met terug-knop), aantal resultaten wordt voorgelezen.
-// Binnen één groep = OF, tussen groepen = EN.
-// Opbouw volgens Victor: Type, Vorm, Kleur en "Verras me" direct; Status, Schaal en
-// Materiaal onder "Tot op de mm".
+// Binnen één groep = OF, tussen groepen = EN. Opties die tot 0 projecten leiden worden
+// uitgeschakeld, zodat je nooit op een leeg resultaat uitkomt.
+// Opbouw volgens Victor: Type, Vorm, Kleur (dropdown) en "Verras me" direct; Status,
+// Schaal en Materiaal onder "Tot op de mm".
 import { KLEUR_SWATCH, label } from '../lib/labels';
 import { KLEUR, MATERIAAL, SCHAAL, STATUS, TYPE, VORM, type Project } from '../lib/schema';
 
@@ -31,8 +32,8 @@ const group = (key: string, legend: string, order: readonly string[], used: stri
 const main = [
   group('type', 'Type', TYPE, projects.map((p) => p.type)),
   group('vorm', 'Vorm', VORM, projects.flatMap((p) => p.vorm)),
-  group('kleuren', 'Kleur', KLEUR, projects.flatMap((p) => p.kleuren)),
 ];
+const kleur = group('kleuren', 'Kleur', KLEUR, projects.flatMap((p) => p.kleuren));
 const extra = [
   group('status', 'Status', STATUS, projects.map((p) => p.status)),
   group('schaal', 'Schaal', SCHAAL, projects.flatMap((p) => (p.schaal ? [p.schaal] : []))),
@@ -44,8 +45,9 @@ const extra = [
 // Een filter met één waarde filtert niets.
 const useful = (g: Group) => g.values.length > 1;
 const mainGroups = main.filter(useful);
+const hasKleur = useful(kleur);
 const extraGroups = extra.filter(useful);
-const hasFilters = mainGroups.length + extraGroups.length > 0;
+const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) > 0;
 ---
 
 <form class="project-filter" data-project-filter data-target={target} hidden aria-label="Projecten filteren">
@@ -56,40 +58,69 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
           {mainGroups.map((g) => (
             <fieldset>
               <legend>{g.legend}</legend>
-              {g.values.map((v) => (
-                <label>
-                  <input type="checkbox" name={g.key} value={v} />
-                  {g.key === 'kleuren' && <span class="swatch" style={`--swatch: ${KLEUR_SWATCH[v]}`} aria-hidden="true" />}
-                  {label(v)}
-                </label>
-              ))}
+              <div class="chips">
+                {g.values.map((v) => (
+                  <label class="chip">
+                    <input type="checkbox" name={g.key} value={v} />
+                    {label(v)}
+                  </label>
+                ))}
+              </div>
             </fieldset>
           ))}
-          <div class="project-filter__random">
-            <button type="button" class="button" data-random>
-              <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20">
-                <rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2" />
-                <circle cx="8" cy="8" r="1.6" fill="currentColor" />
-                <circle cx="12" cy="12" r="1.6" fill="currentColor" />
-                <circle cx="16" cy="16" r="1.6" fill="currentColor" />
-              </svg>
-              Verras me
-            </button>
-          </div>
+          {hasKleur && (
+            <details class="dropdown" data-dropdown>
+              <summary class="chip">
+                {kleur.legend}
+                <span class="dropdown__count" data-dropdown-count />
+                <svg class="chevron" aria-hidden="true" viewBox="0 0 16 16" width="12" height="12">
+                  <path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.75" />
+                </svg>
+              </summary>
+              <fieldset class="dropdown__panel">
+                <legend class="visually-hidden">{kleur.legend}</legend>
+                <div class="chips">
+                  {kleur.values.map((v) => (
+                    <label class="chip">
+                      <input type="checkbox" name={kleur.key} value={v} />
+                      <span class="swatch" style={`--swatch: ${KLEUR_SWATCH[v]}`} aria-hidden="true" />
+                      {label(v)}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            </details>
+          )}
+          <button type="button" class="button project-filter__random" data-random>
+            <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20">
+              <rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2" />
+              <circle cx="8" cy="8" r="1.6" fill="currentColor" />
+              <circle cx="12" cy="12" r="1.6" fill="currentColor" />
+              <circle cx="16" cy="16" r="1.6" fill="currentColor" />
+            </svg>
+            Verras me
+          </button>
         </div>
         {extraGroups.length > 0 && (
           <details class="project-filter__more" data-more>
-            <summary>Tot op de mm</summary>
+            <summary>
+              Tot op de mm
+              <svg class="chevron" aria-hidden="true" viewBox="0 0 16 16" width="12" height="12">
+                <path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.75" />
+              </svg>
+            </summary>
             <div class="project-filter__row">
               {extraGroups.map((g) => (
                 <fieldset>
                   <legend>{g.legend}</legend>
-                  {g.values.map((v) => (
-                    <label>
-                      <input type="checkbox" name={g.key} value={v} />
-                      {label(v)}
-                    </label>
-                  ))}
+                  <div class="chips">
+                    {g.values.map((v) => (
+                      <label class="chip">
+                        <input type="checkbox" name={g.key} value={v} />
+                        {label(v)}
+                      </label>
+                    ))}
+                  </div>
                 </fieldset>
               ))}
             </div>
@@ -107,17 +138,27 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
 </form>
 
 <script>
+  // Document-listeners (dropdown sluiten) per pagina opnieuw koppelen, oude opruimen.
+  let controller: AbortController | undefined;
+
   function initFilter() {
+    controller?.abort();
     const form = document.querySelector<HTMLFormElement>('[data-project-filter]');
     if (!form) return;
+    controller = new AbortController();
+    const { signal } = controller;
     const list = document.getElementById(form.dataset.target!)!;
     const cards = [...list.querySelectorAll<HTMLElement>('.project-card')];
     const count = form.querySelector('[data-count]')!;
     const more = form.querySelector<HTMLDetailsElement>('[data-more]');
+    const dropdown = form.querySelector<HTMLDetailsElement>('[data-dropdown]');
+    const dropdownCount = form.querySelector('[data-dropdown-count]');
     const inputs = [...form.querySelectorAll<HTMLInputElement>('input[type=checkbox]')];
     form.hidden = false;
 
     const own = (card: HTMLElement, key: string) => (card.dataset[key] ?? '').split(' ').filter(Boolean);
+    const matches = (card: HTMLElement, active: Map<string, string[]>, skip?: string) =>
+      [...active].every(([key, values]) => key === skip || values.some((v) => own(card, key).includes(v)));
 
     const apply = (updateUrl: boolean) => {
       const data = new FormData(form);
@@ -126,11 +167,27 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
 
       let visible = 0;
       for (const card of cards) {
-        const match = [...active].every(([key, values]) => values.some((v) => own(card, key).includes(v)));
+        const match = matches(card, active);
         card.hidden = !match;
         if (match) visible++;
       }
       count.textContent = `${visible} ${visible === 1 ? 'project' : 'projecten'}`;
+
+      // Facetten: een optie blijft aan als er minstens één project is dat aan alle
+      // andere groepen voldoet én deze waarde heeft. Aangevinkte opties blijven altijd
+      // bedienbaar, zodat je ze (ook vanuit een oude URL) kunt uitzetten.
+      for (const input of inputs) {
+        if (input.checked) {
+          input.disabled = false;
+          continue;
+        }
+        input.disabled = !cards.some((card) => matches(card, active, input.name) && own(card, input.name).includes(input.value));
+      }
+
+      if (dropdownCount) {
+        const n = active.get('kleuren')?.length ?? 0;
+        dropdownCount.textContent = n ? `(${n})` : '';
+      }
 
       // "Tot op de mm" open houden zolang daar iets aan staat.
       if (more && more.querySelector('input:checked')) more.open = true;
@@ -164,6 +221,22 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
       }
     };
 
+    // Kleur-dropdown sluiten bij klik erbuiten of Escape.
+    if (dropdown) {
+      document.addEventListener(
+        'click',
+        (e) => {
+          if (dropdown.open && !dropdown.contains(e.target as Node)) dropdown.open = false;
+        },
+        { signal },
+      );
+      dropdown.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape' || !dropdown.open) return;
+        dropdown.open = false;
+        dropdown.querySelector('summary')?.focus();
+      });
+    }
+
     // Startwaarden uit de URL
     const params = new URLSearchParams(location.search);
     inputs.forEach((input) => {
@@ -194,53 +267,159 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
   .project-filter__row {
     display: flex;
     flex-wrap: wrap;
-    align-items: start;
+    align-items: end;
     gap: var(--space-s) var(--space-l);
   }
   fieldset {
     border: 0;
     padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-3xs) var(--space-s);
+    margin: 0;
+    min-inline-size: 0;
   }
   legend {
     font-weight: 600;
     margin-block-end: var(--space-3xs);
-    inline-size: 100%;
+    padding: 0;
   }
-  label {
-    display: inline-flex;
+
+  /* Chips: een checkbox in een label. De input blijft in de toegankelijkheidsboom
+     (visueel weg), de chip toont focus, aan en uitgeschakeld via :has(). */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
     gap: var(--space-3xs);
-    align-items: center;
-    min-block-size: 1.5rem;
   }
+  .chip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3xs);
+    min-block-size: 2.75rem; /* raakvlak ≥ 24px (WCAG 2.5.8), ruim voor touch */
+    padding-inline: var(--space-xs);
+    border: var(--border-width) solid var(--color-line);
+    border-radius: 999px;
+    cursor: pointer;
+    user-select: none;
+    transition:
+      background var(--duration) var(--ease),
+      color var(--duration) var(--ease),
+      border-color var(--duration) var(--ease);
+  }
+  .chip input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: inherit;
+  }
+  .chip:hover {
+    border-color: var(--color-fg);
+  }
+  .chip:has(input:checked) {
+    background: var(--color-fg);
+    border-color: var(--color-fg);
+    color: var(--color-bg);
+  }
+  .chip:has(input:focus-visible) {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  .chip:has(input:disabled) {
+    cursor: not-allowed;
+    border-style: dashed;
+    color: var(--color-muted);
+    opacity: 0.55;
+  }
+  .chip:has(input:disabled):hover {
+    border-color: var(--color-line);
+  }
+
   .swatch {
     inline-size: 0.9em;
     block-size: 0.9em;
     border-radius: 50%;
     background: var(--swatch);
-    box-shadow: inset 0 0 0 1px var(--color-line);
+    box-shadow: 0 0 0 1px var(--color-line);
   }
+
+  /* Kleur-dropdown */
+  .dropdown {
+    position: relative;
+  }
+  .dropdown summary {
+    list-style: none;
+    font-weight: 600;
+  }
+  .dropdown summary::-webkit-details-marker {
+    display: none;
+  }
+  .dropdown[open] summary {
+    border-color: var(--color-fg);
+  }
+  .dropdown__count {
+    font-weight: 400;
+  }
+  .dropdown__panel {
+    position: absolute;
+    z-index: 10;
+    inset-block-start: calc(100% + var(--space-3xs));
+    inset-inline-start: 0;
+    inline-size: max-content;
+    max-inline-size: min(22rem, calc(100vw - 2 * var(--space-s)));
+    padding: var(--space-xs);
+    background: var(--color-bg);
+    border: var(--border-width) solid var(--color-fg);
+  }
+  /* Smal scherm: paneel in de flow, op volle breedte, zodat het nooit buiten beeld valt. */
+  @media (width < 40rem) {
+    .dropdown[open] {
+      flex-basis: 100%;
+    }
+    .dropdown__panel {
+      position: static;
+      inline-size: auto;
+      max-inline-size: none;
+      margin-block-start: var(--space-3xs);
+    }
+  }
+
+  .chevron {
+    flex: none;
+    transition: rotate var(--duration) var(--ease);
+  }
+  details[open] > summary .chevron {
+    rotate: 180deg;
+  }
+
   .project-filter__random {
-    align-self: end;
+    min-block-size: 2.75rem;
   }
-  .project-filter__random .button {
+
+  .project-filter__more summary {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-2xs);
-  }
-  .project-filter__more summary {
+    gap: var(--space-3xs);
+    min-block-size: 2.75rem;
     cursor: pointer;
     font-weight: 600;
-    inline-size: fit-content;
+    list-style: none;
+  }
+  .project-filter__more summary::-webkit-details-marker {
+    display: none;
   }
   .project-filter__more[open] summary {
-    margin-block-end: var(--space-s);
+    margin-block-end: var(--space-xs);
   }
   .project-filter__footer {
     display: flex;
     align-items: center;
     gap: var(--space-s);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .chip,
+    .chevron {
+      transition: none;
+    }
   }
 </style>
