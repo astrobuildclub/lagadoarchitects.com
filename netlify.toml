@@ -1,6 +1,9 @@
 [build]
   command = "npm run build"
   publish = "dist"
+  # exit 0 = build overslaan: alleen .md in de root, .github/ of .vscode/ gewijzigd (zie _standards/DEPLOY.md).
+  # `glob`: *.md matcht alleen de root, zodat Markdown-content in lagado-content/ wel een build start.
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . ':(exclude,glob)*.md' ':(exclude).github/' ':(exclude).vscode/'"
 
 [build.environment]
   NODE_VERSION = "22"
