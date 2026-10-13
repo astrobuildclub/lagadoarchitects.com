@@ -8,20 +8,21 @@ intro: |
   Een leuk huis voor wonen, werken, spelen en het ontvangen van logees.
   Zelfs als het allemaal tegelijk gebeurt.
 
-type: binnenkant
+type: thuiskomen
 programma: woning
 functie: Eigen woonhuis voor wonen, werken, spelen en logees
 oppervlakte: 135
 locatie: { plaats: Rotterdam, wijk: Noordereiland }
-status: gerealiseerd
+status: af
 jaarOpdracht: 2016                     # bevestigen: "Opdrachtgever privé, 2016"
 jaarOplevering: 2020
 opdrachtgeverType: prive
 opdrachtgever: Privé (eigen woning)
 
-stijl: speels                          # bevestigen met Victor
-themas: [kleur, vorm, gelaagdheid]     # bevestigen met Victor
-doelgroep: [gezinnen]                  # afgeleid, bevestigen
+vorm: [schuin]
+kleuren: [blauw, oranje, paars]
+schaal: huis                         # bevestigen: Victor schreef "L"
+materialen: [hout, tegels]
 prijsklasse: null                      # eigen huis, niet van toepassing
 
 accentkleur: ""                        # TODO: uit foto's, bv. het blauw van de trap

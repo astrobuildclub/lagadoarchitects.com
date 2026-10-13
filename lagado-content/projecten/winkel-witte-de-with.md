@@ -6,19 +6,20 @@ tagline: Een compacte retailfit-out met gelaagde vitrines.
 intro: |
   TODO: korte intro. Placeholder voor het homepage-raster.
 
-type: binnenkant
+type: de-hort-op
 programma: winkel
 functie: Retail
 oppervlakte: 55
 locatie: { plaats: Rotterdam, wijk: Cool }
-status: concept
+status: opgetekend
 jaarOpdracht: 2025
 opdrachtgeverType: zakelijk
 opdrachtgever: ""
 
-stijl: serieus
-themas: [gelaagdheid]
-doelgroep: []
+vorm: [recht]
+kleuren: [zwart]
+schaal: kamer
+materialen: [metaal, glas]
 prijsklasse: null
 
 accentkleur: ""

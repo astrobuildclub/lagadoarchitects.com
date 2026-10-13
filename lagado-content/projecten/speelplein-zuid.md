@@ -6,19 +6,20 @@ tagline: Openbare ruimte die uitnodigt tot spelen en ontmoeten.
 intro: |
   TODO: korte intro. Placeholder voor het homepage-raster.
 
-type: buitenkant
+type: de-hort-op
 programma: openbare-ruimte
 functie: Speelplein
 oppervlakte: 800
 locatie: { plaats: Rotterdam, wijk: Charlois }
-status: ontwerp
+status: opgetekend
 jaarOpdracht: 2025
 opdrachtgeverType: publiek
 opdrachtgever: Gemeente Rotterdam
 
-stijl: speels
-themas: [vorm, kleur]
-doelgroep: [gezinnen]
+vorm: [rond]
+kleuren: [rood, geel, blauw]
+schaal: stad
+materialen: [beton]
 prijsklasse: null
 
 accentkleur: ""

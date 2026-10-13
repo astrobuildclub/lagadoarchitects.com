@@ -1,10 +1,12 @@
 ---
-// Filters voor /projecten. Progressive enhancement: zonder JS staat alles zichtbaar en zijn
+// Filters voor /wat. Progressive enhancement: zonder JS staat alles zichtbaar en zijn
 // de filters verborgen. Met JS: kaarten krijgen `hidden`, keuze staat in de querystring
 // (deelbaar, werkt met terug-knop), aantal resultaten wordt voorgelezen.
 // Binnen één groep = OF, tussen groepen = EN.
-import { label } from '../lib/labels';
-import type { Project } from '../lib/schema';
+// Opbouw volgens Victor: Type, Vorm, Kleur en "Verras me" direct; Status, Schaal en
+// Materiaal onder "Tot op de mm".
+import { KLEUR_SWATCH, label } from '../lib/labels';
+import { KLEUR, MATERIAAL, SCHAAL, STATUS, TYPE, VORM, type Project } from '../lib/schema';
 
 interface Props {
   projects: Project[];
@@ -13,34 +15,87 @@ interface Props {
 }
 const { projects, toonPrijs, target } = Astro.props;
 
-const groups: { key: string; legend: string; values: string[] }[] = [
-  { key: 'type', legend: 'Binnen / buiten', values: projects.map((p) => p.type) },
-  { key: 'programma', legend: 'Programma', values: projects.map((p) => p.programma) },
-  { key: 'status', legend: 'Status', values: projects.map((p) => p.status) },
-  { key: 'stijl', legend: 'Stijl', values: projects.flatMap((p) => (p.stijl ? [p.stijl] : [])) },
-  { key: 'themas', legend: 'Thema', values: projects.flatMap((p) => p.themas) },
-  { key: 'doelgroep', legend: 'Doelgroep', values: projects.flatMap((p) => p.doelgroep) },
-  ...(toonPrijs ? [{ key: 'prijsklasse', legend: 'Prijsklasse', values: projects.flatMap((p) => (p.prijsklasse ? [p.prijsklasse] : [])) }] : []),
-]
-  .map((g) => ({ ...g, values: [...new Set(g.values)].sort() }))
-  // Een filter met één waarde filtert niets.
-  .filter((g) => g.values.length > 1);
+interface Group {
+  key: string;
+  legend: string;
+  values: string[];
+}
+
+/** Alleen waarden die in de projecten voorkomen, in de volgorde van de waardenlijst. */
+const group = (key: string, legend: string, order: readonly string[], used: string[]): Group => ({
+  key,
+  legend,
+  values: order.filter((v) => used.includes(v)),
+});
+
+const main = [
+  group('type', 'Type', TYPE, projects.map((p) => p.type)),
+  group('vorm', 'Vorm', VORM, projects.flatMap((p) => p.vorm)),
+  group('kleuren', 'Kleur', KLEUR, projects.flatMap((p) => p.kleuren)),
+];
+const extra = [
+  group('status', 'Status', STATUS, projects.map((p) => p.status)),
+  group('schaal', 'Schaal', SCHAAL, projects.flatMap((p) => (p.schaal ? [p.schaal] : []))),
+  group('materialen', 'Materiaal', MATERIAAL, projects.flatMap((p) => p.materialen)),
+  ...(toonPrijs
+    ? [group('prijsklasse', 'Prijsklasse', ['laag', 'midden', 'hoog'], projects.flatMap((p) => (p.prijsklasse ? [p.prijsklasse] : [])))]
+    : []),
+];
+// Een filter met één waarde filtert niets.
+const useful = (g: Group) => g.values.length > 1;
+const mainGroups = main.filter(useful);
+const extraGroups = extra.filter(useful);
+const hasFilters = mainGroups.length + extraGroups.length > 0;
 ---
 
 <form class="project-filter" data-project-filter data-target={target} hidden aria-label="Projecten filteren">
   {
-    groups.length > 0 ? (
-      groups.map((g) => (
-        <fieldset>
-          <legend>{g.legend}</legend>
-          {g.values.map((v) => (
-            <label>
-              <input type="checkbox" name={g.key} value={v} />
-              {label(v)}
-            </label>
+    hasFilters ? (
+      <>
+        <div class="project-filter__row">
+          {mainGroups.map((g) => (
+            <fieldset>
+              <legend>{g.legend}</legend>
+              {g.values.map((v) => (
+                <label>
+                  <input type="checkbox" name={g.key} value={v} />
+                  {g.key === 'kleuren' && <span class="swatch" style={`--swatch: ${KLEUR_SWATCH[v]}`} aria-hidden="true" />}
+                  {label(v)}
+                </label>
+              ))}
+            </fieldset>
           ))}
-        </fieldset>
-      ))
+          <div class="project-filter__random">
+            <button type="button" class="button" data-random>
+              <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20">
+                <rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2" />
+                <circle cx="8" cy="8" r="1.6" fill="currentColor" />
+                <circle cx="12" cy="12" r="1.6" fill="currentColor" />
+                <circle cx="16" cy="16" r="1.6" fill="currentColor" />
+              </svg>
+              Verras me
+            </button>
+          </div>
+        </div>
+        {extraGroups.length > 0 && (
+          <details class="project-filter__more" data-more>
+            <summary>Tot op de mm</summary>
+            <div class="project-filter__row">
+              {extraGroups.map((g) => (
+                <fieldset>
+                  <legend>{g.legend}</legend>
+                  {g.values.map((v) => (
+                    <label>
+                      <input type="checkbox" name={g.key} value={v} />
+                      {label(v)}
+                    </label>
+                  ))}
+                </fieldset>
+              ))}
+            </div>
+          </details>
+        )}
+      </>
     ) : (
       <p class="muted">Filters verschijnen zodra er meer projecten zijn.</p>
     )
@@ -58,7 +113,11 @@ const groups: { key: string; legend: string; values: string[] }[] = [
     const list = document.getElementById(form.dataset.target!)!;
     const cards = [...list.querySelectorAll<HTMLElement>('.project-card')];
     const count = form.querySelector('[data-count]')!;
+    const more = form.querySelector<HTMLDetailsElement>('[data-more]');
+    const inputs = [...form.querySelectorAll<HTMLInputElement>('input[type=checkbox]')];
     form.hidden = false;
+
+    const own = (card: HTMLElement, key: string) => (card.dataset[key] ?? '').split(' ').filter(Boolean);
 
     const apply = (updateUrl: boolean) => {
       const data = new FormData(form);
@@ -67,14 +126,14 @@ const groups: { key: string; legend: string; values: string[] }[] = [
 
       let visible = 0;
       for (const card of cards) {
-        const match = [...active].every(([key, values]) => {
-          const own = (card.dataset[key] ?? '').split(' ');
-          return values.some((v) => own.includes(v));
-        });
+        const match = [...active].every(([key, values]) => values.some((v) => own(card, key).includes(v)));
         card.hidden = !match;
         if (match) visible++;
       }
       count.textContent = `${visible} ${visible === 1 ? 'project' : 'projecten'}`;
+
+      // "Tot op de mm" open houden zolang daar iets aan staat.
+      if (more && more.querySelector('input:checked')) more.open = true;
 
       if (updateUrl) {
         const params = new URLSearchParams(data as unknown as Record<string, string>);
@@ -82,15 +141,39 @@ const groups: { key: string; legend: string; values: string[] }[] = [
       }
     };
 
+    // Verras me: kies een willekeurig project en zet 1–3 van zijn eigen filterwaarden aan.
+    // Zo levert de combinatie altijd minstens één project op. Niet twee keer dezelfde combi.
+    const groups = [...new Set(inputs.map((i) => i.name))];
+    let previous = '';
+    const random = <T,>(items: T[]) => items[Math.floor(Math.random() * items.length)];
+    const surprise = () => {
+      for (let attempt = 0; attempt < 20; attempt++) {
+        const card = random(cards);
+        const options = groups
+          .map((key) => ({ key, values: own(card, key).filter((v) => inputs.some((i) => i.name === key && i.value === v)) }))
+          .filter((o) => o.values.length);
+        if (!options.length) continue;
+        const picked = options.sort(() => Math.random() - 0.5).slice(0, 1 + Math.floor(Math.random() * Math.min(3, options.length)));
+        const choice = picked.map((o) => [o.key, random(o.values)] as const);
+        const signature = choice.map((c) => c.join('=')).sort().join('&');
+        if (signature === previous && attempt < 19) continue;
+        previous = signature;
+        inputs.forEach((i) => (i.checked = choice.some(([k, v]) => i.name === k && i.value === v)));
+        apply(true);
+        return;
+      }
+    };
+
     // Startwaarden uit de URL
     const params = new URLSearchParams(location.search);
-    form.querySelectorAll<HTMLInputElement>('input[type=checkbox]').forEach((input) => {
+    inputs.forEach((input) => {
       input.checked = params.getAll(input.name).includes(input.value);
     });
 
     form.addEventListener('change', () => apply(true));
     form.addEventListener('reset', () => setTimeout(() => apply(true)));
     form.addEventListener('submit', (e) => e.preventDefault());
+    form.querySelector('[data-random]')?.addEventListener('click', surprise);
     apply(false);
   }
 
@@ -99,15 +182,20 @@ const groups: { key: string; legend: string; values: string[] }[] = [
 
 <style>
   .project-filter {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-s) var(--space-l);
+    display: grid;
+    gap: var(--space-s);
     padding-block: var(--space-s);
     border-block: var(--border-width) solid var(--color-line);
     font-size: var(--step--1);
   }
   .project-filter[hidden] {
     display: none;
+  }
+  .project-filter__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: start;
+    gap: var(--space-s) var(--space-l);
   }
   fieldset {
     border: 0;
@@ -127,10 +215,32 @@ const groups: { key: string; legend: string; values: string[] }[] = [
     align-items: center;
     min-block-size: 1.5rem;
   }
+  .swatch {
+    inline-size: 0.9em;
+    block-size: 0.9em;
+    border-radius: 50%;
+    background: var(--swatch);
+    box-shadow: inset 0 0 0 1px var(--color-line);
+  }
+  .project-filter__random {
+    align-self: end;
+  }
+  .project-filter__random .button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+  .project-filter__more summary {
+    cursor: pointer;
+    font-weight: 600;
+    inline-size: fit-content;
+  }
+  .project-filter__more[open] summary {
+    margin-block-end: var(--space-s);
+  }
   .project-filter__footer {
     display: flex;
     align-items: center;
     gap: var(--space-s);
-    inline-size: 100%;
   }
 </style>

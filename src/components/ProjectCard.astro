@@ -1,5 +1,5 @@
 ---
-// Kaart in een projectraster. De data-*-attributen voeden de filters op /projecten.
+// Kaart in een projectraster. De data-*-attributen voeden de filters op /wat.
 import Img from './Img.astro';
 import { projectImage } from '../lib/images';
 import { label } from '../lib/labels';
@@ -17,11 +17,11 @@ const Heading = `h${headingLevel}` as 'h2' | 'h3';
 const grootte = sized ? p.homepageGrootte : undefined;
 const filters = {
   type: p.type,
-  programma: p.programma,
+  vorm: p.vorm.join(' '),
+  kleuren: p.kleuren.join(' '),
   status: p.status,
-  stijl: p.stijl ?? '',
-  themas: p.themas.join(' '),
-  doelgroep: p.doelgroep.join(' '),
+  schaal: p.schaal ?? '',
+  materialen: p.materialen.join(' '),
   prijsklasse: p.prijsklasse ?? '',
 };
 ---
@@ -30,7 +30,7 @@ const filters = {
   class:list={['project-card', grootte && `project-card--${grootte}`]}
   {...Object.fromEntries(Object.entries(filters).map(([k, v]) => [`data-${k}`, v]))}
 >
-  <a href={`/projecten/${p.slug}`}>
+  <a href={`/wat/${p.slug}`}>
     <Img
       src={projectImage(p.slug, p.hero.src)}
       alt={p.hero.alt}

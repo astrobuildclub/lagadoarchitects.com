@@ -3,12 +3,16 @@
 import { z } from 'astro/zod';
 
 // ── Waardenlijsten ─────────────────────────────────────────
-export const TYPE = ['binnenkant', 'buitenkant', 'beide'] as const;
+// Filters op /wat (Victors eigen woorden, zie README).
+export const TYPE = ['thuiskomen', 'de-hort-op'] as const;
+export const VORM = ['recht', 'rond', 'schuin'] as const;
+export const KLEUR = ['rood', 'oranje', 'geel', 'groen', 'blauw', 'paars', 'roze', 'wit', 'zwart', 'grijs'] as const;
+export const STATUS = ['af', 'bijna', 'opgetekend'] as const;
+export const SCHAAL = ['stoel', 'kamer', 'huis', 'stad'] as const;
+export const MATERIAAL = ['hout', 'steen', 'beton', 'glas', 'tegels', 'metaal'] as const;
+
 export const PROGRAMMA = ['woning', 'winkel', 'horeca', 'kantoor', 'publiek', 'openbare-ruimte', 'meubel'] as const;
-export const STATUS = ['gerealiseerd', 'in-uitvoering', 'ontwerp', 'concept'] as const;
 export const OPDRACHTGEVER_TYPE = ['prive', 'zakelijk', 'publiek'] as const;
-export const STIJL = ['speels', 'serieus', 'beide'] as const;
-export const THEMA = ['gelaagdheid', 'vorm', 'kleur'] as const;
 export const PRIJSKLASSE = ['laag', 'midden', 'hoog'] as const;
 export const BREEDTE = ['content', 'popout', 'feature', 'full'] as const;
 /** Kaartgrootte op de homepage (projectGrid). */
@@ -51,7 +55,11 @@ const listItem = persItem.extend(awardItem.shape);
 const heroBlock = z.object({
   type: z.literal('hero'),
   kop: z.string(),
+  /** Woorden die na `kop` wisselen; de eerste staat er zonder animatie. */
+  kopWissel: z.array(z.string()).default([]),
   subkop: text,
+  subkopWissel: z.array(z.string()).default([]),
+  link: link.optional(),
   beelden: z.array(imageRef.extend({ project: text })).min(1).max(5),
 });
 
@@ -272,9 +280,10 @@ export const projectSchema = z
     opdrachtgeverType: z.enum(OPDRACHTGEVER_TYPE).optional(),
     opdrachtgever: text,
 
-    stijl: z.enum(STIJL).optional(),
-    themas: z.array(z.enum(THEMA)).default([]),
-    doelgroep: z.array(z.string()).default([]),
+    vorm: z.array(z.enum(VORM)).default([]),
+    kleuren: z.array(z.enum(KLEUR)).default([]),
+    schaal: z.enum(SCHAAL).nullable().optional(),
+    materialen: z.array(z.enum(MATERIAAL)).default([]),
     prijsklasse: z.enum(PRIJSKLASSE).nullable().optional(),
 
     accentkleur: text,
@@ -297,8 +306,8 @@ export const projectSchema = z
     seo,
     blocks: z.array(block).default([]),
   })
-  .refine((p) => p.status !== 'gerealiseerd' || !!p.jaarOplevering, {
-    message: 'jaarOplevering is verplicht als status = gerealiseerd',
+  .refine((p) => p.status !== 'af' || !!p.jaarOplevering, {
+    message: 'jaarOplevering is verplicht als status = af',
     path: ['jaarOplevering'],
   });
 
