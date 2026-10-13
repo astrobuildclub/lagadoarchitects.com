@@ -88,15 +88,16 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
                 </summary>
                 <fieldset class="dropdown__panel">
                   <legend class="visually-hidden">{kleur.legend}</legend>
-                  <div class="chips">
-                    {kleur.values.map((v) => (
-                      <label class="chip">
-                        <input type="checkbox" name={kleur.key} value={v} />
-                        <span class="swatch" style={`--swatch: ${KLEUR_SWATCH[v]}`} aria-hidden="true" />
-                        {label(v)}
-                      </label>
-                    ))}
-                  </div>
+                  {kleur.values.map((v) => (
+                    <label class="option">
+                      <input type="checkbox" name={kleur.key} value={v} />
+                      <span class="swatch" style={`--swatch: ${KLEUR_SWATCH[v]}`} aria-hidden="true" />
+                      <span class="option__label">{label(v)}</span>
+                      <svg class="option__check" aria-hidden="true" viewBox="0 0 16 16" width="14" height="14">
+                        <path d="M3 8.5l3.5 3.5L13 4.5" fill="none" stroke="currentColor" stroke-width="1.75" />
+                      </svg>
+                    </label>
+                  ))}
                 </fieldset>
               </details>
             )}
@@ -424,16 +425,61 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
   .dropdown__count {
     font-weight: 400;
   }
+  /* Paneel rechts uitgelijnd onder de chip, opties onder elkaar. */
   .dropdown__panel {
     position: absolute;
     z-index: 10;
     inset-block-start: calc(100% + var(--space-3xs));
-    inset-inline-start: 0;
-    inline-size: max-content;
-    max-inline-size: min(22rem, calc(100vw - 2 * var(--space-s)));
-    padding: var(--space-xs);
+    inset-inline-end: 0;
+    display: grid;
+    min-inline-size: 12rem;
+    padding: var(--space-3xs);
     background: var(--color-bg);
     border: var(--border-width) solid var(--color-fg);
+  }
+  .option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    min-block-size: 2.75rem;
+    padding-inline: var(--space-xs);
+    cursor: pointer;
+    user-select: none;
+  }
+  .option input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: inherit;
+  }
+  .option__label {
+    flex: 1;
+  }
+  .option__check {
+    visibility: hidden;
+  }
+  .option:hover {
+    background: var(--color-surface);
+  }
+  .option:has(input:checked) {
+    font-weight: 600;
+  }
+  .option:has(input:checked) .option__check {
+    visibility: visible;
+  }
+  .option:has(input:focus-visible) {
+    outline: 2px solid var(--color-focus);
+    outline-offset: -2px;
+  }
+  .option:has(input:disabled) {
+    cursor: not-allowed;
+    color: var(--color-muted);
+    opacity: 0.55;
+  }
+  .option:has(input:disabled):hover {
+    background: none;
   }
   /* Smal scherm: paneel in de flow, op volle breedte, zodat het nooit buiten beeld valt. */
   @media (width < 40rem) {
@@ -442,8 +488,7 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
     }
     .dropdown__panel {
       position: static;
-      inline-size: auto;
-      max-inline-size: none;
+      min-inline-size: 0;
       margin-block-start: var(--space-3xs);
     }
   }
