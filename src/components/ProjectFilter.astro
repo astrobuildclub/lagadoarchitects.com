@@ -53,92 +53,119 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
 <form class="project-filter" data-project-filter data-target={target} hidden aria-label="Projecten filteren">
   {
     hasFilters ? (
-      <>
-        <div class="project-filter__row">
-          {mainGroups.map((g) => (
-            <fieldset>
-              <legend>{g.legend}</legend>
-              <div class="chips">
-                {g.values.map((v) => (
-                  <label class="chip">
-                    <input type="checkbox" name={g.key} value={v} />
-                    {label(v)}
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-          ))}
-          {hasKleur && (
-            <details class="dropdown" data-dropdown>
-              <summary class="chip">
-                {kleur.legend}
-                <span class="dropdown__count" data-dropdown-count />
-                <svg class="chevron" aria-hidden="true" viewBox="0 0 16 16" width="12" height="12">
-                  <path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.75" />
-                </svg>
-              </summary>
-              <fieldset class="dropdown__panel">
-                <legend class="visually-hidden">{kleur.legend}</legend>
+      <dialog class="project-filter__panel" aria-labelledby="project-filter-titel" data-panel>
+        <div class="project-filter__head">
+          <h2 id="project-filter-titel">Filters</h2>
+          <button type="button" class="project-filter__close" aria-label="Filters sluiten" data-close>
+            <svg aria-hidden="true" viewBox="0 0 16 16" width="16" height="16">
+              <path d="M3 3l10 10M13 3L3 13" fill="none" stroke="currentColor" stroke-width="1.75" />
+            </svg>
+          </button>
+        </div>
+        <div class="project-filter__body">
+          <div class="project-filter__row">
+            {mainGroups.map((g) => (
+              <fieldset>
+                <legend>{g.legend}</legend>
                 <div class="chips">
-                  {kleur.values.map((v) => (
+                  {g.values.map((v) => (
                     <label class="chip">
-                      <input type="checkbox" name={kleur.key} value={v} />
-                      <span class="swatch" style={`--swatch: ${KLEUR_SWATCH[v]}`} aria-hidden="true" />
+                      <input type="checkbox" name={g.key} value={v} />
                       {label(v)}
                     </label>
                   ))}
                 </div>
               </fieldset>
-            </details>
-          )}
-          <button type="button" class="button project-filter__random" data-random>
-            <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20">
-              <rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2" />
-              <circle cx="8" cy="8" r="1.6" fill="currentColor" />
-              <circle cx="12" cy="12" r="1.6" fill="currentColor" />
-              <circle cx="16" cy="16" r="1.6" fill="currentColor" />
-            </svg>
-            Verras me
-          </button>
-        </div>
-        {extraGroups.length > 0 && (
-          <details class="project-filter__more" data-more>
-            <summary>
-              Tot op de mm
-              <svg class="chevron" aria-hidden="true" viewBox="0 0 16 16" width="12" height="12">
-                <path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.75" />
-              </svg>
-            </summary>
-            <div class="project-filter__row">
-              {extraGroups.map((g) => (
-                <fieldset>
-                  <legend>{g.legend}</legend>
+            ))}
+            {hasKleur && (
+              <details class="dropdown" data-dropdown>
+                <summary class="chip">
+                  {kleur.legend}
+                  <span class="dropdown__count" data-dropdown-count />
+                  <svg class="chevron" aria-hidden="true" viewBox="0 0 16 16" width="12" height="12">
+                    <path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.75" />
+                  </svg>
+                </summary>
+                <fieldset class="dropdown__panel">
+                  <legend class="visually-hidden">{kleur.legend}</legend>
                   <div class="chips">
-                    {g.values.map((v) => (
+                    {kleur.values.map((v) => (
                       <label class="chip">
-                        <input type="checkbox" name={g.key} value={v} />
+                        <input type="checkbox" name={kleur.key} value={v} />
+                        <span class="swatch" style={`--swatch: ${KLEUR_SWATCH[v]}`} aria-hidden="true" />
                         {label(v)}
                       </label>
                     ))}
                   </div>
                 </fieldset>
-              ))}
-            </div>
-          </details>
-        )}
-      </>
+              </details>
+            )}
+          </div>
+          {extraGroups.length > 0 && (
+            <details class="project-filter__more" data-more>
+              <summary>
+                Tot op de mm
+                <svg class="chevron" aria-hidden="true" viewBox="0 0 16 16" width="12" height="12">
+                  <path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.75" />
+                </svg>
+              </summary>
+              <div class="project-filter__row">
+                {extraGroups.map((g) => (
+                  <fieldset>
+                    <legend>{g.legend}</legend>
+                    <div class="chips">
+                      {g.values.map((v) => (
+                        <label class="chip">
+                          <input type="checkbox" name={g.key} value={v} />
+                          {label(v)}
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
+                ))}
+              </div>
+            </details>
+          )}
+        </div>
+        <div class="project-filter__foot">
+          <button type="button" class="button project-filter__show" data-close data-show-count>Toon projecten</button>
+        </div>
+      </dialog>
     ) : (
       <p class="muted">Filters verschijnen zodra er meer projecten zijn.</p>
     )
   }
-  <div class="project-filter__footer">
-    <p aria-live="polite" data-count></p>
+  <div class="project-filter__bar">
+    {
+      hasFilters && (
+        <button type="button" class="button project-filter__open" aria-haspopup="dialog" data-open>
+          <svg aria-hidden="true" viewBox="0 0 16 16" width="16" height="16">
+            <path d="M2 4h12M4 8h8M6 12h4" fill="none" stroke="currentColor" stroke-width="1.75" />
+          </svg>
+          Filters <span data-active-count />
+        </button>
+      )
+    }
+    {
+      hasFilters && (
+        <button type="button" class="button" data-random>
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20">
+            <rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2" />
+            <circle cx="8" cy="8" r="1.6" fill="currentColor" />
+            <circle cx="12" cy="12" r="1.6" fill="currentColor" />
+            <circle cx="16" cy="16" r="1.6" fill="currentColor" />
+          </svg>
+          Verras me
+        </button>
+      )
+    }
     <button type="reset" class="button">Wis filters</button>
+    <p aria-live="polite" class="project-filter__count" data-count></p>
   </div>
 </form>
 
 <script>
-  // Document-listeners (dropdown sluiten) per pagina opnieuw koppelen, oude opruimen.
+  // Document-listeners (dropdown, overlay, breakpoint) per pagina opnieuw koppelen, oude opruimen.
   let controller: AbortController | undefined;
 
   function initFilter() {
@@ -153,6 +180,9 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
     const more = form.querySelector<HTMLDetailsElement>('[data-more]');
     const dropdown = form.querySelector<HTMLDetailsElement>('[data-dropdown]');
     const dropdownCount = form.querySelector('[data-dropdown-count]');
+    const panel = form.querySelector<HTMLDialogElement>('[data-panel]');
+    const activeCount = form.querySelector('[data-active-count]');
+    const showCount = form.querySelector('[data-show-count]');
     const inputs = [...form.querySelectorAll<HTMLInputElement>('input[type=checkbox]')];
     form.hidden = false;
 
@@ -171,7 +201,13 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
         card.hidden = !match;
         if (match) visible++;
       }
-      count.textContent = `${visible} ${visible === 1 ? 'project' : 'projecten'}`;
+      const projecten = `${visible} ${visible === 1 ? 'project' : 'projecten'}`;
+      count.textContent = projecten;
+      if (showCount) showCount.textContent = `Toon ${projecten}`;
+      if (activeCount) {
+        const n = inputs.filter((i) => i.checked).length;
+        activeCount.textContent = n ? `(${n})` : '';
+      }
 
       // Facetten: een optie blijft aan als er minstens één project is dat aan alle
       // andere groepen voldoet én deze waarde heeft. Aangevinkte opties blijven altijd
@@ -232,9 +268,38 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
       );
       dropdown.addEventListener('keydown', (e) => {
         if (e.key !== 'Escape' || !dropdown.open) return;
+        // Alleen de dropdown dicht, niet ook de overlay eromheen.
+        e.preventDefault();
+        e.stopPropagation();
         dropdown.open = false;
         dropdown.querySelector('summary')?.focus();
       });
+    }
+
+    // Paneel: op mobiel een modale overlay achter de knop "Filters", op desktop gewoon in
+    // de pagina. Desktop opent via het attribuut (niet show()), zodat de focus niet verspringt.
+    if (panel) {
+      const mobile = matchMedia('(width < 40rem)');
+      const setMode = () => {
+        if (panel.open) panel.close();
+        if (!mobile.matches) panel.setAttribute('open', '');
+      };
+      mobile.addEventListener('change', setMode, { signal });
+      setMode();
+      form.querySelector('[data-open]')?.addEventListener('click', () => panel.showModal());
+      form.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => panel.close()));
+      // Escape mag het paneel op desktop niet laten verdwijnen.
+      panel.addEventListener('cancel', (e) => {
+        if (!panel.matches(':modal')) e.preventDefault();
+      });
+      // Een modale <dialog> ligt boven de transitielaag: dicht vóór de pagina wordt bedekt.
+      document.addEventListener(
+        'interlude:leave',
+        () => {
+          if (panel.matches(':modal')) panel.close();
+        },
+        { signal },
+      );
     }
 
     // Startwaarden uit de URL
@@ -391,9 +456,6 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
     rotate: 180deg;
   }
 
-  .project-filter__random {
-    min-block-size: 2.75rem;
-  }
 
   .project-filter__more summary {
     display: inline-flex;
@@ -410,10 +472,102 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
   .project-filter__more[open] summary {
     margin-block-end: var(--space-xs);
   }
-  .project-filter__footer {
+  /* Balk met Filters (mobiel), Verras me, Wis filters en het aantal: altijd zichtbaar. */
+  .project-filter__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+  .project-filter__bar .button {
+    min-block-size: 2.75rem;
+  }
+  .project-filter__count {
+    margin-inline-start: auto;
+  }
+  .project-filter__open {
+    display: none;
+  }
+
+  /* Paneel. Desktop: gewoon in de pagina (dialog open via attribuut, niet modaal). */
+  .project-filter__panel {
+    position: static;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    inline-size: auto;
+    max-inline-size: none;
+    max-block-size: none;
+    background: none;
+    color: inherit;
+  }
+  .project-filter__panel[open],
+  .project-filter__body {
+    display: grid;
+    gap: var(--space-s);
+  }
+  .project-filter__head,
+  .project-filter__foot {
+    display: none;
+  }
+
+  /* Mobiel: schermvullende overlay met kop, scrollende inhoud en een vaste knop onderaan. */
+  @media (width < 40rem) {
+    .project-filter__open {
+      display: inline-flex;
+    }
+  }
+  .project-filter__panel:modal {
+    position: fixed;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100dvh;
+    grid-template-rows: auto 1fr auto;
+    gap: 0;
+    background: var(--color-bg);
+    color: var(--color-fg);
+  }
+  .project-filter__panel:modal .project-filter__head {
     display: flex;
     align-items: center;
-    gap: var(--space-s);
+    justify-content: space-between;
+    padding: var(--space-2xs) var(--space-s);
+    border-block-end: var(--border-width) solid var(--color-line);
+  }
+  .project-filter__head h2 {
+    margin: 0;
+    font-size: var(--step-1);
+  }
+  .project-filter__close {
+    display: grid;
+    place-items: center;
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    margin-inline-end: calc(-1 * var(--space-xs));
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+  .project-filter__panel:modal .project-filter__body {
+    align-content: start;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: var(--space-s);
+  }
+  .project-filter__panel:modal .project-filter__foot {
+    display: block;
+    padding: var(--space-s);
+    border-block-start: var(--border-width) solid var(--color-line);
+  }
+  .project-filter__show {
+    inline-size: 100%;
+    min-block-size: 2.75rem;
+    justify-content: center;
+  }
+  :global(html:has(.project-filter__panel:modal)) {
+    overflow: hidden;
   }
 
   @media (prefers-reduced-motion: reduce) {
