@@ -6,10 +6,23 @@ seo:
   beschrijving: ""
 
 blocks:
-  # 1. Hero: payoff + beeldraster. Eerste beeld laadt eager (LCP).
+  # 1. Hero: payoff met wisselende woorden + beeldraster. Eerste beeld laadt eager (LCP).
   - type: hero
-    kop: Een serieus buro voor speelse architectuur   # verplicht
-    subkop: ""                         # optioneel
+    kop: Wij zijn een serieus buro voor  # verplicht
+    kopWissel:                         # optioneel; de eerste staat er zonder animatie
+      - speelse architectuur
+      - spannende interieurs
+      - sportieve landschappen
+    subkop: We ontwerpen               # optioneel
+    subkopWissel:
+      - van nok tot fundering          # het idee achter onze naam
+      - van bed tot flat
+      - van deur tot dorp
+      - van kelder tot kap
+      - van neut tot nok
+      - van plank tot plein
+      - van tegel tot tuin
+    link: { label: over ons, href: /waarom }
     beelden:                           # 1–5 beelden, verwijzing naar projectbeeld
       - { project: workhome-playhome, src: 01.jpg, alt: "" }   # alt verplicht
 
@@ -31,7 +44,7 @@ blocks:
       - speelplein-zuid
       - winkel-witte-de-with
     limit: 6
-    linkNaarOverzicht: { label: Alle projecten, href: /projecten }
+    linkNaarOverzicht: { label: Alle projecten, href: /wat }
 
   # 4. Pers & awards: logo's of namen, geen lange lijst.
   - type: list
