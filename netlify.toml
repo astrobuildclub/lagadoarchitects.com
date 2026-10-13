@@ -7,6 +7,8 @@
 
 [build.environment]
   NODE_VERSION = "22"
+  # FONTS_URL is geen geheim (staat in de README); FONTS_TOKEN wordt wel gescand.
+  SECRETS_SCAN_OMIT_KEYS = "FONTS_URL"
 
 [[headers]]
   for = "/_astro/*"
