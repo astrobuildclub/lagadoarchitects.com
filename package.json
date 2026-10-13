@@ -7,13 +7,13 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "predev": "node scripts/fonts.mjs",
+    "predev": "node --env-file-if-exists=.env scripts/fonts.mjs",
     "dev": "astro dev",
-    "prebuild": "node scripts/fonts.mjs",
+    "prebuild": "node --env-file-if-exists=.env scripts/fonts.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "fonts": "node scripts/fonts.mjs",
+    "fonts": "node --env-file-if-exists=.env scripts/fonts.mjs",
     "placeholders": "node scripts/placeholders.mjs",
     "astro": "astro"
   },

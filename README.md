@@ -52,7 +52,7 @@ De licentie (§10) verbiedt fonts in publieke repositories, en deze repo is publ
 
 - `public/fonts/` staat in `.gitignore`. Nodig: `ABCArealVariable.woff2` en `ABCArealMonoVariable.woff2`.
 - `scripts/fonts.mjs` draait vóór `dev` en `build`. Ontbreken de bestanden, dan haalt het ze op via `FONTS_URL` (+ `FONTS_TOKEN`).
-  Lokaal zonder fonts: waarschuwing en systeemfonts. Op Netlify: bouwfout.
+  Het script leest ook `.env`. Lokaal zonder fonts: waarschuwing en systeemfonts. Op Netlify: bouwfout.
 - Bron: privé-repo [`All-This/fonts`](https://github.com/All-This/fonts) (map `abc-areal/`). Lokaal kun je ze daar ook uit kopiëren, of uit Dropbox All This → Resources/Fonts.
 - Tokens: `--font-sans`, `--font-mono`, `--font-darkmode` (Areal-as `DRKM`, staat op 1 in dark mode).
 
