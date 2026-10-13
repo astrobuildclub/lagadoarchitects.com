@@ -13,7 +13,9 @@ const page = { title: 'Wat we maken', fallbackDescription: `Architectuur en inte
 
 <BaseLayout title={pageTitle(settings, page)} description={pageDescription(settings, page)}>
   <div class="layout flow" style="--flow-space: var(--space-l)">
-    <PageHeader title="Wat" />
+    <div class="feature">
+      <PageHeader title="Wat" intro={settings.projecten.intro} />
+    </div>
     <div class="feature">
       <ProjectFilter projects={projects} toonPrijs={settings.projecten.toonPrijsfilter} target="projecten" />
     </div>

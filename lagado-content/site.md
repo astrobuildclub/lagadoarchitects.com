@@ -23,6 +23,7 @@ seo:
   deelAfbeelding: { src: "", alt: "" } # optioneel, 1200×630, anders /og-default.png
 
 projecten:
+  intro: "Woningen, winkels, plekken om samen te komen en alles daartussen. Filter op wat je zoekt, of laat je verrassen."   # ondertitel op /wat; TODO: Victor
   toonPrijsfilter: false               # prijsklasse nooit tonen zonder akkoord van Victor
 
 # Statistiek: cookieloos script, alleen actief als PUBLIC_ANALYTICS_* in .env staat
