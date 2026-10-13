@@ -28,7 +28,7 @@ kleurpalet: []
 
 hero: { src: 01.jpg, alt: "" }
 featured: true
-homepageGrootte: m
+homepageGrootte: l
 volgorde: 2
 gerelateerd: []
 

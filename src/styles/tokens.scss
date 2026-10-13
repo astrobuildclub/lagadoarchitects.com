@@ -21,30 +21,28 @@
   --leading-normal: 1.55;
   --measure: 65ch;
 
-  @include utopia.generateTypeScale((
-    'minWidth': 360,
-    'maxWidth': 2560,
-    'minFontSize': 16,
-    'maxFontSize': 18,
-    'minTypeScale': 1.2,
-    'maxTypeScale': 1.333,
-    'positiveSteps': 8,
-    'negativeSteps': 3,
-    'prefix': 'step-',
-    'relativeTo': 'viewport-width',
-  ));
+  @include utopia.generateTypeScale(('minWidth': 360,
+      'maxWidth': 2560,
+      'minFontSize': 16,
+      'maxFontSize': 18,
+      'minTypeScale': 1.2,
+      'maxTypeScale': 1.333,
+      'positiveSteps': 8,
+      'negativeSteps': 3,
+      'prefix': 'step-',
+      'relativeTo': 'viewport-width',
+    ));
 
-  @include utopia.generateSpaceScale((
-    'minWidth': 360,
-    'maxWidth': 2560,
-    'minSize': 16,
-    'maxSize': 18,
-    'positiveSteps': (1.5, 2, 3, 4, 6, 7),
-    'negativeSteps': (0.75, 0.5, 0.25, 0.1),
-    'customSizes': ('s-l', 'm-xl', 'l-2xl', 'xl-3xl'),
-    'prefix': 'space-',
-    'relativeTo': 'viewport-width',
-  ));
+  @include utopia.generateSpaceScale(('minWidth': 360,
+      'maxWidth': 2560,
+      'minSize': 16,
+      'maxSize': 18,
+      'positiveSteps': (1.5, 2, 3, 4, 6, 7),
+      'negativeSteps': (0.75, 0.5, 0.25, 0.1),
+      'customSizes': ('s-l', 'm-xl', 'l-2xl', 'xl-3xl'),
+      'prefix': 'space-',
+      'relativeTo': 'viewport-width',
+    ));
 
   /* Layout (breakout-grid, zie layout.css) */
   --gutter: var(--space-s-l);
@@ -64,7 +62,7 @@
   --color-fg: oklch(18% 0 0);
   --color-muted: oklch(45% 0 0);
   --color-line: oklch(85% 0 0);
-  --color-accent: oklch(50% 0.17 255);
+  --color-accent: oklch(46.856% 0.30296 271.609);
   --color-on-accent: oklch(99% 0 0);
   --color-focus: var(--color-accent);
   /* Projectpagina's overschrijven --accent met de accentkleur van het project. */
@@ -78,7 +76,7 @@
     --color-fg: oklch(95% 0 0);
     --color-muted: oklch(72% 0 0);
     --color-line: oklch(35% 0 0);
-    --color-accent: oklch(72% 0.14 255);
+    --color-accent: oklch(70.544% 0.19659 44.231);
     --color-on-accent: oklch(17% 0 0);
     --font-darkmode: 1;
   }
@@ -90,7 +88,7 @@
   --color-fg: oklch(95% 0 0);
   --color-muted: oklch(72% 0 0);
   --color-line: oklch(35% 0 0);
-  --color-accent: oklch(72% 0.14 255);
+  --color-accent: oklch(70.544% 0.19659 44.231);
   --color-on-accent: oklch(17% 0 0);
   --font-darkmode: 1;
 }
@@ -98,6 +96,7 @@
 :root[data-theme='light'] {
   color-scheme: light;
 }
+
 :root[data-theme='dark'] {
   color-scheme: dark;
 }

@@ -15,7 +15,7 @@ body {
 /* Areal heeft geen echte cursief maar een slant-as: expliciet zodat er niets wordt gesynthetiseerd. */
 em, i, cite { font-style: oblique 12deg; }
 
-h1, h2, h3, h4 { line-height: var(--leading-tight); font-weight: 600; }
+h1, h2, h3, h4 { line-height: var(--leading-tight); font-weight: 600; letter-spacing: -0.03ch; }
 h1 { font-size: var(--step-5); }
 h2 { font-size: var(--step-3); }
 h3 { font-size: var(--step-1); }
