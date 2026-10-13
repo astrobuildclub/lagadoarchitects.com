@@ -1,9 +1,7 @@
 /* Volgorde van de lagen: later wint. Componentstijlen staan scoped in de .astro-bestanden. */
 @layer reset, tokens, base, layout, components, utilities;
 
-@import '@fontsource-variable/instrument-sans/wght.css' layer(base);
-@import '@fontsource/dm-mono/400.css' layer(base);
-@import '@fontsource/dm-mono/500.css' layer(base);
+@import './fonts.css' layer(base);
 
 @import './reset.css' layer(reset);
 @import './tokens.scss' layer(tokens);

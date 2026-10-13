@@ -17,7 +17,7 @@
 ## Stack
 
 - Astro 7.3 · Node 22 (`.nvmrc`) · static
-- Styling: CSS + SCSS-tokens via `utopia-core-scss` (OKLCH, fluid type/space, cascade layers). Fonts: Instrument Sans + DM Mono (self-hosted). Geen Tailwind.
+- Styling: CSS + SCSS-tokens via `utopia-core-scss` (OKLCH, fluid type/space, cascade layers). Fonts: ABC Areal + ABC Areal Mono (variabel, self-hosted, niet in git; zie [Fonts](#fonts)). Geen Tailwind.
 - Animatie: GSAP (gebundeld, alleen core) voor de wisseltekst in de hero (`src/scripts/rotating-text.ts`) + view transitions via `<ClientRouter />`
 - Consent: `vanilla-cookieconsent` v3 + `@orestbida/iframemanager` (gebundeld, geen CDN) · Hosting: Netlify
 
@@ -26,6 +26,7 @@
 ```bash
 nvm use
 npm install
+# fonts: zet de twee woff2's in public/fonts/ (zie Fonts hieronder)
 npm run placeholders   # placeholder-beelden voor wat nog niet is aangeleverd
 cp .env.example .env   # optioneel, alleen voor statistiek
 npm run dev            # http://localhost:4321
@@ -39,8 +40,21 @@ Overige scripts: `npm run build`, `npm run preview`, `npm run check`.
 |---|---|---|
 | `PUBLIC_ANALYTICS_SRC` | Script-URL van cookieloze statistiek (Plausible/Umami). Leeg = uit. | Account van de statistiekdienst |
 | `PUBLIC_ANALYTICS_DOMAIN` | `data-domain` voor dat script | Idem |
+| `FONTS_URL` | Map-URL waar `scripts/fonts.mjs` de woff2's ophaalt als `public/fonts/` leeg is (Netlify). | Privé fonts-repo/-opslag |
+| `FONTS_TOKEN` | Optioneel bearer-token voor `FONTS_URL` (read-only). Geheim, nooit `PUBLIC_`. | GitHub fine-grained token / opslagdienst |
 
 Waarden staan nooit in git. Productiewaarden: Netlify → Site configuration → Environment variables (let op deploy contexts).
+
+## Fonts
+
+ABC Areal by [ABC Dinamo](https://abcdinamo.com/typefaces/areal), gratis licentie. Credit staat in de footer.
+De licentie (§10) verbiedt fonts in publieke repositories, en deze repo is publiek. Daarom:
+
+- `public/fonts/` staat in `.gitignore`. Nodig: `ABCArealVariable.woff2` en `ABCArealMonoVariable.woff2`.
+- `scripts/fonts.mjs` draait vóór `dev` en `build`. Ontbreken de bestanden, dan haalt het ze op via `FONTS_URL` (+ `FONTS_TOKEN`).
+  Lokaal zonder fonts: waarschuwing en systeemfonts. Op Netlify: bouwfout.
+- Bron: de map met de Dinamo-download (Dropbox All This → Resources/Fonts) of een privé-repo/opslag die je als `FONTS_URL` instelt.
+- Tokens: `--font-sans`, `--font-mono`, `--font-darkmode` (Areal-as `DRKM`, staat op 1 in dark mode).
 
 ## Structuur
 
