@@ -6,20 +6,21 @@ tagline: Een speelse horecazaak in een bestaand casco.
 intro: |
   TODO: korte intro. Placeholder voor het homepage-raster.
 
-type: binnenkant
+type: de-hort-op
 programma: horeca
 functie: Koffiebar
 oppervlakte: 42
 locatie: { plaats: Rotterdam, wijk: Middelland }
-status: gerealiseerd
+status: af
 jaarOpdracht: 2022
 jaarOplevering: 2023
 opdrachtgeverType: zakelijk
 opdrachtgever: ""
 
-stijl: speels
-themas: [kleur, vorm]
-doelgroep: []
+vorm: [rond]
+kleuren: [geel, roze]
+schaal: kamer
+materialen: [tegels, metaal]
 prijsklasse: null
 
 accentkleur: ""

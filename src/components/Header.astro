@@ -1,5 +1,6 @@
 ---
 import type { Settings } from '../lib/schema';
+import Logo from './Logo.astro';
 import ThemeToggle from './ThemeToggle.astro';
 import { cleanPath } from '../lib/url';
 
@@ -13,8 +14,9 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
 
 <header class="site-header">
   <div class="wrapper site-header__inner">
-    <a class="site-header__logo" href="/" aria-label={`${settings.siteNaam}, naar de homepage`}>
-      {settings.siteNaam}
+    <a class="site-header__logo" href="/">
+      <Logo class="site-header__wordmark" />
+      <span class="visually-hidden">{settings.siteNaam}</span>
     </a>
     <nav aria-label="Hoofdmenu">
       <ul role="list">
@@ -45,9 +47,16 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
     gap: var(--space-xs) var(--space-m);
   }
   .site-header__logo {
-    font-weight: 700;
-    text-decoration: none;
+    display: inline-flex;
     margin-inline-end: auto;
+    /* Het woordmerk is fill="currentColor": kleur hier sturen.
+       --color-accent, niet --accent: projectpagina's overschrijven die laatste. */
+    color: var(--color-accent);
+  }
+  .site-header__logo :global(.site-header__wordmark) {
+    /* Hoogte bepaalt de maat; breedte volgt de viewBox (65 × 14). */
+    block-size: calc(var(--step-0) * 0.9);
+    inline-size: auto;
   }
   ul {
     display: flex;

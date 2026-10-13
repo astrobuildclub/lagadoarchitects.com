@@ -6,20 +6,21 @@ tagline: Werkplek en showroom in een voormalige garage.
 intro: |
   TODO: korte intro. Placeholder voor het homepage-raster.
 
-type: binnenkant
+type: de-hort-op
 programma: kantoor
 functie: Atelier / showroom
 oppervlakte: 110
 locatie: { plaats: Rotterdam, wijk: Kralingen }
-status: in-uitvoering
+status: bijna
 jaarOpdracht: 2024
 jaarOplevering: 2026
 opdrachtgeverType: zakelijk
 opdrachtgever: ""
 
-stijl: beide
-themas: [vorm]
-doelgroep: []
+vorm: [recht]
+kleuren: [wit, grijs]
+schaal: kamer
+materialen: [beton, glas]
 prijsklasse: null
 
 accentkleur: ""

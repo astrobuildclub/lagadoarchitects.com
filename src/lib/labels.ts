@@ -1,8 +1,7 @@
 // Leesbare labels voor de vaste waarden uit het contentmodel.
 const LABELS: Record<string, string> = {
-  binnenkant: 'Binnenkant',
-  buitenkant: 'Buitenkant',
-  beide: 'Beide',
+  thuiskomen: 'Thuiskomen',
+  'de-hort-op': 'De hort op',
   woning: 'Woning',
   winkel: 'Winkel',
   horeca: 'Horeca',
@@ -10,17 +9,11 @@ const LABELS: Record<string, string> = {
   publiek: 'Publiek',
   'openbare-ruimte': 'Openbare ruimte',
   meubel: 'Meubel',
-  gerealiseerd: 'Gerealiseerd',
-  'in-uitvoering': 'In uitvoering',
-  ontwerp: 'Ontwerp',
-  concept: 'Concept',
+  af: 'Af',
+  bijna: 'Bijna',
+  opgetekend: 'Opgetekend',
   prive: 'Privé',
   zakelijk: 'Zakelijk',
-  speels: 'Speels',
-  serieus: 'Serieus',
-  gelaagdheid: 'Gelaagdheid',
-  vorm: 'Vorm',
-  kleur: 'Kleur',
   laag: '€',
   midden: '€€',
   hoog: '€€€',
@@ -30,3 +23,17 @@ const LABELS: Record<string, string> = {
 };
 
 export const label = (value: string) => LABELS[value] ?? value.charAt(0).toUpperCase() + value.slice(1).replace(/-/g, ' ');
+
+/** Swatch per filterkleur (KLEUR in schema.ts). Altijd samen met het tekstlabel tonen (WCAG 1.4.1). */
+export const KLEUR_SWATCH: Record<string, string> = {
+  rood: 'oklch(58% 0.21 27)',
+  oranje: 'oklch(72% 0.18 52)',
+  geel: 'oklch(88% 0.17 95)',
+  groen: 'oklch(62% 0.15 150)',
+  blauw: 'oklch(52% 0.2 262)',
+  paars: 'oklch(48% 0.2 300)',
+  roze: 'oklch(78% 0.13 350)',
+  wit: 'oklch(99% 0 0)',
+  zwart: 'oklch(18% 0 0)',
+  grijs: 'oklch(65% 0 0)',
+};

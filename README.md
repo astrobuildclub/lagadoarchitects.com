@@ -17,8 +17,8 @@
 ## Stack
 
 - Astro 7.3 · Node 22 (`.nvmrc`) · static
-- Styling: CSS + SCSS-tokens via `utopia-core-scss` (OKLCH, fluid type/space, cascade layers). Fonts: Instrument Sans + DM Mono (self-hosted). Geen Tailwind.
-- Animatie: geen (alleen view transitions via `<ClientRouter />`)
+- Styling: CSS + SCSS-tokens via `utopia-core-scss` (OKLCH, fluid type/space, cascade layers). Fonts: ABC Areal + ABC Areal Mono (variabel, self-hosted, niet in git; zie [Fonts](#fonts)). Geen Tailwind.
+- Animatie: GSAP (gebundeld, alleen core) voor de wisseltekst in de hero (`src/scripts/rotating-text.ts`) + view transitions via `<ClientRouter />`
 - Consent: `vanilla-cookieconsent` v3 + `@orestbida/iframemanager` (gebundeld, geen CDN) · Hosting: Netlify
 
 ## Lokaal starten
@@ -26,6 +26,7 @@
 ```bash
 nvm use
 npm install
+# fonts: zet de twee woff2's in public/fonts/ (zie Fonts hieronder)
 npm run placeholders   # placeholder-beelden voor wat nog niet is aangeleverd
 cp .env.example .env   # optioneel, alleen voor statistiek
 npm run dev            # http://localhost:4321
@@ -39,13 +40,27 @@ Overige scripts: `npm run build`, `npm run preview`, `npm run check`.
 |---|---|---|
 | `PUBLIC_ANALYTICS_SRC` | Script-URL van cookieloze statistiek (Plausible/Umami). Leeg = uit. | Account van de statistiekdienst |
 | `PUBLIC_ANALYTICS_DOMAIN` | `data-domain` voor dat script | Idem |
+| `FONTS_URL` | Map-URL waar `scripts/fonts.mjs` de woff2's ophaalt als `public/fonts/` leeg is (Netlify): `https://raw.githubusercontent.com/All-This/fonts/main/abc-areal` | Privé-repo `All-This/fonts` |
+| `FONTS_TOKEN` | Fine-grained GitHub-token, alleen `All-This/fonts`, Contents: Read-only. Geheim, nooit `PUBLIC_`. Verloopt: tijdig vernieuwen. | GitHub → Settings → Developer settings → Fine-grained tokens |
 
 Waarden staan nooit in git. Productiewaarden: Netlify → Site configuration → Environment variables (let op deploy contexts).
+
+## Fonts
+
+ABC Areal by [ABC Dinamo](https://abcdinamo.com/typefaces/areal), gratis licentie. Credit staat in de footer.
+De licentie (§10) verbiedt fonts in publieke repositories, en deze repo is publiek. Daarom:
+
+- `public/fonts/` staat in `.gitignore`. Nodig: `ABCArealVariable.woff2` en `ABCArealMonoVariable.woff2`.
+- `scripts/fonts.mjs` draait vóór `dev` en `build`. Ontbreken de bestanden, dan haalt het ze op via `FONTS_URL` (+ `FONTS_TOKEN`).
+  Het script leest ook `.env`. Lokaal zonder fonts: waarschuwing en systeemfonts. Op Netlify: bouwfout.
+- Bron: privé-repo [`All-This/fonts`](https://github.com/All-This/fonts) (map `abc-areal/`). Lokaal kun je ze daar ook uit kopiëren, of uit Dropbox All This → Resources/Fonts.
+- Tokens: `--font-sans`, `--font-mono`, `--font-darkmode` (Areal-as `DRKM`, staat op 1 in dark mode).
 
 ## Structuur
 
 ```
 lagado-content/      Content (.md) + beelden + downloads. Zie lagado-content/README.md
+                     (input/ = brondocumenten van de klant, niet in git)
 scripts/             placeholders.mjs (overschrijft nooit bestaand beeld)
 src/
   content.config.ts  Content collections (glob op lagado-content/)
@@ -53,7 +68,8 @@ src/
   components/blocks/ Eén component per bloktype
   layouts/           BaseLayout.astro
   lib/               schema, content (enige datalaag), images, seo, consent, …
-  pages/             Routes
+  pages/             Routes (/wat, /waarom, /contact …)
+  scripts/           Client-side scripts (rotating-text.ts)
   styles/            tokens.scss (Utopia), layout, base, reset
 public/              favicon, og-default
 TODO.md              Openstaande projecttaken
@@ -63,7 +79,7 @@ TODO.md              Openstaande projecttaken
 
 - **Nu:** content in `lagado-content/`. Victor levert Word-sjabloon + beeldmap; wij zetten om naar `projecten/<slug>.md` volgens `_template.md`. Bouwfout = ontbrekend verplicht veld of beeld.
 - **Contentmodel:** `lagado-content/README.md` is leidend; `src/lib/schema.ts` volgt 1-op-1.
-- **Pagina's:** Home, Projecten (filters), Project, Bureau, Contact (geen formulier), Privacy.
+- **Pagina's:** Home, Wat (`/wat`, projecten met filters), Project (`/wat/<slug>`), Waarom (`/waarom`, content in `bureau.md`), Contact (geen formulier), Privacy.
 - **Bouwstenen:** hero, text, image, gallery, columns, quote, video, colors, beforeAfter, projectGrid, team, list, cta, services, logos, downloads.
 - **Straks Sanity:**zelfde veldnamen; alleen `src/lib/content.ts` (en `images.ts`) wisselt.
 

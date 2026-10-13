@@ -31,3 +31,10 @@ pnpm-debug.log*
 
 # Claude / lokale agent-config (poorten e.d.)
 .claude/
+
+# Brondocumenten van de klant (Word, lockbestanden): niet in git
+lagado-content/input/
+
+# Gelicenseerde fonts (ABC Dinamo): nooit in deze publieke repo (licentie §10).
+# Lokaal: zelf in public/fonts/ zetten; op Netlify haalt scripts/fonts.mjs ze op.
+public/fonts/

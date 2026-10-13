@@ -28,12 +28,13 @@ lagado-content/
             └── 02.jpg …
 ```
 
-Bestandsnaam van een project = `slug` = URL (`/projecten/workhome-playhome`).
+Bestandsnaam van een project = `slug` = URL (`/wat/workhome-playhome`).
 
 ## Regels
 
 - **Taal:** Nederlands. Engels volgt later als aparte velden (`title_en`), niet nu.
 - **Afbeeldingen:** genummerd (`01.jpg`, `02.jpg`, …) in de projectmap. Elke afbeelding in een blok heeft een `alt` (verplicht, WCAG 1.1.1), `caption` is optioneel. Decoratief beeld: `alt: ""`.
+- **Hero met wisseltekst:** `kopWissel` en `subkopWissel` zijn de woorden die na `kop` / `subkop` wisselen. De eerste is wat er staat zonder animatie (reduced motion, geen JS).
 - **Verplicht / optioneel:** staat als commentaar achter elk veld. Alle *filtervelden* zijn optioneel, anders blokkeert één ontbrekende prijs de publicatie.
 - **Filtervelden** gebruiken vaste waarden (zie tabel). Geen vrije tekst.
 - **Teksten:** korte alinea's, één onderwerp per alinea. Lange tekst opknippen in meerdere `text`-blokken met een kop.
@@ -47,14 +48,20 @@ Bestandsnaam van een project = `slug` = URL (`/projecten/workhome-playhome`).
 
 | Veld | Waarden |
 |---|---|
-| `type` | `binnenkant`, `buitenkant`, `beide` |
-| `programma` | `woning`, `winkel`, `horeca`, `kantoor`, `publiek`, `openbare-ruimte`, `meubel` |
-| `status` | `gerealiseerd`, `in-uitvoering`, `ontwerp`, `concept` |
+| `type` | `thuiskomen` (particuliere klant), `de-hort-op` (publiek project) |
+| `vorm` | `recht` (rechthoekig), `rond` (curves), `schuin` (schuine lijnen) — meerdere mogelijk |
+| `kleuren` | `rood`, `oranje`, `geel`, `groen`, `blauw`, `paars`, `roze`, `wit`, `zwart`, `grijs` — hoofdkleur(en), meerdere mogelijk |
+| `status` | `af` (gerealiseerd), `bijna` (in ontwikkeling), `opgetekend` (gepubliceerd, niet gebouwd) |
+| `schaal` | `stoel` (meubilair), `kamer` (interieur/verbouw), `huis` (nieuwbouw huis), `stad` (skatepark, groter wooncomplex) |
+| `materialen` | `hout`, `steen`, `beton`, `glas`, `tegels`, `metaal` — hoofdmateriaal/-materialen, meerdere mogelijk |
+| `programma` | `woning`, `winkel`, `horeca`, `kantoor`, `publiek`, `openbare-ruimte`, `meubel` (feit, geen filter) |
 | `opdrachtgeverType` | `prive`, `zakelijk`, `publiek` |
-| `stijl` | `speels`, `serieus`, `beide` |
-| `thema` | `gelaagdheid`, `vorm`, `kleur` |
 | `prijsklasse` | `laag`, `midden`, `hoog` (optioneel, nooit tonen zonder akkoord) |
 | `homepageGrootte` | `s`, `m`, `l` — kaartbreedte op de homepage |
+
+## Filters op /wat
+
+Volgorde zoals Victor ze aanleverde. Direct zichtbaar: **Type**, **Vorm**, **Kleur** en **Verras me** (willekeurige filtercombinatie, altijd minstens één project). Onder "Tot op de mm" (uitklap): **Status**, **Schaal**, **Materiaal**. Binnen een groep = of, tussen groepen = en. Een groep met maar één waarde in de projecten wordt niet getoond.
 
 ## Bouwstenen (`blocks`)
 
@@ -72,7 +79,7 @@ Bestandsnaam van een project = `slug` = URL (`/projecten/workhome-playhome`).
 | `team` | Personen | `personen[]` |
 | `list` | Pers, awards | `soort` (`pers`/`awards`), `items[]` |
 | `cta` | Afsluitende actie | `tekst`, `label`, `href` |
-| `hero` | Opening van een pagina | `kop`, `subkop?`, `beelden[]` (`project?`, `src`, `alt`) |
+| `hero` | Opening van een pagina | `kop`, `kopWissel?[]`, `subkop?`, `subkopWissel?[]`, `link?{label,href}`, `beelden[]` (`project?`, `src`, `alt`) |
 | `services` | Diensten / wat we doen | `kop?`, `items[]` (`titel`, `tekst`) |
 | `logos` | Klant- of perslogo's | `kop?`, `items[]` (`naam`, `logo?{src,alt}`, `href?`) |
 | `downloads` | Bestanden | `kop?`, `items[]` (`label`, `bestand`) |

@@ -9,21 +9,22 @@ intro: |                               # verplicht, 2–4 zinnen
   ""
 
 # ── Feitenblok ─────────────────────────────────────────────
-type: binnenkant                       # verplicht: binnenkant | buitenkant | beide
+type: thuiskomen                       # verplicht: thuiskomen (particulier) | de-hort-op (publiek)
 programma: woning                      # verplicht: zie README
 functie: ""                            # optioneel, korte tekst
 oppervlakte: 0                         # optioneel, m²
 locatie: { plaats: "", wijk: "" }      # plaats verplicht, wijk optioneel
-status: gerealiseerd                   # verplicht
+status: af                             # verplicht: af (gerealiseerd) | bijna (in ontwikkeling) | opgetekend (gepubliceerd)
 jaarOpdracht: 0                        # optioneel
-jaarOplevering: 0                      # optioneel, verplicht als status = gerealiseerd
+jaarOplevering: 0                      # optioneel, verplicht als status = af
 opdrachtgeverType: prive               # optioneel: prive | zakelijk | publiek
 opdrachtgever: ""                      # optioneel, naam of "privé"
 
-# ── Filters & thema's (allemaal optioneel) ─────────────────
-stijl: speels                          # speels | serieus | beide
-themas: []                             # gelaagdheid | vorm | kleur
-doelgroep: []                          # vrije lijst voor nu, later vaste waarden
+# ── Filters (optioneel; type en status staan hierboven) ────
+vorm: []                               # recht | rond | schuin (meerdere mogelijk)
+kleuren: []                            # hoofdkleur(en), zie README (meerdere mogelijk)
+schaal: null                           # stoel | kamer | huis | stad
+materialen: []                         # hout | steen | beton | glas | tegels | metaal (meerdere mogelijk)
 prijsklasse: null                      # laag | midden | hoog — niet tonen zonder akkoord
 
 # ── Kleur ──────────────────────────────────────────────────

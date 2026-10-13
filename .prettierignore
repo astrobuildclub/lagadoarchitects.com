@@ -1,0 +1,5 @@
+# Prettier zet de Utopia-maps (SCSS) onleesbaar uit elkaar: met de hand bijhouden.
+src/styles/tokens.scss
+dist/
+.astro/
+lagado-content/

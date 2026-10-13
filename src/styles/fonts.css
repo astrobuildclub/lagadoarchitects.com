@@ -1,0 +1,20 @@
+/*
+ * ABC Areal by ABC Dinamo (gratis licentie, https://abcdinamo.com/typefaces/areal).
+ * Bestanden staan niet in git; zie scripts/fonts.mjs en de README.
+ * Variabel: wght 400–700, slnt -12–0 (cursief = oblique), DRKM 0–1 (dikte-correctie voor licht op donker).
+ */
+@font-face {
+  font-family: 'ABC Areal';
+  src: url('/fonts/ABCArealVariable.woff2') format('woff2-variations');
+  font-weight: 400 700;
+  font-style: oblique 0deg 12deg;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'ABC Areal Mono';
+  src: url('/fonts/ABCArealMonoVariable.woff2') format('woff2-variations');
+  font-weight: 400 700;
+  font-style: oblique 0deg 12deg;
+  font-display: swap;
+}

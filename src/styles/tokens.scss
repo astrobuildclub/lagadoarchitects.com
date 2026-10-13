@@ -13,8 +13,10 @@
   interpolate-size: allow-keywords;
 
   /* Typografie */
-  --font-sans: 'Instrument Sans Variable', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'DM Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --font-sans: 'ABC Areal', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'ABC Areal Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  /* Areal-as DRKM: 1 maakt letters iets dunner voor lichte tekst op donker. */
+  --font-darkmode: 0;
   --leading-tight: 1.1;
   --leading-normal: 1.55;
   --measure: 65ch;
@@ -62,7 +64,7 @@
   --color-fg: oklch(18% 0 0);
   --color-muted: oklch(45% 0 0);
   --color-line: oklch(85% 0 0);
-  --color-accent: oklch(50% 0.17 255);
+  --color-accent: oklch(46.856% 0.30296 271.609);
   --color-on-accent: oklch(99% 0 0);
   --color-focus: var(--color-accent);
   /* Projectpagina's overschrijven --accent met de accentkleur van het project. */
@@ -76,8 +78,9 @@
     --color-fg: oklch(95% 0 0);
     --color-muted: oklch(72% 0 0);
     --color-line: oklch(35% 0 0);
-    --color-accent: oklch(72% 0.14 255);
+    --color-accent: oklch(70.544% 0.19659 44.231);
     --color-on-accent: oklch(17% 0 0);
+    --font-darkmode: 1;
   }
 }
 
@@ -87,8 +90,9 @@
   --color-fg: oklch(95% 0 0);
   --color-muted: oklch(72% 0 0);
   --color-line: oklch(35% 0 0);
-  --color-accent: oklch(72% 0.14 255);
+  --color-accent: oklch(70.544% 0.19659 44.231);
   --color-on-accent: oklch(17% 0 0);
+  --font-darkmode: 1;
 }
 
 :root[data-theme='light'] {
