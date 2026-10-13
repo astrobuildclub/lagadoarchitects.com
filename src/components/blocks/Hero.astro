@@ -109,6 +109,12 @@ const woorden = (phrase: string) => phrase.split(' ');
     /* Ankerpunt voor de meetkloon in rotating-text.ts */
     position: relative;
   }
+  /* Geen balance/pretty uit reset.css: de regels moeten gewoon vollopen, anders
+     verspringt de verdeling bij elke wissel. */
+  .hero__kop,
+  .hero__subkop {
+    text-wrap: wrap;
+  }
   .hero__kop {
     font-size: var(--step-6);
     font-weight: 700;
