@@ -95,6 +95,10 @@ const sizes = block.kolommen === 2 ? '(min-width: 48rem) 50vw, 100vw' : '(min-wi
   }
 
   document.addEventListener('astro:page-load', initGalleries);
+  // Een modale <dialog> ligt boven de transitielaag: dicht vóór de pagina wordt bedekt.
+  document.addEventListener('interlude:leave', () => {
+    document.querySelectorAll<HTMLDialogElement>('dialog.lightbox[open]').forEach((d) => d.close());
+  });
 </script>
 
 <style>

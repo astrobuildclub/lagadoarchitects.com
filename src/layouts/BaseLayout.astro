@@ -5,6 +5,7 @@ import '../styles/index.css';
 import CookieConsent from '../components/CookieConsent.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import Interlude from '../components/Interlude.astro';
 import SiteMeta from '../components/SiteMeta.astro';
 import { getContact, getSettings } from '../lib/content';
 import { organizationJsonLd } from '../lib/seo';
@@ -29,7 +30,7 @@ const isHome = cleanPath(Astro.url.pathname) === '/';
 ---
 
 <!doctype html>
-<html lang={settings.taal} style={accent ? `--accent: ${accent}` : undefined}>
+<html lang={settings.taal} style={accent ? `--accent: ${accent}` : undefined} transition:animate="none">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -58,6 +59,8 @@ const isHome = cleanPath(Astro.url.pathname) === '/';
     <ClientRouter fallback="swap" />
   </head>
   <body>
+    <!-- Paginatransities (Interlude, zie TRANSITIONS.md §7): direct kind van <body>. -->
+    <Interlude />
     <a class="skip-link" href="#inhoud">Naar de inhoud</a>
     <Header settings={settings} />
     <main id="inhoud" tabindex="-1">

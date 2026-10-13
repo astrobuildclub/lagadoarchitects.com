@@ -69,6 +69,8 @@
   --color-focus: var(--color-accent);
   /* Projectpagina's overschrijven --accent met de accentkleur van het project. */
   --accent: var(--color-accent);
+  /* Vlak van de paginatransitie (Interlude): volgt het thema mee. Niet --accent: dat wisselt per pagina halverwege de transitie. */
+  --interlude-color: var(--color-fg);
 }
 
 @media (prefers-color-scheme: dark) {
