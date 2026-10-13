@@ -6,8 +6,8 @@ taal: nl
 url: https://lagadoarchitects.com      # verplicht, zonder slash aan het eind
 
 navigatie:                             # verplicht, max 5 items
-  - { label: Projecten, href: /projecten }
-  - { label: Bureau,    href: /bureau }
+  - { label: Wat,     href: /wat }        # alternatief: Projecten / Werk
+  - { label: Waarom,  href: /waarom }     # alternatief: Bureau / Over
   - { label: Contact,   href: /contact }
 
 footer:

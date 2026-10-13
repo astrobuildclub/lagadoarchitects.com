@@ -28,7 +28,7 @@ const projectTitle = (slug?: string) => projects.find((p) => p.slug === slug);
                 {has(item.url) ? <a href={item.url} rel="noopener">{titel}</a> : titel}
                 {block.soort === 'awards' && item.resultaat && <span class="muted"> ({label(item.resultaat)})</span>}
               </span>
-              {project && <a class="list__project muted" href={`/projecten/${project.slug}`}>{project.title}</a>}
+              {project && <a class="list__project muted" href={`/wat/${project.slug}`}>{project.title}</a>}
             </li>
           );
         })}
