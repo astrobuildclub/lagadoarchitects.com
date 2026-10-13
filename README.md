@@ -40,8 +40,8 @@ Overige scripts: `npm run build`, `npm run preview`, `npm run check`.
 |---|---|---|
 | `PUBLIC_ANALYTICS_SRC` | Script-URL van cookieloze statistiek (Plausible/Umami). Leeg = uit. | Account van de statistiekdienst |
 | `PUBLIC_ANALYTICS_DOMAIN` | `data-domain` voor dat script | Idem |
-| `FONTS_URL` | Map-URL waar `scripts/fonts.mjs` de woff2's ophaalt als `public/fonts/` leeg is (Netlify). | Privé fonts-repo/-opslag |
-| `FONTS_TOKEN` | Optioneel bearer-token voor `FONTS_URL` (read-only). Geheim, nooit `PUBLIC_`. | GitHub fine-grained token / opslagdienst |
+| `FONTS_URL` | Map-URL waar `scripts/fonts.mjs` de woff2's ophaalt als `public/fonts/` leeg is (Netlify): `https://raw.githubusercontent.com/All-This/fonts/main/abc-areal` | Privé-repo `All-This/fonts` |
+| `FONTS_TOKEN` | Fine-grained GitHub-token, alleen `All-This/fonts`, Contents: Read-only. Geheim, nooit `PUBLIC_`. Verloopt: tijdig vernieuwen. | GitHub → Settings → Developer settings → Fine-grained tokens |
 
 Waarden staan nooit in git. Productiewaarden: Netlify → Site configuration → Environment variables (let op deploy contexts).
 
@@ -53,7 +53,7 @@ De licentie (§10) verbiedt fonts in publieke repositories, en deze repo is publ
 - `public/fonts/` staat in `.gitignore`. Nodig: `ABCArealVariable.woff2` en `ABCArealMonoVariable.woff2`.
 - `scripts/fonts.mjs` draait vóór `dev` en `build`. Ontbreken de bestanden, dan haalt het ze op via `FONTS_URL` (+ `FONTS_TOKEN`).
   Lokaal zonder fonts: waarschuwing en systeemfonts. Op Netlify: bouwfout.
-- Bron: de map met de Dinamo-download (Dropbox All This → Resources/Fonts) of een privé-repo/opslag die je als `FONTS_URL` instelt.
+- Bron: privé-repo [`All-This/fonts`](https://github.com/All-This/fonts) (map `abc-areal/`). Lokaal kun je ze daar ook uit kopiëren, of uit Dropbox All This → Resources/Fonts.
 - Tokens: `--font-sans`, `--font-mono`, `--font-darkmode` (Areal-as `DRKM`, staat op 1 in dark mode).
 
 ## Structuur
