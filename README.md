@@ -18,7 +18,7 @@
 
 - Astro 7.3 · Node 22 (`.nvmrc`) · static
 - Styling: CSS + SCSS-tokens via `utopia-core-scss` (OKLCH, fluid type/space, cascade layers). Fonts: ABC Areal + ABC Areal Mono (variabel, self-hosted, niet in git; zie [Fonts](#fonts)). Geen Tailwind.
-- Animatie: GSAP (gebundeld, alleen core) voor de wisseltekst in de hero (`src/scripts/rotating-text.ts`) + view transitions via `<ClientRouter />`
+- Animatie: GSAP (gebundeld, alleen core) voor de wisseltekst in de hero (`src/scripts/rotating-text.ts`) en paginatransities met Interlude (`curtain`) op `<ClientRouter />`
 - Consent: `vanilla-cookieconsent` v3 + `@orestbida/iframemanager` (gebundeld, geen CDN) · Hosting: Netlify
 
 ## Lokaal starten

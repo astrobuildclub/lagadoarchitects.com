@@ -10,6 +10,7 @@ body {
   font-variation-settings: 'DRKM' var(--font-darkmode);
   font-size: var(--step-0);
   line-height: var(--leading-normal);
+  overflow-x: clip; /* geen scrollbalkflits als een paginatransitie de content verschuift */
 }
 
 /* Areal heeft geen echte cursief maar een slant-as: expliciet zodat er niets wordt gesynthetiseerd. */
