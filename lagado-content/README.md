@@ -7,7 +7,7 @@ Eén `.md`-bestand per pagina of project. De **frontmatter** bevat de vaste veld
 ```
 lagado-content/
 ├── README.md              ← dit bestand
-├── site.md                ← globaal: navigatie, footer, SEO-defaults
+├── site.md                ← globaal: navigatie, footer, SEO-defaults, projectoverzicht (intro, prijsfilter)
 ├── home.md
 ├── bureau.md
 ├── contact.md

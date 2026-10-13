@@ -220,7 +220,9 @@ export const settingsSchema = z.object({
     beschrijving: text,
     deelAfbeelding: z.object({ src: z.string(), alt: z.string() }).partial().optional(),
   }),
-  projecten: z.object({ toonPrijsfilter: z.boolean().default(false) }).default({ toonPrijsfilter: false }),
+  projecten: z
+    .object({ intro: text, toonPrijsfilter: z.boolean().default(false) })
+    .default({ toonPrijsfilter: false }),
   analytics: text,
 });
 
