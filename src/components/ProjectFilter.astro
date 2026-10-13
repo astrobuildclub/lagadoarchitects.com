@@ -81,7 +81,7 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
               <details class="dropdown" data-dropdown>
                 <summary class="chip">
                   {kleur.legend}
-                  <span class="dropdown__count" data-dropdown-count />
+                  <span class="count" data-dropdown-count />
                   <svg class="chevron" aria-hidden="true" viewBox="0 0 16 16" width="12" height="12">
                     <path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.75" />
                   </svg>
@@ -143,7 +143,7 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
           <svg aria-hidden="true" viewBox="0 0 16 16" width="16" height="16">
             <path d="M2 4h12M4 8h8M6 12h4" fill="none" stroke="currentColor" stroke-width="1.75" />
           </svg>
-          Filters <span data-active-count />
+          Filters <span class="count" data-active-count />
         </button>
       )
     }
@@ -422,7 +422,9 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
   .dropdown[open] summary {
     border-color: var(--color-fg);
   }
-  .dropdown__count {
+  /* Aantallen in mono, zodat chips en knoppen niet per cijfer van breedte verspringen. */
+  .count {
+    font-family: var(--font-mono);
     font-weight: 400;
   }
   /* Paneel rechts uitgelijnd onder de chip, opties onder elkaar. */
@@ -528,6 +530,7 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
     min-block-size: 2.75rem;
   }
   .project-filter__count {
+    font-variant-numeric: tabular-nums;
     margin-inline-start: auto;
   }
   .project-filter__open {
