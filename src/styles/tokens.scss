@@ -51,6 +51,8 @@
   --content-width: 42rem;
   --popout-width: 6rem;
   --feature-width: 12rem;
+  /* Ruimte tussen de header en het begin van elke pagina (hero, paginakop, projectkop). */
+  --page-top: var(--space-4xl);
 
   /* Vormen & beweging */
   --radius: 0;
