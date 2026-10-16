@@ -8,6 +8,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 ## [Unreleased]
 
 ### Toegevoegd
+- /wat: weergave Raster of Lijst (knoppen rechts in de filterbalk, keuze onthouden per bezoeker). In de lijst één rij per project zonder beeld; met een muis hangt het projectbeeld bij hover aan de cursor (GSAP `quickTo`, `src/scripts/hover-follow.ts`, zonder naloop bij reduced motion).
 - Projectdetail: kruimelpad Home › Wat (ook in de JSON-LD), meer ruimte boven de titel. Titel en tagline schuiven per woord van onder in (`words-in.ts`).
 - Projectdetail: de vraag kleurt woord voor woord in terwijl je scrollt (`src/scripts/ink-in.ts`); zonder JS of met reduced motion staat hij gewoon in kleur.
 - Projectdetail: factsheet in twee helften. Eerst de filtereigenschappen (Type, Vorm, Kleur met swatch, Status, Schaal, Materiaal), elke waarde linkt naar `/wat` met dat filter aan; daarna Locatie, Omvang, Opdrachtgever, Bouwteam, Fotograaf, Jaar.
@@ -36,7 +37,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Netlify secrets scanning: `FONTS_URL` uitgezonderd (`SECRETS_SCAN_OMIT_KEYS`), de build faalde omdat de URL in de README staat.
 
 ### Gewijzigd
-- Projectoverzicht (/wat) over de volle breedte. Vanaf 40rem staan de filters verticaal in een kolom links van de projecten (sticky, scrolt zelf als hij te hoog is): aantal, Verras me en Wis filters bovenaan, daaronder de groepen; de kleurenlijst klapt in de kolom uit. Op mobiel blijft de overlay.
+- Projectoverzicht (/wat) over de volle breedte, filters erboven. Filteropties compacter: kale tekst in plaats van pills, actief = onderstreept (ook de kleurknop).
 - Titelanimatie op projectdetail start pas als de paginatransitie klaar is (`interlude:idle`).
 - Hero-kop altijd op drie regels, op elke schermbreedte: "Wij zijn een serieus / buro voor speelse / architectuur". De breuk na "serieus" staat in `home.md` (nieuwe regel in `kop`), het laatste wisselwoord krijgt een eigen regel, en de kop krimpt mee met de breedte (`cqi`). Zo past ook "sportieve landschappen".
 - Header en footer lopen over de volle breedte van de viewport (`.wrapper--full`).

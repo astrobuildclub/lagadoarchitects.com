@@ -12,13 +12,12 @@ const page = { title: 'Wat we maken', fallbackDescription: `Architectuur en inte
 ---
 
 <BaseLayout title={pageTitle(settings, page)} description={pageDescription(settings, page)}>
-  <!-- Volle breedte. Vanaf 40rem staan de filters in een kolom links naast de projecten,
-       daaronder zit de overlay achter de knop "Filters" (zie ProjectFilter). -->
+  <!-- Volle breedte: filters erboven, projecten als raster of lijst. -->
   <div class="wrapper wrapper--full wat">
     <PageHeader title="Wat" intro={settings.projecten.intro} />
     <div class="wat__body">
       <ProjectFilter projects={projects} toonPrijs={settings.projecten.toonPrijsfilter} target="projecten" />
-      <ProjectList projects={projects} headingLevel={2} id="projecten" />
+      <ProjectList projects={projects} headingLevel={2} id="projecten" weergave />
     </div>
   </div>
 </BaseLayout>
@@ -28,12 +27,5 @@ const page = { title: 'Wat we maken', fallbackDescription: `Architectuur en inte
     display: grid;
     gap: var(--space-l);
     margin-block-start: var(--space-l);
-  }
-  @media (width >= 40rem) {
-    .wat__body {
-      grid-template-columns: minmax(13rem, 16rem) 1fr;
-      align-items: start;
-      gap: var(--space-l) var(--space-xl);
-    }
   }
 </style>
