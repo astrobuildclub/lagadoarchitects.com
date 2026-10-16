@@ -8,8 +8,9 @@
 // Opbouw als het factsheet op de projectpagina: één rij per groep, label (mono) links in
 // een vaste kolom, opties ernaast als kale tekst (actief = onderstreept). Volgorde volgens
 // Victor: Type, Vorm, Kleur (swatches, direct zichtbaar); Status, Schaal en Materiaal
-// onder "Tot op de mm". Daaronder één actieregel: aantal, Verras me, Tot op de mm,
-// Wis filters (alleen als er iets aan staat) en rechts Raster / Lijst.
+// onder "Tot op de mm". Daaronder één actieregel: Tot op de mm, Wis filters (alleen als er
+// iets aan staat) en rechts Raster / Lijst. "Verras me" is het woord "verrassen" in de
+// intro (link naar #verras in site.md), het aantal projecten staat boven de lijst.
 // Mobiel (< 40rem): de rijen staan in een overlay achter de knop "Filters", alle rijen open.
 import { KLEUR_SWATCH, label } from '../lib/labels';
 import { KLEUR, MATERIAAL, SCHAAL, STATUS, TYPE, VORM, type Project } from '../lib/schema';
@@ -111,20 +112,6 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
         </button>
       )
     }
-    <p aria-live="polite" class="project-filter__count" data-count></p>
-    {
-      hasFilters && (
-        <button type="button" class="action" data-random>
-          <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16">
-            <rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2" />
-            <circle cx="8" cy="8" r="1.6" fill="currentColor" />
-            <circle cx="12" cy="12" r="1.6" fill="currentColor" />
-            <circle cx="16" cy="16" r="1.6" fill="currentColor" />
-          </svg>
-          Verras me
-        </button>
-      )
-    }
     {
       extraGroups.length > 0 && (
         <button type="button" class="action project-filter__more" aria-expanded="false" aria-controls="filter-extra" data-more>
@@ -155,7 +142,8 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
     const { signal } = controller;
     const list = document.getElementById(form.dataset.target!)!;
     const cards = [...list.querySelectorAll<HTMLElement>('.project-card')];
-    const count = form.querySelector('[data-count]')!;
+    // Aantal staat boven de lijst (wat/index.astro), verras-knop in de intro (PageHeader).
+    const count = document.querySelector(`[data-count="${form.dataset.target}"]`);
     const extra = form.querySelector<HTMLElement>('[data-extra]');
     const moreButton = form.querySelector<HTMLButtonElement>('[data-more]');
     const resetButton = form.querySelector<HTMLButtonElement>('[data-reset]')!;
@@ -189,7 +177,7 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
         if (match) visible++;
       }
       const projecten = `${visible} ${visible === 1 ? 'project' : 'projecten'}`;
-      count.textContent = projecten;
+      if (count) count.textContent = projecten;
       if (showCount) showCount.textContent = `Toon ${projecten}`;
       const n = inputs.filter((i) => i.checked).length;
       if (activeCount) activeCount.textContent = n ? String(n) : '';
@@ -293,7 +281,10 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
     form.addEventListener('change', () => apply(true));
     form.addEventListener('reset', () => setTimeout(() => apply(true)));
     form.addEventListener('submit', (e) => e.preventDefault());
-    form.querySelector('[data-random]')?.addEventListener('click', surprise);
+    document.querySelectorAll<HTMLButtonElement>('[data-random]').forEach((b) => {
+      b.disabled = !cards.length;
+      b.addEventListener('click', surprise, { signal });
+    });
     apply(false);
   }
 
@@ -415,11 +406,6 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
   }
   .action[hidden] {
     display: none;
-  }
-  .project-filter__count {
-    font-family: var(--font-mono);
-    font-variant-numeric: tabular-nums;
-    color: var(--color-muted);
   }
   .project-filter__view {
     display: flex;

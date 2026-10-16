@@ -6,16 +6,42 @@ interface Props {
   intro?: string;
 }
 const { title, intro } = Astro.props;
+// Een link naar `#verras` in de intro wordt de knop "Verras me" van de projectfilters
+// (ProjectFilter zoekt `[data-random]`). Zonder JS blijft het uitgeschakelde, gewone tekst.
+const introHtml = md(intro).replace(
+  /<a href="#verras">(.*?)<\/a>/,
+  '<button type="button" class="verras" data-random disabled>$1</button>',
+);
 ---
 
 <header class="page-header">
   <h1>{title}</h1>
-  {intro && <div class="page-header__intro" set:html={md(intro)} />}
+  {intro && <div class="page-header__intro" set:html={introHtml} />}
 </header>
 
 <style>
   .page-header {
     padding-block-start: var(--space-xl);
+  }
+  .page-header__intro :global(.verras) {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+  }
+  .page-header__intro :global(.verras:enabled) {
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.15em;
+  }
+  .page-header__intro :global(.verras:enabled:hover) {
+    text-decoration-thickness: 3px;
+  }
+  .page-header__intro :global(.verras:focus-visible) {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
   }
   .page-header__intro {
     margin-block-start: var(--space-s);

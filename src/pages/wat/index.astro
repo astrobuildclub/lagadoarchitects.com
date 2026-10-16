@@ -17,12 +17,25 @@ const page = { title: 'Wat we maken', fallbackDescription: `Architectuur en inte
     <PageHeader title="Wat" intro={settings.projecten.intro} />
     <div class="wat__body">
       <ProjectFilter projects={projects} toonPrijs={settings.projecten.toonPrijsfilter} target="projecten" />
-      <ProjectList projects={projects} headingLevel={2} id="projecten" weergave />
+      <div>
+        <p class="wat__count" aria-live="polite" data-count="projecten"></p>
+        <ProjectList projects={projects} headingLevel={2} id="projecten" weergave />
+      </div>
     </div>
   </div>
 </BaseLayout>
 
 <style>
+  .wat__count {
+    margin-block-end: var(--space-2xs);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    color: var(--color-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .wat__count:empty {
+    display: none;
+  }
   .wat__body {
     display: grid;
     gap: var(--space-l);
