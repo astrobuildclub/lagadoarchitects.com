@@ -37,6 +37,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Netlify secrets scanning: `FONTS_URL` uitgezonderd (`SECRETS_SCAN_OMIT_KEYS`), de build faalde omdat de URL in de README staat.
 
 ### Gewijzigd
+- /wat: filters als kolommen in plaats van rijen. Per groep het label erboven (mono, `--step--2`) en de opties onder elkaar; Kleur beslaat twee kolommen met de kleuren in twee rijtjes. Uitgeklapt lopen Status, Schaal en Materiaal in hetzelfde raster door (vanaf ±1000px alles op één rij). In de mobiele overlay blijven het rijen.
 - Paginakop: de eerste alinea van een intro is groot, volgende alinea's kleiner op een eigen regel. Op /wat staat "Filter op wat je zoekt, of laat je verrassen." zo klein onder de grote zin (`site.md`, `projecten.intro`).
 - /wat: aantal projecten en Raster/Lijst op één regel boven de lijst, in dezelfde typografie (de weergaveknoppen staan niet meer in de actieregel). De intro onder "Wat" loopt over de volle containerbreedte (`PageHeader` prop `breed`).
 - Ruimte boven de eerste kop overal gelijk: één token `--page-top` (`--space-4xl`) voor hero, paginakop (Wat, Waarom, Contact, Privacy, 404) en projectkop. De paginakop had eerder `--space-xl`.
