@@ -34,7 +34,7 @@ Bestandsnaam van een project = `slug` = URL (`/wat/workhome-playhome`).
 
 - **Taal:** Nederlands. Engels volgt later als aparte velden (`title_en`), niet nu.
 - **Afbeeldingen:** genummerd (`01.jpg`, `02.jpg`, …) in de projectmap. Elke afbeelding in een blok heeft een `alt` (verplicht, WCAG 1.1.1), `caption` is optioneel. Decoratief beeld: `alt: ""`.
-- **Hero met wisseltekst:** `kopWissel` en `subkopWissel` zijn de woorden die na `kop` / `subkop` wisselen. De eerste is wat er staat zonder animatie (reduced motion, geen JS).
+- **Hero met wisseltekst:** `kopWissel` en `subkopWissel` zijn de woorden die na `kop` / `subkop` wisselen. De eerste is wat er staat zonder animatie (reduced motion, geen JS). Een nieuwe regel in `kop` (YAML `|-`) is een vaste regelafbreking; het laatste wisselwoord van de kop staat altijd op een eigen regel.
 - **Verplicht / optioneel:** staat als commentaar achter elk veld. Alle *filtervelden* zijn optioneel, anders blokkeert één ontbrekende prijs de publicatie.
 - **Filtervelden** gebruiken vaste waarden (zie tabel). Geen vrije tekst.
 - **Teksten:** korte alinea's, één onderwerp per alinea. Lange tekst opknippen in meerdere `text`-blokken met een kop.

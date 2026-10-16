@@ -2,10 +2,16 @@
 // Filters voor /wat. Progressive enhancement: zonder JS staat alles zichtbaar en zijn
 // de filters verborgen. Met JS: kaarten krijgen `hidden`, keuze staat in de querystring
 // (deelbaar, werkt met terug-knop), aantal resultaten wordt voorgelezen.
-// Binnen één groep = OF, tussen groepen = EN. Opties die tot 0 projecten leiden worden
-// uitgeschakeld, zodat je nooit op een leeg resultaat uitkomt.
-// Opbouw volgens Victor: Type, Vorm, Kleur (kop erboven, dropdown met "Kies" / "Gekozen (n)") en "Verras me" direct; Status,
-// Schaal en Materiaal onder "Tot op de mm".
+// Binnen één groep = OF, tussen groepen = EN. Elke optie toont hoeveel projecten je
+// overhoudt als je hem aanzet; bij 0 is hij uitgeschakeld, dus je komt nooit op niets uit.
+//
+// Opbouw als het factsheet op de projectpagina: één rij per groep, label (mono) links in
+// een vaste kolom, opties ernaast als kale tekst (actief = onderstreept). Volgorde volgens
+// Victor: Type, Vorm, Kleur (swatches, direct zichtbaar); Status, Schaal en Materiaal
+// onder "Tot op de mm". Daaronder één actieregel: Tot op de mm, Wis filters (alleen als er
+// iets aan staat) en rechts Raster / Lijst. "Verras me" is het woord "verrassen" in de
+// intro (link naar #verras in site.md), het aantal projecten staat boven de lijst.
+// Mobiel (< 40rem): de rijen staan in een overlay achter de knop "Filters", alle rijen open.
 import { KLEUR_SWATCH, label } from '../lib/labels';
 import { KLEUR, MATERIAAL, SCHAAL, STATUS, TYPE, VORM, type Project } from '../lib/schema';
 
@@ -32,8 +38,8 @@ const group = (key: string, legend: string, order: readonly string[], used: stri
 const main = [
   group('type', 'Type', TYPE, projects.map((p) => p.type)),
   group('vorm', 'Vorm', VORM, projects.flatMap((p) => p.vorm)),
+  group('kleuren', 'Kleur', KLEUR, projects.flatMap((p) => p.kleuren)),
 ];
-const kleur = group('kleuren', 'Kleur', KLEUR, projects.flatMap((p) => p.kleuren));
 const extra = [
   group('status', 'Status', STATUS, projects.map((p) => p.status)),
   group('schaal', 'Schaal', SCHAAL, projects.flatMap((p) => (p.schaal ? [p.schaal] : []))),
@@ -45,9 +51,8 @@ const extra = [
 // Een filter met één waarde filtert niets.
 const useful = (g: Group) => g.values.length > 1;
 const mainGroups = main.filter(useful);
-const hasKleur = useful(kleur);
 const extraGroups = extra.filter(useful);
-const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) > 0;
+const hasFilters = mainGroups.length + extraGroups.length > 0;
 ---
 
 <form class="project-filter" data-project-filter data-target={target} hidden aria-label="Projecten filteren">
@@ -63,72 +68,29 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
           </button>
         </div>
         <div class="project-filter__body">
-          <div class="project-filter__row">
-            {mainGroups.map((g) => (
-              <fieldset>
-                <legend>{g.legend}</legend>
-                <div class="chips">
-                  {g.values.map((v) => (
-                    <label class="chip">
-                      <input type="checkbox" name={g.key} value={v} />
-                      {label(v)}
-                    </label>
+          {[mainGroups, extraGroups].map(
+            (groups, i) =>
+              groups.length > 0 && (
+                <div class:list={['project-filter__groups', i === 1 && 'project-filter__extra']} id={i === 1 ? 'filter-extra' : undefined} data-extra={i === 1 ? '' : undefined}>
+                  {groups.map((g) => (
+                    <div class="project-filter__group" role="group" aria-labelledby={`filter-${g.key}`}>
+                      <span class="project-filter__label" id={`filter-${g.key}`}>
+                        {g.legend}
+                      </span>
+                      <div class="options">
+                        {g.values.map((v) => (
+                          <label class="option">
+                            <input type="checkbox" name={g.key} value={v} />
+                            {g.key === 'kleuren' && <span class="swatch" style={`--swatch: ${KLEUR_SWATCH[v]}`} aria-hidden="true" />}
+                            <span class="option__label">{label(v)}</span>
+                            <span class="option__n" data-n />
+                          </label>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
-              </fieldset>
-            ))}
-            {hasKleur && (
-              <div class="kleur">
-                <span class="legend" aria-hidden="true">{kleur.legend}</span>
-                <details class="dropdown" data-dropdown>
-                  <summary class="chip">
-                    <span class="visually-hidden">{kleur.legend}: </span>
-                    <span data-dropdown-label>Kies</span>
-                    <svg class="chevron" aria-hidden="true" viewBox="0 0 16 16" width="12" height="12">
-                      <path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.75" />
-                    </svg>
-                  </summary>
-                  <fieldset class="dropdown__panel">
-                    <legend class="visually-hidden">{kleur.legend}</legend>
-                    {kleur.values.map((v) => (
-                      <label class="option">
-                        <input type="checkbox" name={kleur.key} value={v} />
-                        <span class="swatch" style={`--swatch: ${KLEUR_SWATCH[v]}`} aria-hidden="true" />
-                        <span class="option__label">{label(v)}</span>
-                        <svg class="option__check" aria-hidden="true" viewBox="0 0 16 16" width="14" height="14">
-                          <path d="M3 8.5l3.5 3.5L13 4.5" fill="none" stroke="currentColor" stroke-width="1.75" />
-                        </svg>
-                      </label>
-                    ))}
-                  </fieldset>
-                </details>
-              </div>
-            )}
-          </div>
-          {extraGroups.length > 0 && (
-            <details class="project-filter__more" data-more>
-              <summary>
-                Tot op de mm
-                <svg class="chevron" aria-hidden="true" viewBox="0 0 16 16" width="12" height="12">
-                  <path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.75" />
-                </svg>
-              </summary>
-              <div class="project-filter__row">
-                {extraGroups.map((g) => (
-                  <fieldset>
-                    <legend>{g.legend}</legend>
-                    <div class="chips">
-                      {g.values.map((v) => (
-                        <label class="chip">
-                          <input type="checkbox" name={g.key} value={v} />
-                          {label(v)}
-                        </label>
-                      ))}
-                    </div>
-                  </fieldset>
-                ))}
-              </div>
-            </details>
+              ),
           )}
         </div>
         <div class="project-filter__foot">
@@ -142,34 +104,34 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
   <div class="project-filter__bar">
     {
       hasFilters && (
-        <button type="button" class="button project-filter__open" aria-haspopup="dialog" data-open>
-          <svg aria-hidden="true" viewBox="0 0 16 16" width="16" height="16">
+        <button type="button" class="action project-filter__open" aria-haspopup="dialog" data-open>
+          <svg aria-hidden="true" viewBox="0 0 16 16" width="14" height="14">
             <path d="M2 4h12M4 8h8M6 12h4" fill="none" stroke="currentColor" stroke-width="1.75" />
           </svg>
-          Filters <span class="count" data-active-count />
+          Filters <span class="n" data-active-count />
         </button>
       )
     }
     {
-      hasFilters && (
-        <button type="button" class="button" data-random>
-          <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20">
-            <rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="2" />
-            <circle cx="8" cy="8" r="1.6" fill="currentColor" />
-            <circle cx="12" cy="12" r="1.6" fill="currentColor" />
-            <circle cx="16" cy="16" r="1.6" fill="currentColor" />
+      extraGroups.length > 0 && (
+        <button type="button" class="action project-filter__more" aria-expanded="false" aria-controls="filter-extra" data-more>
+          Tot op de mm
+          <svg class="chevron" aria-hidden="true" viewBox="0 0 16 16" width="12" height="12">
+            <path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.75" />
           </svg>
-          Verras me
         </button>
       )
     }
-    <button type="reset" class="button">Wis filters</button>
-    <p aria-live="polite" class="project-filter__count" data-count></p>
+    <button type="reset" class="action" data-reset hidden>Wis filters</button>
+    <div class="project-filter__view" role="group" aria-label="Weergave">
+      <button type="button" class="action" data-view="raster" aria-pressed="true">Raster</button>
+      <button type="button" class="action" data-view="lijst" aria-pressed="false">Lijst</button>
+    </div>
   </div>
 </form>
 
 <script>
-  // Document-listeners (dropdown, overlay, breakpoint) per pagina opnieuw koppelen, oude opruimen.
+  // Document-listeners (overlay, breakpoint, transitie) per pagina opnieuw koppelen, oude opruimen.
   let controller: AbortController | undefined;
 
   function initFilter() {
@@ -180,10 +142,11 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
     const { signal } = controller;
     const list = document.getElementById(form.dataset.target!)!;
     const cards = [...list.querySelectorAll<HTMLElement>('.project-card')];
-    const count = form.querySelector('[data-count]')!;
-    const more = form.querySelector<HTMLDetailsElement>('[data-more]');
-    const dropdown = form.querySelector<HTMLDetailsElement>('[data-dropdown]');
-    const dropdownLabel = form.querySelector('[data-dropdown-label]');
+    // Aantal staat boven de lijst (wat/index.astro), verras-knop in de intro (PageHeader).
+    const count = document.querySelector(`[data-count="${form.dataset.target}"]`);
+    const extra = form.querySelector<HTMLElement>('[data-extra]');
+    const moreButton = form.querySelector<HTMLButtonElement>('[data-more]');
+    const resetButton = form.querySelector<HTMLButtonElement>('[data-reset]')!;
     const panel = form.querySelector<HTMLDialogElement>('[data-panel]');
     const activeCount = form.querySelector('[data-active-count]');
     const showCount = form.querySelector('[data-show-count]');
@@ -193,6 +156,14 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
     const own = (card: HTMLElement, key: string) => (card.dataset[key] ?? '').split(' ').filter(Boolean);
     const matches = (card: HTMLElement, active: Map<string, string[]>, skip?: string) =>
       [...active].every(([key, values]) => key === skip || values.some((v) => own(card, key).includes(v)));
+
+    // "Tot op de mm": extra rijen tonen of verbergen (op mobiel staan ze in de overlay altijd open).
+    const setMore = (open: boolean) => {
+      if (!extra || !moreButton) return;
+      extra.classList.toggle('is-open', open);
+      moreButton.setAttribute('aria-expanded', String(open));
+    };
+    moreButton?.addEventListener('click', () => setMore(moreButton.getAttribute('aria-expanded') !== 'true'));
 
     const apply = (updateUrl: boolean) => {
       const data = new FormData(form);
@@ -206,39 +177,24 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
         if (match) visible++;
       }
       const projecten = `${visible} ${visible === 1 ? 'project' : 'projecten'}`;
-      count.textContent = projecten;
+      if (count) count.textContent = projecten;
       if (showCount) showCount.textContent = `Toon ${projecten}`;
-      if (activeCount) {
-        const n = inputs.filter((i) => i.checked).length;
-        activeCount.textContent = n ? `(${n})` : '';
-      }
+      const n = inputs.filter((i) => i.checked).length;
+      if (activeCount) activeCount.textContent = n ? String(n) : '';
+      resetButton.hidden = n === 0;
 
-      // Facetten: een optie blijft aan als er minstens één project is dat aan alle
-      // andere groepen voldoet én deze waarde heeft. Aangevinkte opties blijven altijd
-      // bedienbaar, zodat je ze (ook vanuit een oude URL) kunt uitzetten.
+      // Facetten: per optie het aantal projecten dat aan alle andere groepen voldoet én deze
+      // waarde heeft. 0 = uitgeschakeld. Aangevinkte opties blijven altijd bedienbaar, zodat
+      // je ze (ook vanuit een oude URL) kunt uitzetten.
       for (const input of inputs) {
-        if (input.checked) {
-          input.disabled = false;
-          continue;
-        }
-        input.disabled = !cards.some((card) => matches(card, active, input.name) && own(card, input.name).includes(input.value));
-      }
-
-      if (dropdownLabel) {
-        const n = active.get('kleuren')?.length ?? 0;
-        // "Kies" zolang er niets aan staat, daarna "Gekozen (n)" met het aantal in mono.
-        if (n) {
-          const count = document.createElement('span');
-          count.className = 'count';
-          count.textContent = `(${n})`;
-          dropdownLabel.replaceChildren('Gekozen ', count);
-        } else {
-          dropdownLabel.textContent = 'Kies';
-        }
+        const hits = cards.filter((card) => matches(card, active, input.name) && own(card, input.name).includes(input.value)).length;
+        input.disabled = !input.checked && hits === 0;
+        const badge = input.parentElement!.querySelector('[data-n]');
+        if (badge) badge.textContent = String(hits);
       }
 
       // "Tot op de mm" open houden zolang daar iets aan staat.
-      if (more && more.querySelector('input:checked')) more.open = true;
+      if (extra?.querySelector('input:checked')) setMore(true);
 
       if (updateUrl) {
         const params = new URLSearchParams(data as unknown as Record<string, string>);
@@ -269,25 +225,6 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
       }
     };
 
-    // Kleur-dropdown sluiten bij klik erbuiten of Escape.
-    if (dropdown) {
-      document.addEventListener(
-        'click',
-        (e) => {
-          if (dropdown.open && !dropdown.contains(e.target as Node)) dropdown.open = false;
-        },
-        { signal },
-      );
-      dropdown.addEventListener('keydown', (e) => {
-        if (e.key !== 'Escape' || !dropdown.open) return;
-        // Alleen de dropdown dicht, niet ook de overlay eromheen.
-        e.preventDefault();
-        e.stopPropagation();
-        dropdown.open = false;
-        dropdown.querySelector('summary')?.focus();
-      });
-    }
-
     // Paneel: op mobiel een modale overlay achter de knop "Filters", op desktop gewoon in
     // de pagina. Desktop opent via het attribuut (niet show()), zodat de focus niet verspringt.
     if (panel) {
@@ -314,6 +251,27 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
       );
     }
 
+    // Weergave: raster of lijst. Zet `data-view` op de lijst; de keuze blijft per bezoeker
+    // bewaard (localStorage, mag ontbreken of falen: dan raster).
+    const viewButtons = [...form.querySelectorAll<HTMLButtonElement>('[data-view]')];
+    const setView = (view: string) => {
+      list.dataset.view = view;
+      viewButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === view)));
+    };
+    let savedView = 'raster';
+    try {
+      savedView = localStorage.getItem('wat-weergave') === 'lijst' ? 'lijst' : 'raster';
+    } catch {}
+    setView(savedView);
+    viewButtons.forEach((b) =>
+      b.addEventListener('click', () => {
+        setView(b.dataset.view!);
+        try {
+          localStorage.setItem('wat-weergave', b.dataset.view!);
+        } catch {}
+      }),
+    );
+
     // Startwaarden uit de URL
     const params = new URLSearchParams(location.search);
     inputs.forEach((input) => {
@@ -323,7 +281,10 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
     form.addEventListener('change', () => apply(true));
     form.addEventListener('reset', () => setTimeout(() => apply(true)));
     form.addEventListener('submit', (e) => e.preventDefault());
-    form.querySelector('[data-random]')?.addEventListener('click', surprise);
+    document.querySelectorAll<HTMLButtonElement>('[data-random]').forEach((b) => {
+      b.disabled = !cards.length;
+      b.addEventListener('click', surprise, { signal });
+    });
     apply(false);
   }
 
@@ -333,133 +294,55 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
 <style>
   .project-filter {
     display: grid;
-    gap: var(--space-s);
-    padding-block: var(--space-s);
-    border-block: var(--border-width) solid var(--color-line);
     font-size: var(--step--1);
+    border-block-start: var(--border-width) solid var(--color-line);
   }
   .project-filter[hidden] {
     display: none;
   }
-  .project-filter__row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: end;
-    gap: var(--space-s) var(--space-l);
+
+  /* Rijen: label in een vaste kolom (mono, gedempt, zoals het factsheet), opties ernaast.
+     Elke rij een dunne lijn eronder; alle opties beginnen op dezelfde lijn. */
+  .project-filter__group {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    align-items: baseline;
+    gap: var(--space-s);
+    padding-block: var(--space-3xs);
+    border-block-end: var(--border-width) solid var(--color-line);
   }
-  fieldset {
-    border: 0;
-    padding: 0;
-    margin: 0;
-    min-inline-size: 0;
+  .project-filter__label {
+    font-family: var(--font-mono);
+    color: var(--color-muted);
   }
-  legend,
-  .legend {
-    display: block;
-    font-weight: 600;
-    margin-block-end: var(--space-3xs);
-    padding: 0;
+  .project-filter__extra:not(.is-open) {
+    display: none;
   }
 
-  /* Chips: een checkbox in een label. De input blijft in de toegankelijkheidsboom
-     (visueel weg), de chip toont focus, aan en uitgeschakeld via :has(). */
-  .chips {
+  /* Opties en acties: kale tekst, actief = onderstreept. De checkbox blijft in de
+     toegankelijkheidsboom (visueel weg); focus, aan en uitgeschakeld via :has(). */
+  .options {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-3xs);
+    gap: 0 var(--space-m);
   }
-  .chip {
+  .option,
+  .action {
     position: relative;
     display: inline-flex;
     align-items: center;
-    gap: var(--space-3xs);
-    min-block-size: 2.75rem; /* raakvlak ≥ 24px (WCAG 2.5.8), ruim voor touch */
-    padding-inline: var(--space-xs);
-    border: var(--border-width) solid var(--color-line);
-    border-radius: 999px;
+    gap: 0.4em;
+    min-block-size: 2rem; /* raakvlak ≥ 24px (WCAG 2.5.8) */
     cursor: pointer;
     user-select: none;
-    transition:
-      background var(--duration) var(--ease),
-      color var(--duration) var(--ease),
-      border-color var(--duration) var(--ease);
   }
-  .chip input {
-    position: absolute;
-    inset: 0;
-    margin: 0;
-    opacity: 0;
-    cursor: inherit;
-  }
-  .chip:hover {
-    border-color: var(--color-fg);
-  }
-  .chip:has(input:checked) {
-    background: var(--color-fg);
-    border-color: var(--color-fg);
-    color: var(--color-bg);
-  }
-  .chip:has(input:focus-visible) {
-    outline: 2px solid var(--color-focus);
-    outline-offset: 2px;
-  }
-  .chip:has(input:disabled) {
-    cursor: not-allowed;
-    border-style: dashed;
-    color: var(--color-muted);
-    opacity: 0.55;
-  }
-  .chip:has(input:disabled):hover {
-    border-color: var(--color-line);
-  }
-
-  .swatch {
-    inline-size: 0.9em;
-    block-size: 0.9em;
-    border-radius: 50%;
-    background: var(--swatch);
-    box-shadow: 0 0 0 1px var(--color-line);
-  }
-
-  /* Kleur-dropdown */
-  .dropdown {
-    position: relative;
-  }
-  .dropdown summary {
-    list-style: none;
-  }
-  .dropdown summary::-webkit-details-marker {
-    display: none;
-  }
-  .dropdown[open] summary {
-    border-color: var(--color-fg);
-  }
-  /* Aantallen in mono, zodat chips en knoppen niet per cijfer van breedte verspringen. */
-  .project-filter :global(.count) {
-    font-family: var(--font-mono);
-    font-weight: 400;
-  }
-  /* Paneel rechts uitgelijnd onder de chip, opties onder elkaar. */
-  .dropdown__panel {
-    position: absolute;
-    z-index: 10;
-    inset-block-start: calc(100% + var(--space-3xs));
-    inset-inline-end: 0;
-    display: grid;
-    min-inline-size: 12rem;
-    padding: var(--space-3xs);
-    background: var(--color-bg);
-    border: var(--border-width) solid var(--color-fg);
-  }
-  .option {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: var(--space-2xs);
-    min-block-size: 2.75rem;
-    padding-inline: var(--space-xs);
-    cursor: pointer;
-    user-select: none;
+  .option__label,
+  .action {
+    text-decoration-line: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+    transition: text-decoration-color var(--duration) var(--ease);
   }
   .option input {
     position: absolute;
@@ -468,85 +351,76 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
     opacity: 0;
     cursor: inherit;
   }
-  .option__label {
-    flex: 1;
+  .option:hover .option__label,
+  .action:hover {
+    text-decoration-color: var(--color-line);
   }
-  .option__check {
-    visibility: hidden;
+  .option:has(input:checked) .option__label,
+  .action[aria-pressed='true'] {
+    text-decoration-color: currentColor;
   }
-  .option:hover {
-    background: var(--color-surface);
-  }
-  .option:has(input:checked) {
-    font-weight: 600;
-  }
-  .option:has(input:checked) .option__check {
-    visibility: visible;
-  }
-  .option:has(input:focus-visible) {
+  .option:has(input:focus-visible),
+  .action:focus-visible {
     outline: 2px solid var(--color-focus);
-    outline-offset: -2px;
+    outline-offset: 2px;
   }
   .option:has(input:disabled) {
     cursor: not-allowed;
     color: var(--color-muted);
-    opacity: 0.55;
+    opacity: 0.4;
   }
-  .option:has(input:disabled):hover {
-    background: none;
+  .option:has(input:disabled):hover .option__label {
+    text-decoration-color: transparent;
   }
-  /* Smal scherm: paneel in de flow, op volle breedte, zodat het nooit buiten beeld valt. */
-  @media (width < 40rem) {
-    .kleur:has(.dropdown[open]) {
-      flex-basis: 100%;
-    }
-    .dropdown__panel {
-      position: static;
-      min-inline-size: 0;
-      margin-block-start: var(--space-3xs);
-    }
+  /* Aantal per optie, klein in mono: verklaart meteen waarom een optie uit staat. */
+  .option__n,
+  .n {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    color: var(--color-muted);
+    font-variant-numeric: tabular-nums;
   }
-
-  .chevron {
-    flex: none;
-    transition: rotate var(--duration) var(--ease);
-  }
-  details[open] > summary .chevron {
-    rotate: 180deg;
+  .swatch {
+    inline-size: 0.9em;
+    block-size: 0.9em;
+    border-radius: 50%;
+    background: var(--swatch);
+    box-shadow: 0 0 0 1px var(--color-line);
   }
 
-
-  .project-filter__more summary {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-3xs);
-    min-block-size: 2.75rem;
-    cursor: pointer;
-    font-weight: 600;
-    list-style: none;
-  }
-  .project-filter__more summary::-webkit-details-marker {
-    display: none;
-  }
-  .project-filter__more[open] summary {
-    margin-block-end: var(--space-xs);
-  }
-  /* Balk met Filters (mobiel), Verras me, Wis filters en het aantal: altijd zichtbaar. */
+  /* Actieregel */
   .project-filter__bar {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-xs);
+    gap: 0 var(--space-m);
+    padding-block: var(--space-2xs);
+    border-block-end: var(--border-width) solid var(--color-line);
   }
-  .project-filter__bar .button {
-    min-block-size: 2.75rem;
+  .action {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
   }
-  .project-filter__count {
-    font-variant-numeric: tabular-nums;
+  .action[hidden] {
+    display: none;
+  }
+  .project-filter__view {
+    display: flex;
+    gap: var(--space-s);
     margin-inline-start: auto;
   }
   .project-filter__open {
     display: none;
+  }
+  .chevron {
+    flex: none;
+    transition: rotate var(--duration) var(--ease);
+  }
+  .project-filter__more[aria-expanded='true'] .chevron {
+    rotate: 180deg;
   }
 
   /* Paneel. Desktop: gewoon in de pagina (dialog open via attribuut, niet modaal). */
@@ -561,31 +435,41 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
     background: none;
     color: inherit;
   }
-  .project-filter__panel[open],
-  .project-filter__body {
+  .project-filter__panel[open] {
     display: grid;
-    gap: var(--space-s);
   }
   .project-filter__head,
   .project-filter__foot {
     display: none;
   }
 
-  /* Mobiel: schermvullende overlay met kop, scrollende inhoud en een vaste knop onderaan. */
+  /* Mobiel: knop "Filters" in de actieregel, "Tot op de mm" niet (in de overlay staat alles open). */
   @media (width < 40rem) {
     .project-filter__open {
       display: inline-flex;
     }
+    .project-filter__more {
+      display: none;
+    }
   }
+  /* Overlay: schermvullend met kop, scrollende inhoud en een vaste knop onderaan.
+     Label boven de opties in plaats van ernaast. */
   .project-filter__panel:modal {
     position: fixed;
     inset: 0;
     inline-size: 100%;
     block-size: 100dvh;
     grid-template-rows: auto 1fr auto;
-    gap: 0;
     background: var(--color-bg);
     color: var(--color-fg);
+  }
+  .project-filter__panel:modal .project-filter__extra {
+    display: block;
+  }
+  .project-filter__panel:modal .project-filter__group {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding-block: var(--space-xs);
   }
   .project-filter__panel:modal .project-filter__head {
     display: flex;
@@ -614,7 +498,7 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
     align-content: start;
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding: var(--space-s);
+    padding: 0 var(--space-s);
   }
   .project-filter__panel:modal .project-filter__foot {
     display: block;
@@ -631,7 +515,8 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .chip,
+    .option__label,
+    .action,
     .chevron {
       transition: none;
     }

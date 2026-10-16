@@ -8,21 +8,90 @@ interface Props {
   id?: string;
   /** Homepage: s/m/l kaarten in een bento-raster. */
   sized?: boolean;
+  /** /wat: raster of lijst (wisselknop in ProjectFilter). In de lijst hangt het beeld aan de muis. */
+  weergave?: boolean;
 }
-const { projects, headingLevel, id, sized = false } = Astro.props;
+const { projects, headingLevel, id, sized = false, weergave = false } = Astro.props;
 ---
 
-<ul role="list" class:list={['project-list', sized && 'project-list--sized']} id={id}>
+<ul role="list" class:list={['project-list', sized && 'project-list--sized']} id={id} data-view="raster">
   {projects.map((project, i) => (
     <ProjectCard project={project} headingLevel={headingLevel} priority={i < 2} sized={sized} />
   ))}
 </ul>
+{
+  weergave && id && (
+    <div class="project-hover" data-hover-follow={id} aria-hidden="true">
+      <img alt="" sizes="20rem" decoding="async" />
+    </div>
+  )
+}
+
+<script>
+  import '../scripts/hover-follow';
+</script>
 
 <style>
   .project-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
     gap: var(--space-l) var(--space-s);
+  }
+
+  /* Lijst: één rij per project, zonder beeld (dat hangt bij hover aan de muis, zie
+     hover-follow.ts). De hele rij is klikbaar via de titellink (::after over de rij). */
+  .project-list[data-view='lijst'] {
+    display: block;
+  }
+  .project-list[data-view='lijst'] :global(.project-card) {
+    position: relative;
+    display: grid;
+    gap: var(--space-3xs) var(--space-s);
+    padding-block: var(--space-xs);
+    border-block-end: var(--border-width) solid var(--color-line);
+  }
+  .project-list[data-view='lijst'] :global(.project-card[hidden]) {
+    display: none;
+  }
+  .project-list[data-view='lijst'] :global(.project-card img) {
+    display: none;
+  }
+  .project-list[data-view='lijst'] :global(.project-card a::after) {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .project-list[data-view='lijst'] :global(.project-card__title),
+  .project-list[data-view='lijst'] :global(.project-card__tagline) {
+    margin: 0;
+  }
+  .project-list[data-view='lijst'] :global(.project-card:hover .project-card__title) {
+    text-decoration: underline;
+  }
+  @media (min-width: 48rem) {
+    .project-list[data-view='lijst'] :global(.project-card) {
+      grid-template-columns: 3fr 4fr 3fr;
+      align-items: baseline;
+    }
+    .project-list[data-view='lijst'] :global(.project-card__meta) {
+      text-align: end;
+    }
+  }
+
+  .project-hover {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    z-index: 20;
+    inline-size: clamp(12rem, 22vw, 22rem);
+    aspect-ratio: 4 / 3;
+    pointer-events: none;
+    visibility: hidden;
+  }
+  .project-hover img {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
   }
 
   .project-list--sized {

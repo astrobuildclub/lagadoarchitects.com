@@ -8,6 +8,9 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 ## [Unreleased]
 
 ### Toegevoegd
+- /wat: weergave Raster of Lijst (knoppen rechts in de filterbalk, keuze onthouden per bezoeker). In de lijst één rij per project zonder beeld; met een muis hangt het projectbeeld bij hover aan de cursor (GSAP `quickTo`, `src/scripts/hover-follow.ts`, zonder naloop bij reduced motion).
+- Projectdetail: kruimelpad Home › Wat (ook in de JSON-LD), meer ruimte boven de titel. Titel en tagline schuiven per woord van onder in (`words-in.ts`).
+- Projectdetail: de vraag kleurt woord voor woord in terwijl je scrollt (`src/scripts/ink-in.ts`); zonder JS of met reduced motion staat hij gewoon in kleur.
 - Projectdetail: factsheet in twee helften. Eerst de filtereigenschappen (Type, Vorm, Kleur met swatch, Status, Schaal, Materiaal), elke waarde linkt naar `/wat` met dat filter aan; daarna Locatie, Omvang, Opdrachtgever, Bouwteam, Fotograaf, Jaar.
 - Veld `vraag`: de ontwerpvraag van een project, groot in de accentkleur boven de intro.
 - Velden `bouwteam` (in het factsheet) en een sectie "Opbouw van een project" in `lagado-content/README.md`.
@@ -34,8 +37,11 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Netlify secrets scanning: `FONTS_URL` uitgezonderd (`SECRETS_SCAN_OMIT_KEYS`), de build faalde omdat de URL in de README staat.
 
 ### Gewijzigd
+- Projectoverzicht (/wat) op featurebreedte (`.wrapper`, max 78rem). Filters opgebouwd als het factsheet: één rij per groep met het label in mono in een vaste kolom, opties als kale tekst (actief = onderstreept) met per optie het aantal projecten dat overblijft (0 = uitgeschakeld). Kleuren staan direct in de rij met swatch, zonder dropdown. Actieregel: Tot op de mm links, Wis filters ernaast (alleen als er iets aan staat), Raster/Lijst rechts. Het aantal projecten staat klein boven de lijst. "Verras me" is nu het woord "verrassen" in de intro (link naar `#verras` in `site.md`, wordt een knop met underline). Op mobiel dezelfde rijen in de overlay.
+- Titelanimatie op projectdetail start pas als de paginatransitie klaar is (`interlude:idle`).
+- Hero-kop altijd op drie regels, op elke schermbreedte: "Wij zijn een serieus / buro voor speelse / architectuur". De breuk na "serieus" staat in `home.md` (nieuwe regel in `kop`), het laatste wisselwoord krijgt een eigen regel, en de kop krimpt mee met de breedte (`cqi`). Zo past ook "sportieve landschappen".
+- Header en footer lopen over de volle breedte van de viewport (`.wrapper--full`).
 - Volgend project sluit direct aan op de footer (geen ruimte of lijn ertussen). Label en titel schuiven per woord van onder in zodra het blok in beeld komt (GSAP, `src/scripts/words-in.ts`, zelfde beweging als de hero; niets bij reduced motion).
-- Kleurfilter: "Kleur" staat als kop boven de dropdown, net als Type en Vorm. De knop zegt "Kies", of "Gekozen (n)" als er kleuren aan staan.
 - Projectmodel strakgetrokken: alle projectbestanden en `_template.md` in dezelfde volgorde (identiteit, filters, projectgegevens, kleur, beeld, credits). `oppervlakte` heet nu `omvang`, `opdrachtgeverType` `prive` heet nu `particulier`, `functie` is vervallen (de vraag vervangt hem). Fotografie staat in het factsheet in plaats van onderaan bij de credits.
 - Hero-kop op mobiel (< 36rem) altijd op drie regels: "Wij zijn een serieus buro / voor speelse / architectuur". Max 20ch, laatste wisselwoord op een eigen regel, en op smalle schermen krimpt de kop mee (`cqi`) zodat de eerste regel past.
 - Paginatransitie: eigen variant `curtain-lagado`, waarin header en footer meedrijven met de content. Bij `curtain` bleef de header stilstaan terwijl de pagina eronder wegschoof.
