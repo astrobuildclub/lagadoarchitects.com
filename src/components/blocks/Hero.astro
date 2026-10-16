@@ -17,6 +17,9 @@ const wisselt = kopWissel.length > 1 || subkopWissel.length > 1;
 
 /** "a, b en c" */
 const zin = (items: string[]) => (items.length < 2 ? items.join('') : `${items.slice(0, -1).join(', ')} en ${items.at(-1)}`);
+/** Een nieuwe regel in `kop` (YAML `|-`) wordt een <br>; voor screenreaders een spatie. */
+const regels = (tekst: string) => tekst.trim().split(/\s*\n\s*/);
+const plat = (tekst: string) => regels(tekst).join(' ');
 /** Woorden in een masker, gescheiden door gewone spaties: zo breekt de regel per woord om. */
 const woorden = (phrase: string) => phrase.split(' ');
 ---
@@ -27,9 +30,14 @@ const woorden = (phrase: string) => phrase.split(' ');
       {
         kopWissel.length > 0 ? (
           <>
-            <span class="visually-hidden">{block.kop} {zin(kopWissel)}</span>
+            <span class="visually-hidden">{plat(block.kop)} {zin(kopWissel)}</span>
             <span aria-hidden="true" data-rotate data-hold="2.5" data-delay="0.4">
-              {block.kop}{' '}
+              {regels(block.kop).map((r, i) => (
+                <>
+                  {i > 0 && <br />}
+                  {r}
+                </>
+              ))}{' '}
               <span class="hero__wissel" data-words={JSON.stringify(kopWissel)}>
                 {woorden(kopWissel[0]).map((w, i) => (
                   <>
@@ -41,7 +49,7 @@ const woorden = (phrase: string) => phrase.split(' ');
             </span>
           </>
         ) : (
-          block.kop
+          plat(block.kop)
         )
       }
     </h1>
@@ -117,33 +125,26 @@ const woorden = (phrase: string) => phrase.split(' ');
   }
   .hero__kop {
     /* Mobiel kleiner, vanaf 36rem (zelfde breekpunt als ProjectList) de grote maat. */
-    font-size: var(--step-4);
     font-weight: 700;
     letter-spacing: -0.03em;
-    text-wrap: pretty;
-  }
-  /* Mobiel altijd drie regels: "Wij zijn een serieus buro / voor speelse / architectuur".
-     20ch houdt "voor" van de eerste regel (die is ±19ch, met "voor" ±23ch); het laatste
-     wisselwoord krijgt een eigen regel. Alleen een ch-maat is te krap: "voor speelse
-     architectuur" is ±20ch, nauwelijks langer dan regel 1. */
-  @media (max-width: 35.999rem) {
-    .hero .wrapper {
-      container-type: inline-size;
-    }
-    .hero__kop {
-      max-inline-size: 20ch;
-      /* Regel 1 is ±10,7em breed: op smalle schermen (< ±400px) krimpt de kop mee zodat hij past. */
-      font-size: min(var(--step-4), 8.8cqi);
-    }
-    .hero__kop .hero__wissel :global(.w:last-child:not(:first-child)) {
-      display: block;
-      inline-size: fit-content;
-    }
+    font-size: min(var(--step-4), 10.5cqi);
   }
   @media (min-width: 36rem) {
     .hero__kop {
-      font-size: var(--step-6);
+      font-size: min(var(--step-6), 10.5cqi);
     }
+  }
+  /* Altijd drie regels: "Wij zijn een serieus / buro voor speelse / architectuur".
+     De eerste breuk staat in de content (nieuwe regel in `kop`), het laatste wisselwoord
+     krijgt een eigen regel. Zo staan de twee wisselwoorden altijd op twee regels, ook bij
+     "sportieve landschappen". Regel 1 en 2 zijn ±8,6em breed: de kop krimpt mee met de
+     wrapper (cqi) zodat ze altijd passen. */
+  .hero .wrapper {
+    container-type: inline-size;
+  }
+  .hero__kop .hero__wissel :global(.w:last-child:not(:first-child)) {
+    display: block;
+    inline-size: fit-content;
   }
   .hero__subkop {
     margin-block-start: var(--space-m);

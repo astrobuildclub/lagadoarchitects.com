@@ -40,7 +40,7 @@ const isHome = cleanPath(Astro.url.pathname) === '/';
     <meta name="generator" content={Astro.generator} />
     <SiteMeta settings={settings} {...meta} jsonLd={[...(isHome ? [organizationJsonLd(settings, contact)] : []), ...jsonLd]} />
 
-    <!-- Thema vóór de eerste paint: alleen data-theme bij handmatige override; anders volgt CSS prefers-color-scheme. -->
+    <!-- Vóór de eerste paint: data-theme alleen bij handmatige override (anders volgt CSS prefers-color-scheme), en data-js. -->
     <script is:inline>
       (() => {
         const apply = (doc) => {
@@ -50,6 +50,8 @@ const isHome = cleanPath(Astro.url.pathname) === '/';
           } catch {}
           if (theme === 'light' || theme === 'dark') doc.documentElement.dataset.theme = theme;
           else doc.documentElement.removeAttribute('data-theme');
+          // JS draait: woorden die inschuiven (words-in.ts) starten verborgen, zonder flits.
+          doc.documentElement.dataset.js = '';
         };
         apply(document);
         document.addEventListener('astro:before-swap', (e) => apply(e.newDocument));

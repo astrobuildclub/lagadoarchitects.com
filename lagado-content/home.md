@@ -8,7 +8,9 @@ seo:
 blocks:
   # 1. Hero: payoff met wisselende woorden + beeldraster. Eerste beeld laadt eager (LCP).
   - type: hero
-    kop: Wij zijn een serieus buro voor  # verplicht
+    kop: |-                            # verplicht; een nieuwe regel hier = nieuwe regel op de site
+      Wij zijn een serieus
+      buro voor
     kopWissel:                         # optioneel; de eerste staat er zonder animatie
       - speelse architectuur
       - spannende interieurs

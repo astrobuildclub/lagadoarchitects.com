@@ -52,3 +52,22 @@ hr { border: 0; border-block-start: var(--border-width) solid var(--color-line);
   transition: background var(--duration) var(--ease), color var(--duration) var(--ease);
 }
 .button:hover { background: var(--color-fg); color: var(--color-bg); }
+
+/* Woorden die van onder inschuiven (src/scripts/words-in.ts). Masker per woord:
+   clip-path knipt op de border-box; padding + negatieve marge geeft ruimte aan staarten
+   en de veer zonder dat de regel hoger wordt. */
+[data-words-in] .w {
+  display: inline-block;
+  padding-block: 0.2em;
+  margin-block: -0.2em;
+  clip-path: inset(0);
+}
+[data-words-in] .w__i {
+  display: inline-block;
+  transform-origin: 50% 100%;
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-js] [data-words-in] .w__i {
+    opacity: 0;
+  }
+}

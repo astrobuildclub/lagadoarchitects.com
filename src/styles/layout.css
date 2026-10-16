@@ -28,3 +28,7 @@
   inline-size: min(100% - var(--gutter) * 2, calc(var(--content-width) + var(--popout-width) * 2 + var(--feature-width) * 2));
   margin-inline: auto;
 }
+/* Over de volle breedte van de viewport, alleen de gutter eraf (header, footer). */
+.wrapper--full {
+  inline-size: calc(100% - var(--gutter) * 2);
+}
