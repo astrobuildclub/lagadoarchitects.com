@@ -54,4 +54,10 @@ const introHtml = md(intro).replace(
   .page-header__intro--breed {
     max-inline-size: none;
   }
+  /* Eerste alinea groot; volgende alinea's kleiner op een eigen regel (bv. de filterzin op /wat). */
+  .page-header__intro :global(p + p) {
+    margin-block-start: var(--space-2xs);
+    font-size: var(--step-0);
+    line-height: 1.5;
+  }
 </style>

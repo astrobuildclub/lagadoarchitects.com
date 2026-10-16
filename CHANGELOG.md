@@ -37,6 +37,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Netlify secrets scanning: `FONTS_URL` uitgezonderd (`SECRETS_SCAN_OMIT_KEYS`), de build faalde omdat de URL in de README staat.
 
 ### Gewijzigd
+- Paginakop: de eerste alinea van een intro is groot, volgende alinea's kleiner op een eigen regel. Op /wat staat "Filter op wat je zoekt, of laat je verrassen." zo klein onder de grote zin (`site.md`, `projecten.intro`).
 - /wat: aantal projecten en Raster/Lijst op één regel boven de lijst, in dezelfde typografie (de weergaveknoppen staan niet meer in de actieregel). De intro onder "Wat" loopt over de volle containerbreedte (`PageHeader` prop `breed`).
 - Ruimte boven de eerste kop overal gelijk: één token `--page-top` (`--space-4xl`) voor hero, paginakop (Wat, Waarom, Contact, Privacy, 404) en projectkop. De paginakop had eerder `--space-xl`.
 - Projectoverzicht (/wat) op featurebreedte (`.wrapper`, max 78rem). Filters opgebouwd als het factsheet: één rij per groep met het label in mono in een vaste kolom, opties als kale tekst (actief = onderstreept) met per optie het aantal projecten dat overblijft (0 = uitgeschakeld). Kleuren staan direct in de rij met swatch, zonder dropdown. Actieregel: Tot op de mm links, Wis filters ernaast (alleen als er iets aan staat), Raster/Lijst rechts. Het aantal projecten staat klein boven de lijst. "Verras me" is nu het woord "verrassen" in de intro (link naar `#verras` in `site.md`, wordt een knop met underline). Op mobiel dezelfde rijen in de overlay.
