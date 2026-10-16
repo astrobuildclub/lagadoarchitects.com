@@ -4,7 +4,7 @@
 // (deelbaar, werkt met terug-knop), aantal resultaten wordt voorgelezen.
 // Binnen één groep = OF, tussen groepen = EN. Opties die tot 0 projecten leiden worden
 // uitgeschakeld, zodat je nooit op een leeg resultaat uitkomt.
-// Opbouw volgens Victor: Type, Vorm, Kleur (dropdown) en "Verras me" direct; Status,
+// Opbouw volgens Victor: Type, Vorm, Kleur (kop erboven, dropdown met "Kies" / "Gekozen (n)") en "Verras me" direct; Status,
 // Schaal en Materiaal onder "Tot op de mm".
 import { KLEUR_SWATCH, label } from '../lib/labels';
 import { KLEUR, MATERIAAL, SCHAAL, STATUS, TYPE, VORM, type Project } from '../lib/schema';
@@ -78,28 +78,31 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
               </fieldset>
             ))}
             {hasKleur && (
-              <details class="dropdown" data-dropdown>
-                <summary class="chip">
-                  {kleur.legend}
-                  <span class="count" data-dropdown-count />
-                  <svg class="chevron" aria-hidden="true" viewBox="0 0 16 16" width="12" height="12">
-                    <path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.75" />
-                  </svg>
-                </summary>
-                <fieldset class="dropdown__panel">
-                  <legend class="visually-hidden">{kleur.legend}</legend>
-                  {kleur.values.map((v) => (
-                    <label class="option">
-                      <input type="checkbox" name={kleur.key} value={v} />
-                      <span class="swatch" style={`--swatch: ${KLEUR_SWATCH[v]}`} aria-hidden="true" />
-                      <span class="option__label">{label(v)}</span>
-                      <svg class="option__check" aria-hidden="true" viewBox="0 0 16 16" width="14" height="14">
-                        <path d="M3 8.5l3.5 3.5L13 4.5" fill="none" stroke="currentColor" stroke-width="1.75" />
-                      </svg>
-                    </label>
-                  ))}
-                </fieldset>
-              </details>
+              <div class="kleur">
+                <span class="legend" aria-hidden="true">{kleur.legend}</span>
+                <details class="dropdown" data-dropdown>
+                  <summary class="chip">
+                    <span class="visually-hidden">{kleur.legend}: </span>
+                    <span data-dropdown-label>Kies</span>
+                    <svg class="chevron" aria-hidden="true" viewBox="0 0 16 16" width="12" height="12">
+                      <path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.75" />
+                    </svg>
+                  </summary>
+                  <fieldset class="dropdown__panel">
+                    <legend class="visually-hidden">{kleur.legend}</legend>
+                    {kleur.values.map((v) => (
+                      <label class="option">
+                        <input type="checkbox" name={kleur.key} value={v} />
+                        <span class="swatch" style={`--swatch: ${KLEUR_SWATCH[v]}`} aria-hidden="true" />
+                        <span class="option__label">{label(v)}</span>
+                        <svg class="option__check" aria-hidden="true" viewBox="0 0 16 16" width="14" height="14">
+                          <path d="M3 8.5l3.5 3.5L13 4.5" fill="none" stroke="currentColor" stroke-width="1.75" />
+                        </svg>
+                      </label>
+                    ))}
+                  </fieldset>
+                </details>
+              </div>
             )}
           </div>
           {extraGroups.length > 0 && (
@@ -180,7 +183,7 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
     const count = form.querySelector('[data-count]')!;
     const more = form.querySelector<HTMLDetailsElement>('[data-more]');
     const dropdown = form.querySelector<HTMLDetailsElement>('[data-dropdown]');
-    const dropdownCount = form.querySelector('[data-dropdown-count]');
+    const dropdownLabel = form.querySelector('[data-dropdown-label]');
     const panel = form.querySelector<HTMLDialogElement>('[data-panel]');
     const activeCount = form.querySelector('[data-active-count]');
     const showCount = form.querySelector('[data-show-count]');
@@ -221,9 +224,17 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
         input.disabled = !cards.some((card) => matches(card, active, input.name) && own(card, input.name).includes(input.value));
       }
 
-      if (dropdownCount) {
+      if (dropdownLabel) {
         const n = active.get('kleuren')?.length ?? 0;
-        dropdownCount.textContent = n ? `(${n})` : '';
+        // "Kies" zolang er niets aan staat, daarna "Gekozen (n)" met het aantal in mono.
+        if (n) {
+          const count = document.createElement('span');
+          count.className = 'count';
+          count.textContent = `(${n})`;
+          dropdownLabel.replaceChildren('Gekozen ', count);
+        } else {
+          dropdownLabel.textContent = 'Kies';
+        }
       }
 
       // "Tot op de mm" open houden zolang daar iets aan staat.
@@ -342,7 +353,9 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
     margin: 0;
     min-inline-size: 0;
   }
-  legend {
+  legend,
+  .legend {
+    display: block;
     font-weight: 600;
     margin-block-end: var(--space-3xs);
     padding: 0;
@@ -414,7 +427,6 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
   }
   .dropdown summary {
     list-style: none;
-    font-weight: 600;
   }
   .dropdown summary::-webkit-details-marker {
     display: none;
@@ -423,7 +435,7 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
     border-color: var(--color-fg);
   }
   /* Aantallen in mono, zodat chips en knoppen niet per cijfer van breedte verspringen. */
-  .count {
+  .project-filter :global(.count) {
     font-family: var(--font-mono);
     font-weight: 400;
   }
@@ -485,7 +497,7 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
   }
   /* Smal scherm: paneel in de flow, op volle breedte, zodat het nooit buiten beeld valt. */
   @media (width < 40rem) {
-    .dropdown[open] {
+    .kleur:has(.dropdown[open]) {
       flex-basis: 100%;
     }
     .dropdown__panel {

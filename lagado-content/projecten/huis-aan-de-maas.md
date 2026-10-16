@@ -3,25 +3,27 @@
 
 title: Huis aan de Maas
 tagline: Een smalle rijwoning met uitzicht over de rivier.
+vraag: ""
 intro: |
   TODO: korte intro. Placeholder voor het homepage-raster.
 
 type: thuiskomen
-programma: woning
-functie: Rijwoning
-oppervlakte: 98
-locatie: { plaats: Rotterdam, wijk: Feijenoord }
-status: af
-jaarOpdracht: 2019
-jaarOplevering: 2021
-opdrachtgeverType: prive
-opdrachtgever: Privé
-
 vorm: [recht, schuin]
 kleuren: [groen, wit]
+status: af
 schaal: huis
 materialen: [steen, hout]
 prijsklasse: null
+
+locatie: { plaats: Rotterdam, wijk: Feijenoord }
+omvang: 98
+opdrachtgeverType: particulier
+opdrachtgever: ""
+bouwteam: []
+fotografie: []
+jaarOpdracht: 2019
+jaarOplevering: 2021
+programma: woning
 
 accentkleur: ""
 kleurpalet: []
@@ -33,7 +35,6 @@ volgorde: 2
 gerelateerd: []
 
 credits: []
-fotografie: []
 pers: []
 awards: []
 pressKit: ""

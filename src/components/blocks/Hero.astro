@@ -120,8 +120,25 @@ const woorden = (phrase: string) => phrase.split(' ');
     font-size: var(--step-4);
     font-weight: 700;
     letter-spacing: -0.03em;
-    /* max-inline-size: 20ch; */
     text-wrap: pretty;
+  }
+  /* Mobiel altijd drie regels: "Wij zijn een serieus buro / voor speelse / architectuur".
+     20ch houdt "voor" van de eerste regel (die is ±19ch, met "voor" ±23ch); het laatste
+     wisselwoord krijgt een eigen regel. Alleen een ch-maat is te krap: "voor speelse
+     architectuur" is ±20ch, nauwelijks langer dan regel 1. */
+  @media (max-width: 35.999rem) {
+    .hero .wrapper {
+      container-type: inline-size;
+    }
+    .hero__kop {
+      max-inline-size: 20ch;
+      /* Regel 1 is ±10,7em breed: op smalle schermen (< ±400px) krimpt de kop mee zodat hij past. */
+      font-size: min(var(--step-4), 8.8cqi);
+    }
+    .hero__kop .hero__wissel :global(.w:last-child:not(:first-child)) {
+      display: block;
+      inline-size: fit-content;
+    }
   }
   @media (min-width: 36rem) {
     .hero__kop {

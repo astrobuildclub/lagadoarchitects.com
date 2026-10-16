@@ -4,26 +4,33 @@
 
 title: Workhome Playhome
 tagline: Ons eigen familiehuis in het centrum van Rotterdam.
+vraag: Hoe maak je een uitgesproken woning in een nieuwbouwcasco?
 intro: |
   Een leuk huis voor wonen, werken, spelen en het ontvangen van logees.
   Zelfs als het allemaal tegelijk gebeurt.
 
 type: thuiskomen
-programma: woning
-functie: Eigen woonhuis voor wonen, werken, spelen en logees
-oppervlakte: 135
-locatie: { plaats: Rotterdam, wijk: Noordereiland }
-status: af
-jaarOpdracht: 2016                     # bevestigen: "Opdrachtgever privé, 2016"
-jaarOplevering: 2020
-opdrachtgeverType: prive
-opdrachtgever: Privé (eigen woning)
-
 vorm: [schuin]
 kleuren: [blauw, oranje, paars]
-schaal: huis                         # bevestigen: Victor schreef "L"
+status: af
+schaal: huis                           # bevestigen: Victor schreef "L"
 materialen: [hout, tegels]
 prijsklasse: null                      # eigen huis, niet van toepassing
+
+locatie: { plaats: Rotterdam, wijk: Noordereiland }
+omvang: 135
+opdrachtgeverType: particulier
+opdrachtgever: ""                      # eigen woning; leeg = "Particulier"
+bouwteam:                              # hoofdzakelijk zelf gerealiseerd, in samenwerking met:
+  - { naam: Mixalis Vasiloglou }
+  - { naam: HuisHout }                 # kasten
+  - { naam: Elmer Koopmans }           # schuifdeuren
+fotografie:
+  - { naam: Rubén Dario Kleimeer }
+  - { naam: LAGADO architects }
+jaarOpdracht: 2016                     # bevestigen: "Opdrachtgever privé, 2016"
+jaarOplevering: 2020
+programma: woning
 
 accentkleur: ""                        # TODO: uit foto's, bv. het blauw van de trap
 kleurpalet:
@@ -44,17 +51,9 @@ credits:
     personen: [{ naam: Maria Vasiloglou }, { naam: Victor Verhagen }]
   - rol: Ontwerp
     personen: [{ naam: "Interieurontwerp, inbouwmeubels, schuifdeuren en tuinontwerp" }]
-  - rol: Realisatie
-    personen:
-      - { naam: Mixalis Vasiloglou }    # hoofdzakelijk zelf gerealiseerd in samenwerking met
-      - { naam: HuisHout }              # kasten
-      - { naam: Elmer Koopmans }        # schuifdeuren
-fotografie:
-  - { naam: Rubén Dario Kleimeer }
-  - { naam: LAGADO architects }
-
 pers: []                               # TODO publicaties van Victor
 awards: []
+pressKit: ""
 
 seo:
   titel: Workhome Playhome — een kleurrijk familiehuis in Rotterdam

@@ -7,7 +7,7 @@ type RevealOnLoad = boolean | { transition?: string; minCoverTime?: number };
 
 export const interlude = {
   /** Used when a link doesn't name one with `data-transition`. */
-  defaultTransition: 'curtain',
+  defaultTransition: 'curtain-lagado',
 
   /**
    * On each navigation, keep the page covered at least this long (ms) before

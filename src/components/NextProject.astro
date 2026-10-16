@@ -8,19 +8,43 @@ interface Props {
   project: Project;
 }
 const { project: p } = Astro.props;
+const woorden = p.title.split(' ');
 ---
 
 <aside class="next-project full" aria-label="Volgend project">
   <a href={`/wat/${p.slug}`}>
     <Img src={projectImage(p.slug, p.hero.src)} alt="" sizes="100vw" />
-    <span class="next-project__text wrapper">
-      <span class="next-project__label">Volgend project</span>
-      <span class="next-project__title">{p.title}</span>
+    <span class="next-project__text wrapper" data-words-in>
+      <span class="next-project__label"><span class="w"><span class="w__i">Volgend project</span></span></span>
+      <span class="next-project__title">
+        {
+          woorden.map((woord, i) => (
+            <>
+              {i > 0 && ' '}
+              <span class="w">
+                <span class="w__i">{woord}</span>
+              </span>
+            </>
+          ))
+        }
+      </span>
     </span>
   </a>
 </aside>
 
+<script>
+  import '../scripts/words-in';
+</script>
+
 <style>
+  /* Tegen de footer aan: geen ruimte en geen lijn ertussen. */
+  :global(main:has(.next-project) + .site-footer) {
+    margin-block-start: 0;
+    border-block-start: 0;
+  }
+  .next-project {
+    margin-block-end: 0;
+  }
   a {
     display: grid;
     text-decoration: none;
@@ -51,5 +75,17 @@ const { project: p } = Astro.props;
   .next-project__title {
     font-size: var(--step-5);
     font-weight: 600;
+  }
+  /* Masker per woord (zie words-in.ts). Padding + negatieve marge geeft ruimte aan
+     staarten en de veer, zonder dat de regel hoger wordt. */
+  .w {
+    display: inline-block;
+    padding-block: 0.2em;
+    margin-block: -0.2em;
+    clip-path: inset(0);
+  }
+  .w__i {
+    display: inline-block;
+    transform-origin: 50% 100%;
   }
 </style>

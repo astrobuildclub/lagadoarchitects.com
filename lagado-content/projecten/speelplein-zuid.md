@@ -3,24 +3,27 @@
 
 title: Speelplein Zuid
 tagline: Openbare ruimte die uitnodigt tot spelen en ontmoeten.
+vraag: ""
 intro: |
   TODO: korte intro. Placeholder voor het homepage-raster.
 
 type: de-hort-op
-programma: openbare-ruimte
-functie: Speelplein
-oppervlakte: 800
-locatie: { plaats: Rotterdam, wijk: Charlois }
-status: opgetekend
-jaarOpdracht: 2025
-opdrachtgeverType: publiek
-opdrachtgever: Gemeente Rotterdam
-
 vorm: [rond]
 kleuren: [rood, geel, blauw]
+status: opgetekend
 schaal: stad
 materialen: [beton]
 prijsklasse: null
+
+locatie: { plaats: Rotterdam, wijk: Charlois }
+omvang: 800
+opdrachtgeverType: publiek
+opdrachtgever: Gemeente Rotterdam
+bouwteam: []
+fotografie: []
+jaarOpdracht: 2025
+jaarOplevering: 0
+programma: openbare-ruimte
 
 accentkleur: ""
 kleurpalet: []
@@ -32,7 +35,6 @@ volgorde: 5
 gerelateerd: []
 
 credits: []
-fotografie: []
 pers: []
 awards: []
 pressKit: ""
