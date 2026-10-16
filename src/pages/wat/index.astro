@@ -14,11 +14,18 @@ const page = { title: 'Wat we maken', fallbackDescription: `Architectuur en inte
 <BaseLayout title={pageTitle(settings, page)} description={pageDescription(settings, page)}>
   <!-- Featurebreedte (.wrapper, max 78rem): filters erboven, projecten als raster of lijst. -->
   <div class="wrapper wat">
-    <PageHeader title="Wat" intro={settings.projecten.intro} />
+    <PageHeader title="Wat" intro={settings.projecten.intro} breed />
     <div class="wat__body">
       <ProjectFilter projects={projects} toonPrijs={settings.projecten.toonPrijsfilter} target="projecten" />
       <div>
-        <p class="wat__count" aria-live="polite" data-count="projecten"></p>
+        <!-- Aantal en weergave op één regel, zelfde typografie. Gevuld en zichtbaar via ProjectFilter. -->
+        <div class="wat__meta">
+          <p aria-live="polite" data-count="projecten"></p>
+          <div class="wat__view" role="group" aria-label="Weergave" data-view-for="projecten" hidden>
+            <button type="button" data-view="raster" aria-pressed="true">Raster</button>
+            <button type="button" data-view="lijst" aria-pressed="false">Lijst</button>
+          </div>
+        </div>
         <ProjectList projects={projects} headingLevel={2} id="projecten" weergave />
       </div>
     </div>
@@ -26,15 +33,54 @@ const page = { title: 'Wat we maken', fallbackDescription: `Architectuur en inte
 </BaseLayout>
 
 <style>
-  .wat__count {
-    margin-block-end: var(--space-2xs);
-    font-family: var(--font-mono);
+  .wat__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0 var(--space-m);
+    margin-block-end: var(--space-xs);
     font-size: var(--step--1);
-    color: var(--color-muted);
+  }
+  .wat__meta p {
     font-variant-numeric: tabular-nums;
   }
-  .wat__count:empty {
+  .wat__view {
+    display: flex;
+    gap: var(--space-s);
+  }
+  .wat__view[hidden] {
     display: none;
+  }
+  /* Kale tekst, actief = onderstreept (zelfde als de filteropties). */
+  .wat__view button {
+    min-block-size: 2rem; /* raakvlak ≥ 24px (WCAG 2.5.8) */
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    text-decoration-line: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+    transition: text-decoration-color var(--duration) var(--ease);
+  }
+  .wat__view button:hover {
+    text-decoration-color: var(--color-line);
+  }
+  .wat__view button[aria-pressed='true'] {
+    text-decoration-color: currentColor;
+  }
+  .wat__view button:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wat__view button {
+      transition: none;
+    }
   }
   .wat__body {
     display: grid;
