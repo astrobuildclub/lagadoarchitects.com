@@ -12,7 +12,7 @@ const LABELS: Record<string, string> = {
   af: 'Af',
   bijna: 'Bijna',
   opgetekend: 'Opgetekend',
-  prive: 'Privé',
+  particulier: 'Particulier',
   zakelijk: 'Zakelijk',
   laag: '€',
   midden: '€€',

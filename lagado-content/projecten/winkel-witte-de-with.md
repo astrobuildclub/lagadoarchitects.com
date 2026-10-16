@@ -3,24 +3,27 @@
 
 title: Winkel Witte de With
 tagline: Een compacte retailfit-out met gelaagde vitrines.
+vraag: ""
 intro: |
   TODO: korte intro. Placeholder voor het homepage-raster.
 
 type: de-hort-op
-programma: winkel
-functie: Retail
-oppervlakte: 55
-locatie: { plaats: Rotterdam, wijk: Cool }
-status: opgetekend
-jaarOpdracht: 2025
-opdrachtgeverType: zakelijk
-opdrachtgever: ""
-
 vorm: [recht]
 kleuren: [zwart]
+status: opgetekend
 schaal: kamer
 materialen: [metaal, glas]
 prijsklasse: null
+
+locatie: { plaats: Rotterdam, wijk: Cool }
+omvang: 55
+opdrachtgeverType: zakelijk
+opdrachtgever: ""
+bouwteam: []
+fotografie: []
+jaarOpdracht: 2025
+jaarOplevering: 0
+programma: winkel
 
 accentkleur: ""
 kleurpalet: []
@@ -32,7 +35,6 @@ volgorde: 6
 gerelateerd: []
 
 credits: []
-fotografie: []
 pers: []
 awards: []
 pressKit: ""

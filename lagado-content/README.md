@@ -44,6 +44,28 @@ Bestandsnaam van een project = `slug` = URL (`/wat/workhome-playhome`).
 - **Beeldpaden:** in een project is `src` een bestandsnaam in `projecten/images/<slug>/`. Op pagina's is `src` een pad vanaf `lagado-content/` (bv. `images/bureau/01.jpg`).
 - **Downloads:** `bestand` is een pad vanaf `lagado-content/` (bv. `downloads/algemene-voorwaarden.pdf`). Per project kan `pressKit` naar een bestand verwijzen.
 
+## Opbouw van een project
+
+Elk projectbestand heeft dezelfde volgorde als `projecten/_template.md`. Houd die aan, ook bij placeholders: een leeg veld blijft staan (`""`, `[]`, `null`, `0`) zodat Victor ziet wat er nog in moet.
+
+| Groep | Velden | Waar op de pagina |
+|---|---|---|
+| Identiteit | `title`, `tagline`, `vraag`, `intro` | Hero (titel, tagline), daaronder de **vraag** groot, dan de intro |
+| Filters | `type`, `vorm`, `kleuren`, `status`, `schaal`, `materialen`, `prijsklasse` | Factsheet, eerste helft. Elke waarde linkt naar `/wat` met dat filter aan. Prijsklasse nooit |
+| Projectgegevens | `locatie`, `omvang`, `opdrachtgeverType`, `opdrachtgever`, `bouwteam`, `fotografie`, `jaarOpdracht`, `jaarOplevering`, `programma` | Factsheet, tweede helft. `programma` alleen op de projectkaart |
+| Kleur | `accentkleur`, `kleurpalet` | Accentkleur van de pagina, `colors`-blok |
+| Beeld & weergave | `hero`, `featured`, `homepageGrootte`, `volgorde`, `gerelateerd` | Hero-beeld, homepage, sortering |
+| Credits, pers & awards | `credits`, `pers`, `awards`, `pressKit` | Onderaan de pagina |
+| | `seo`, `blocks` | Zoekmachines; het verhaal |
+
+**Factsheet** (labels zoals Victor ze gebruikt): Type · Vorm · Kleur · Status · Schaal · Materiaal, dan Locatie · Omvang · Opdrachtgever · Bouwteam · Fotograaf · Jaar. Lege velden worden weggelaten.
+
+- **Vraag:** de ontwerpvraag in één zin, als trigger voor bezoekers om hun eigen vraag in te herkennen ("Hoe maak je een uitgesproken woning in een nieuwbouwcasco?"). Vervangt de oude velden programma/functie in het factsheet.
+- **Omvang:** getal in m² (heette eerder `oppervlakte`).
+- **Opdrachtgever:** naam als die er is, anders het label van `opdrachtgeverType` (bv. "Particulier").
+- **Jaar:** `jaarOpdracht`–`jaarOplevering` (bv. 2016–2020), of één van beide.
+- **Bouwteam en fotografie:** lijst van `{ naam, url? }`. Overige rollen (ontwerpteam, adviseurs) in `credits`.
+
 ## Waardenlijsten
 
 | Veld | Waarden |
@@ -54,8 +76,8 @@ Bestandsnaam van een project = `slug` = URL (`/wat/workhome-playhome`).
 | `status` | `af` (gerealiseerd), `bijna` (in ontwikkeling), `opgetekend` (gepubliceerd, niet gebouwd) |
 | `schaal` | `stoel` (meubilair), `kamer` (interieur/verbouw), `huis` (nieuwbouw huis), `stad` (skatepark, groter wooncomplex) |
 | `materialen` | `hout`, `steen`, `beton`, `glas`, `tegels`, `metaal` — hoofdmateriaal/-materialen, meerdere mogelijk |
-| `programma` | `woning`, `winkel`, `horeca`, `kantoor`, `publiek`, `openbare-ruimte`, `meubel` (feit, geen filter) |
-| `opdrachtgeverType` | `prive`, `zakelijk`, `publiek` |
+| `programma` | `woning`, `winkel`, `horeca`, `kantoor`, `publiek`, `openbare-ruimte`, `meubel` (alleen op de projectkaart, geen filter) |
+| `opdrachtgeverType` | `particulier`, `zakelijk`, `publiek` |
 | `prijsklasse` | `laag`, `midden`, `hoog` (optioneel, nooit tonen zonder akkoord) |
 | `homepageGrootte` | `s`, `m`, `l` — kaartbreedte op de homepage |
 

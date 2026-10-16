@@ -12,7 +12,7 @@ export const SCHAAL = ['stoel', 'kamer', 'huis', 'stad'] as const;
 export const MATERIAAL = ['hout', 'steen', 'beton', 'glas', 'tegels', 'metaal'] as const;
 
 export const PROGRAMMA = ['woning', 'winkel', 'horeca', 'kantoor', 'publiek', 'openbare-ruimte', 'meubel'] as const;
-export const OPDRACHTGEVER_TYPE = ['prive', 'zakelijk', 'publiek'] as const;
+export const OPDRACHTGEVER_TYPE = ['particulier', 'zakelijk', 'publiek'] as const;
 export const PRIJSKLASSE = ['laag', 'midden', 'hoog'] as const;
 export const BREEDTE = ['content', 'popout', 'feature', 'full'] as const;
 /** Kaartgrootte op de homepage (projectGrid). */
@@ -267,27 +267,36 @@ const persoon = z.object({ naam: z.string(), url: text });
 
 export const projectSchema = z
   .object({
+    // Identiteit
     title: z.string().min(1),
     tagline: z.string().min(1),
+    /** De ontwerpvraag, groot bovenaan de projecttekst. Trigger voor bezoekers om hun eigen vraag te herkennen. */
+    vraag: text,
     intro: z.string().min(1),
 
+    // Filters (volgorde zoals op /wat); ook getoond in het factsheet
     type: z.enum(TYPE),
-    programma: z.enum(PROGRAMMA),
-    functie: text,
-    oppervlakte: z.number().optional(),
-    locatie: z.object({ plaats: z.string().min(1), wijk: text }),
-    status: z.enum(STATUS),
-    jaarOpdracht: z.number().optional(),
-    jaarOplevering: z.number().optional(),
-    opdrachtgeverType: z.enum(OPDRACHTGEVER_TYPE).optional(),
-    opdrachtgever: text,
-
     vorm: z.array(z.enum(VORM)).default([]),
     kleuren: z.array(z.enum(KLEUR)).default([]),
+    status: z.enum(STATUS),
     schaal: z.enum(SCHAAL).nullable().optional(),
     materialen: z.array(z.enum(MATERIAAL)).default([]),
     prijsklasse: z.enum(PRIJSKLASSE).nullable().optional(),
 
+    // Projectgegevens (factsheet)
+    locatie: z.object({ plaats: z.string().min(1), wijk: text }),
+    /** Omvang in m². */
+    omvang: z.number().optional(),
+    opdrachtgeverType: z.enum(OPDRACHTGEVER_TYPE).optional(),
+    opdrachtgever: text,
+    bouwteam: z.array(persoon).default([]),
+    fotografie: z.array(persoon).default([]),
+    jaarOpdracht: z.number().optional(),
+    jaarOplevering: z.number().optional(),
+    /** Feit voor de projectkaart, geen filter en niet in het factsheet. */
+    programma: z.enum(PROGRAMMA),
+
+    // Kleur, beeld en weergave
     accentkleur: text,
     kleurpalet: z.array(kleur).default([]),
 
@@ -298,9 +307,8 @@ export const projectSchema = z
     volgorde: z.number().default(0),
     gerelateerd: z.array(z.string()).max(3).default([]),
 
+    // Credits, pers en awards (onderaan de pagina)
     credits: z.array(z.object({ rol: z.string(), personen: z.array(persoon) })).default([]),
-    fotografie: z.array(persoon).default([]),
-
     pers: z.array(persItem).default([]),
     awards: z.array(awardItem).default([]),
     pressKit: text,

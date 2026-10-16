@@ -1,5 +1,5 @@
 ---
-// Credits, fotografie, pers & awards en press-kit onderaan een project.
+// Credits, pers & awards en press-kit onderaan een project. Bouwteam en fotografie staan in het factsheet.
 import { cleanItems } from '../lib/content';
 import { downloadUrl } from '../lib/images';
 import { label } from '../lib/labels';
@@ -13,11 +13,10 @@ const { project: p } = Astro.props;
 const credits = p.credits
   .map((c) => ({ ...c, personen: c.personen.filter((x) => x.naam) }))
   .filter((c) => c.personen.length);
-const fotografie = p.fotografie.filter((f) => f.naam);
 const pers = cleanItems(p.pers);
 const awards = cleanItems(p.awards);
 const pressKit = downloadUrl(p.pressKit);
-const hasAny = credits.length || fotografie.length || pers.length || awards.length || pressKit;
+const hasAny = credits.length || pers.length || awards.length || pressKit;
 ---
 
 {
@@ -31,12 +30,6 @@ const hasAny = credits.length || fotografie.length || pers.length || awards.leng
             {c.personen.map((x) => <dd>{x.url ? <a href={x.url} rel="noopener">{x.naam}</a> : x.naam}</dd>)}
           </div>
         ))}
-        {fotografie.length > 0 && (
-          <div>
-            <dt>Fotografie</dt>
-            {fotografie.map((x) => <dd>{x.url ? <a href={x.url} rel="noopener">{x.naam}</a> : x.naam}</dd>)}
-          </div>
-        )}
         {awards.length > 0 && (
           <div>
             <dt>Awards</dt>

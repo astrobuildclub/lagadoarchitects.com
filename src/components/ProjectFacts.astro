@@ -1,6 +1,8 @@
 ---
-// Feitenblok bovenaan een project. Lege velden worden weggelaten; prijsklasse nooit.
-import { label } from '../lib/labels';
+// Factsheet bovenaan een project, in twee helften: de filtereigenschappen (zelfde
+// volgorde en namen als op /wat, elke waarde linkt naar dat filter) en de projectgegevens.
+// Lege velden worden weggelaten; prijsklasse nooit.
+import { KLEUR_SWATCH, label } from '../lib/labels';
 import type { Project } from '../lib/schema';
 
 interface Props {
@@ -8,47 +10,112 @@ interface Props {
 }
 const { project: p } = Astro.props;
 
+interface Filter {
+  term: string;
+  key: string;
+  values: string[];
+}
+const filters: Filter[] = [
+  { term: 'Type', key: 'type', values: [p.type] },
+  { term: 'Vorm', key: 'vorm', values: p.vorm },
+  { term: 'Kleur', key: 'kleuren', values: p.kleuren },
+  { term: 'Status', key: 'status', values: [p.status] },
+  { term: 'Schaal', key: 'schaal', values: p.schaal ? [p.schaal] : [] },
+  { term: 'Materiaal', key: 'materialen', values: p.materialen },
+].filter((f) => f.values.length);
+
+const namen = (lijst: { naam: string }[]) =>
+  lijst
+    .map((x) => x.naam)
+    .filter(Boolean)
+    .join(', ');
+const fotografen = p.fotografie.filter((x) => x.naam);
+
 const jaar =
   p.jaarOpdracht && p.jaarOplevering && p.jaarOpdracht !== p.jaarOplevering
     ? `${p.jaarOpdracht}–${p.jaarOplevering}`
     : String(p.jaarOplevering || p.jaarOpdracht || '');
 
-const facts = [
+const gegevens = [
   ['Locatie', [p.locatie.wijk, p.locatie.plaats].filter(Boolean).join(', ')],
-  ['Programma', label(p.programma)],
-  ['Functie', p.functie],
-  ['Oppervlakte', p.oppervlakte ? `${p.oppervlakte} m²` : ''],
-  ['Status', label(p.status)],
+  ['Omvang', p.omvang ? `${p.omvang} m²` : ''],
+  ['Opdrachtgever', p.opdrachtgever || (p.opdrachtgeverType ? label(p.opdrachtgeverType) : '')],
+  ['Bouwteam', namen(p.bouwteam)],
+  [fotografen.length > 1 ? 'Fotografen' : 'Fotograaf', namen(fotografen)],
   ['Jaar', jaar],
-  ['Opdrachtgever', p.opdrachtgever],
 ].filter((f): f is [string, string] => !!f[1]);
+
+const filterUrl = (key: string, value: string) => `/wat?${new URLSearchParams({ [key]: value })}`;
 ---
 
-<dl class="facts">
-  {
-    facts.map(([term, value]) => (
-      <div>
-        <dt>{term}</dt>
-        <dd>{value}</dd>
-      </div>
-    ))
-  }
-</dl>
+<section class="facts" aria-label="Factsheet">
+  <dl>
+    {
+      filters.map((f) => (
+        <div>
+          <dt>{f.term}</dt>
+          <dd>
+            {f.values.map((v, i) => (
+              <>
+                {i > 0 && ', '}
+                <a href={filterUrl(f.key, v)}>
+                  {f.key === 'kleuren' && <span class="swatch" style={`--swatch: ${KLEUR_SWATCH[v]}`} aria-hidden="true" />}
+                  {label(v)}
+                </a>
+              </>
+            ))}
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+  <dl>
+    {
+      gegevens.map(([term, value]) => (
+        <div>
+          <dt>{term}</dt>
+          <dd>{value}</dd>
+        </div>
+      ))
+    }
+  </dl>
+</section>
 
 <style>
   .facts {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
     gap: var(--space-s);
     padding-block: var(--space-s);
     border-block: var(--border-width) solid var(--color-line);
     font-family: var(--font-mono);
     font-size: var(--step--1);
   }
+  dl {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
+    gap: var(--space-s);
+  }
+  dl + dl {
+    padding-block-start: var(--space-s);
+    border-block-start: var(--border-width) solid var(--color-line);
+  }
   dt {
     color: var(--color-muted);
   }
   dd {
     margin: 0;
+  }
+  a {
+    white-space: nowrap;
+  }
+  .swatch {
+    display: inline-block;
+    inline-size: 0.9em;
+    block-size: 0.9em;
+    margin-inline-end: 0.35em;
+    border-radius: 50%;
+    background: var(--swatch);
+    box-shadow: 0 0 0 1px var(--color-line);
+    vertical-align: -0.1em;
   }
 </style>

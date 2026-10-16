@@ -5,27 +5,29 @@
 # ── Identiteit ─────────────────────────────────────────────
 title: ""                              # verplicht
 tagline: ""                            # verplicht, 1 zin (kaartje + hero)
+vraag: ""                              # optioneel, de ontwerpvraag in 1 zin. Staat groot boven de projecttekst
 intro: |                               # verplicht, 2–4 zinnen
   ""
 
-# ── Feitenblok ─────────────────────────────────────────────
+# ── Filters (volgorde zoals op /wat, ook in het factsheet) ─
 type: thuiskomen                       # verplicht: thuiskomen (particulier) | de-hort-op (publiek)
-programma: woning                      # verplicht: zie README
-functie: ""                            # optioneel, korte tekst
-oppervlakte: 0                         # optioneel, m²
-locatie: { plaats: "", wijk: "" }      # plaats verplicht, wijk optioneel
-status: af                             # verplicht: af (gerealiseerd) | bijna (in ontwikkeling) | opgetekend (gepubliceerd)
-jaarOpdracht: 0                        # optioneel
-jaarOplevering: 0                      # optioneel, verplicht als status = af
-opdrachtgeverType: prive               # optioneel: prive | zakelijk | publiek
-opdrachtgever: ""                      # optioneel, naam of "privé"
-
-# ── Filters (optioneel; type en status staan hierboven) ────
 vorm: []                               # recht | rond | schuin (meerdere mogelijk)
 kleuren: []                            # hoofdkleur(en), zie README (meerdere mogelijk)
+status: af                             # verplicht: af (gerealiseerd) | bijna (in ontwikkeling) | opgetekend (gepubliceerd)
 schaal: null                           # stoel | kamer | huis | stad
 materialen: []                         # hout | steen | beton | glas | tegels | metaal (meerdere mogelijk)
 prijsklasse: null                      # laag | midden | hoog — niet tonen zonder akkoord
+
+# ── Projectgegevens (factsheet) ────────────────────────────
+locatie: { plaats: "", wijk: "" }      # plaats verplicht, wijk optioneel
+omvang: 0                              # optioneel, m²
+opdrachtgeverType: particulier         # optioneel: particulier | zakelijk | publiek
+opdrachtgever: ""                      # optioneel, naam. Leeg = het type wordt getoond
+bouwteam: []                           # optioneel, [{ naam, url? }]
+fotografie: []                         # optioneel, [{ naam, url? }]
+jaarOpdracht: 0                        # optioneel
+jaarOplevering: 0                      # optioneel, verplicht als status = af
+programma: woning                      # verplicht: zie README (op de projectkaart, niet in het factsheet)
 
 # ── Kleur ──────────────────────────────────────────────────
 accentkleur: ""                        # optioneel, hex. Gebruikt voor typografie en details op de pagina
@@ -38,15 +40,10 @@ homepageGrootte: m                     # s | m | l — alleen op de homepage-kaa
 volgorde: 0                            # handmatige sortering, laag = eerst
 gerelateerd: []                        # slugs, max 3
 
-# ── Credits ────────────────────────────────────────────────
+# ── Credits, pers & awards (onderaan de pagina) ────────────
 credits:                               # optioneel, [{ rol, personen:[{ naam, url? }] }]
   - rol: Ontwerpteam
     personen: [{ naam: "" }]
-
-fotografie:                            # optioneel
-  - { naam: "", url: "" }
-
-# ── Pers & awards (per project) ────────────────────────────
 pers: []                               # [{ jaar, medium, titel, url }]
 awards: []                             # [{ jaar, naam, resultaat }]
 pressKit: ""                           # optioneel, pad naar zip/pdf in downloads/

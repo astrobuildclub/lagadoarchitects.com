@@ -3,25 +3,27 @@
 
 title: Atelier Kralingen
 tagline: Werkplek en showroom in een voormalige garage.
+vraag: ""
 intro: |
   TODO: korte intro. Placeholder voor het homepage-raster.
 
 type: de-hort-op
-programma: kantoor
-functie: Atelier / showroom
-oppervlakte: 110
-locatie: { plaats: Rotterdam, wijk: Kralingen }
-status: bijna
-jaarOpdracht: 2024
-jaarOplevering: 2026
-opdrachtgeverType: zakelijk
-opdrachtgever: ""
-
 vorm: [recht]
 kleuren: [wit, grijs]
+status: bijna
 schaal: kamer
 materialen: [beton, glas]
 prijsklasse: null
+
+locatie: { plaats: Rotterdam, wijk: Kralingen }
+omvang: 110
+opdrachtgeverType: zakelijk
+opdrachtgever: ""
+bouwteam: []
+fotografie: []
+jaarOpdracht: 2024
+jaarOplevering: 2026
+programma: kantoor
 
 accentkleur: ""
 kleurpalet: []
@@ -33,7 +35,6 @@ volgorde: 4
 gerelateerd: []
 
 credits: []
-fotografie: []
 pers: []
 awards: []
 pressKit: ""
