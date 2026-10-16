@@ -7,6 +7,8 @@
 //   gedraaid). Een IntersectionObserver start de animatie als 40% van het blok in beeld is:
 //   per woord omhoog met een kleine veer (back.out), dezelfde beweging als de wisseltekst
 //   in de hero. Eén keer per pagina.
+// - Loopt er een paginatransitie (Interlude, `[data-interlude]` niet `idle`), dan wachten
+//   we op `interlude:idle`: anders is de animatie al klaar voordat de pagina in beeld is.
 // - Met reduced motion gebeurt er niets.
 // - ClientRouter: start op astro:page-load, ruimt op bij astro:before-swap.
 import { gsap } from 'gsap';
@@ -39,9 +41,14 @@ function init() {
     },
     { threshold: 0.4 },
   );
-  blocks.forEach((block) => observer.observe(block));
+  const observe = () => blocks.forEach((block) => observer.observe(block));
+  const state = document.querySelector<HTMLElement>('[data-interlude]')?.dataset.state;
+  const busy = !!state && state !== 'idle';
+  if (busy) document.addEventListener('interlude:idle', observe, { once: true });
+  else observe();
 
   teardown = () => {
+    document.removeEventListener('interlude:idle', observe);
     observer.disconnect();
     blocks.forEach((block) => gsap.killTweensOf(words(block)));
     teardown = undefined;

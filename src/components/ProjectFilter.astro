@@ -636,4 +636,52 @@ const hasFilters = mainGroups.length + extraGroups.length + (hasKleur ? 1 : 0) >
       transition: none;
     }
   }
+
+  /* Vanaf 40rem: verticale kolom links van de projecten (zie wat/index.astro).
+     Plakt bovenaan tijdens scrollen en scrolt zelf als hij hoger is dan het scherm.
+     Bovenaan aantal, Verras me en Wis filters; daaronder de groepen onder elkaar. */
+  @media (width >= 40rem) {
+    .project-filter {
+      position: sticky;
+      inset-block-start: var(--space-s);
+      max-block-size: calc(100dvh - var(--space-s) * 2);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      align-content: start;
+      gap: var(--space-m);
+      padding-block: 0;
+      border-block: 0;
+      /* Ruimte voor focusringen binnen de scrollcontainer. */
+      padding-inline: 3px;
+      margin-inline: -3px;
+    }
+    .project-filter__bar {
+      order: -1;
+      padding-block-end: var(--space-s);
+      border-block-end: var(--border-width) solid var(--color-line);
+    }
+    .project-filter__count {
+      flex-basis: 100%;
+      margin-inline-start: 0;
+      order: -1;
+    }
+    .project-filter__panel[open],
+    .project-filter__body {
+      gap: var(--space-m);
+    }
+    .project-filter__row {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-m);
+    }
+    /* Kleurenlijst in de flow in plaats van zwevend: past in de smalle kolom. */
+    .dropdown__panel {
+      position: static;
+      min-inline-size: 0;
+      margin-block-start: var(--space-3xs);
+    }
+    .dropdown summary {
+      inline-size: fit-content;
+    }
+  }
 </style>

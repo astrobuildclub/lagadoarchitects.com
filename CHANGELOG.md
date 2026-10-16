@@ -36,6 +36,8 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Netlify secrets scanning: `FONTS_URL` uitgezonderd (`SECRETS_SCAN_OMIT_KEYS`), de build faalde omdat de URL in de README staat.
 
 ### Gewijzigd
+- Projectoverzicht (/wat) over de volle breedte. Vanaf 40rem staan de filters verticaal in een kolom links van de projecten (sticky, scrolt zelf als hij te hoog is): aantal, Verras me en Wis filters bovenaan, daaronder de groepen; de kleurenlijst klapt in de kolom uit. Op mobiel blijft de overlay.
+- Titelanimatie op projectdetail start pas als de paginatransitie klaar is (`interlude:idle`).
 - Hero-kop altijd op drie regels, op elke schermbreedte: "Wij zijn een serieus / buro voor speelse / architectuur". De breuk na "serieus" staat in `home.md` (nieuwe regel in `kop`), het laatste wisselwoord krijgt een eigen regel, en de kop krimpt mee met de breedte (`cqi`). Zo past ook "sportieve landschappen".
 - Header en footer lopen over de volle breedte van de viewport (`.wrapper--full`).
 - Volgend project sluit direct aan op de footer (geen ruimte of lijn ertussen). Label en titel schuiven per woord van onder in zodra het blok in beeld komt (GSAP, `src/scripts/words-in.ts`, zelfde beweging als de hero; niets bij reduced motion).

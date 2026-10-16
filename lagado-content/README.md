@@ -83,7 +83,7 @@ Elk projectbestand heeft dezelfde volgorde als `projecten/_template.md`. Houd di
 
 ## Filters op /wat
 
-Volgorde zoals Victor ze aanleverde. Direct zichtbaar: **Type**, **Vorm**, **Kleur** en **Verras me** (willekeurige filtercombinatie, altijd minstens één project). Onder "Tot op de mm" (uitklap): **Status**, **Schaal**, **Materiaal**. Binnen een groep = of, tussen groepen = en. Een groep met maar één waarde in de projecten wordt niet getoond.
+Volgorde zoals Victor ze aanleverde. Direct zichtbaar: **Type**, **Vorm**, **Kleur** en **Verras me** (willekeurige filtercombinatie, altijd minstens één project). Onder "Tot op de mm" (uitklap): **Status**, **Schaal**, **Materiaal**. Vanaf 40rem staan de filters in een kolom links naast de projecten (plakt bij scrollen), op mobiel in een overlay achter de knop "Filters". Binnen een groep = of, tussen groepen = en. Een groep met maar één waarde in de projecten wordt niet getoond.
 
 ## Bouwstenen (`blocks`)
 
