@@ -37,7 +37,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Netlify secrets scanning: `FONTS_URL` uitgezonderd (`SECRETS_SCAN_OMIT_KEYS`), de build faalde omdat de URL in de README staat.
 
 ### Gewijzigd
-- Projectoverzicht (/wat) over de volle breedte, filters erboven. Filteropties compacter: kale tekst in plaats van pills, actief = onderstreept (ook de kleurknop).
+- Projectoverzicht (/wat) op featurebreedte (`.wrapper`, max 78rem), filters erboven. Filteropties compacter: kale tekst in plaats van pills, actief = onderstreept (ook de kleurknop).
 - Titelanimatie op projectdetail start pas als de paginatransitie klaar is (`interlude:idle`).
 - Hero-kop altijd op drie regels, op elke schermbreedte: "Wij zijn een serieus / buro voor speelse / architectuur". De breuk na "serieus" staat in `home.md` (nieuwe regel in `kop`), het laatste wisselwoord krijgt een eigen regel, en de kop krimpt mee met de breedte (`cqi`). Zo past ook "sportieve landschappen".
 - Header en footer lopen over de volle breedte van de viewport (`.wrapper--full`).
