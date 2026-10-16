@@ -35,6 +35,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 
 ### Gewijzigd
 - Projectmodel strakgetrokken: alle projectbestanden en `_template.md` in dezelfde volgorde (identiteit, filters, projectgegevens, kleur, beeld, credits). `oppervlakte` heet nu `omvang`, `opdrachtgeverType` `prive` heet nu `particulier`, `functie` is vervallen (de vraag vervangt hem). Fotografie staat in het factsheet in plaats van onderaan bij de credits.
+- Paginatransitie: eigen variant `curtain-lagado`, waarin header en footer meedrijven met de content. Bij `curtain` bleef de header stilstaan terwijl de pagina eronder wegschoof.
 - Kleurfilter: dropdown toont kleuren onder elkaar als lijst (swatch, label, vinkje bij actief) in plaats van chips, rechts uitgelijnd onder de chip. Aantallen op "Kleur" en "Filters" in ABC Areal Mono, zodat de chip niet per cijfer van breedte verspringt.
 - Header: woordmerk LAGADO als inline SVG (`Logo.astro`) in de accentkleur. Nieuwe accentkleuren (licht: blauwpaars, donker: oranje). Koppen iets strakker gespatieerd, hero-kop op mobiel `--step-4`. Huis aan de Maas groot (`l`) op de homepage.
 - Instrument Sans en DM Mono (Fontsource) vervangen door ABC Areal; Fontsource-pakketten verwijderd.
