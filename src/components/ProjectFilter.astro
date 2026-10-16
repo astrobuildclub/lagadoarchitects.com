@@ -340,6 +340,16 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
     grid-template-columns: repeat(2, max-content);
     column-gap: var(--space-m);
   }
+  /* "Tot op de mm" dicht: Type, Vorm en Kleur verdeeld over de volle breedte (gelijke
+     sporen, Kleur twee breed) en de kleuren in drie rijtjes. */
+  .project-filter__body:not(:has(.project-filter__extra.is-open)) {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+  }
+  .project-filter__body:not(:has(.project-filter__extra.is-open)) .project-filter__group--kleuren .options {
+    grid-template-columns: repeat(3, max-content);
+  }
   .option,
   .action {
     position: relative;
