@@ -79,11 +79,11 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
                       </span>
                       <div class="options">
                         {g.values.map((v) => (
-                          <label class="option">
+                          <label class:list={['option', g.key === 'kleuren' && 'option--kleur']} title={g.key === 'kleuren' ? label(v) : undefined}>
                             <input type="checkbox" name={g.key} value={v} />
                             {g.key === 'kleuren' && <span class="swatch" style={`--swatch: ${KLEUR_SWATCH[v]}`} aria-hidden="true" />}
-                            <span class="option__label">{label(v)}</span>
-                            <span class="option__n" data-n />
+                            <span class:list={['option__label', g.key === 'kleuren' && 'visually-hidden']}>{label(v)}</span>{' '}
+                            <span class:list={['option__n', g.key === 'kleuren' && 'visually-hidden']} data-n />
                           </label>
                         ))}
                       </div>
@@ -185,8 +185,11 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
       for (const input of inputs) {
         const hits = cards.filter((card) => matches(card, active, input.name) && own(card, input.name).includes(input.value)).length;
         input.disabled = !input.checked && hits === 0;
-        const badge = input.parentElement!.querySelector('[data-n]');
+        const option = input.parentElement!;
+        const badge = option.querySelector('[data-n]');
         if (badge) badge.textContent = String(hits);
+        // Kleuren hebben geen zichtbaar label: naam en aantal in de tooltip.
+        if (option.title) option.title = `${option.querySelector('.option__label')!.textContent} (${hits})`;
       }
 
       // "Tot op de mm" open houden zolang daar iets aan staat.
@@ -324,9 +327,6 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
     font-size: var(--step--2);
     color: var(--color-muted);
   }
-  .project-filter__group--kleuren {
-    grid-column: span 2;
-  }
 
   /* Opties en acties: kale tekst, actief = onderstreept. De checkbox blijft in de
      toegankelijkheidsboom (visueel weg); focus, aan en uitgeschakeld via :has(). */
@@ -335,20 +335,46 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
     flex-direction: column;
     align-items: start;
   }
-  .project-filter__group--kleuren .options {
-    display: grid;
-    grid-template-columns: repeat(2, max-content);
-    column-gap: var(--space-m);
-  }
-  /* "Tot op de mm" dicht: Type, Vorm en Kleur verdeeld over de volle breedte (gelijke
-     sporen, Kleur twee breed) en de kleuren in drie rijtjes. */
+  /* "Tot op de mm" dicht: Type, Vorm en Kleur verdeeld over de volle breedte. */
   .project-filter__body:not(:has(.project-filter__extra.is-open)) {
     grid-template-columns: none;
     grid-auto-flow: column;
     grid-auto-columns: 1fr;
   }
-  .project-filter__body:not(:has(.project-filter__extra.is-open)) .project-filter__group--kleuren .options {
-    grid-template-columns: repeat(3, max-content);
+
+  /* Kleuren compact: alleen de swatch, naam en aantal voor screenreaders (visually-hidden)
+     en als tooltip. Aan = ring eromheen; geen underline. Kleur nooit als enige informatie
+     (WCAG 1.4.1): de naam staat in de toegankelijke naam en de tooltip. */
+  .project-filter__group--kleuren .options,
+  .project-filter__panel:modal .project-filter__group--kleuren .options {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-3xs);
+  }
+  .option--kleur {
+    display: grid;
+    place-items: center;
+    inline-size: 1.75rem; /* raakvlak ≥ 24px (WCAG 2.5.8) */
+    block-size: 1.75rem;
+    border-radius: 50%;
+  }
+  .option--kleur .swatch {
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    transition: box-shadow var(--duration) var(--ease);
+  }
+  .option--kleur:hover .swatch {
+    box-shadow: 0 0 0 1px var(--color-line), 0 0 0 3px var(--color-bg), 0 0 0 4px var(--color-line);
+  }
+  .option--kleur:has(input:checked) .swatch {
+    box-shadow: 0 0 0 1px var(--color-line), 0 0 0 3px var(--color-bg), 0 0 0 5px currentColor;
+  }
+  .option--kleur:has(input:focus-visible) {
+    outline-offset: 0;
+  }
+  .option--kleur:has(input:disabled) {
+    opacity: 0.25;
   }
   .option,
   .action {
@@ -492,8 +518,7 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
     padding-block: var(--space-xs);
     border-block-end: var(--border-width) solid var(--color-line);
   }
-  .project-filter__panel:modal .options,
-  .project-filter__panel:modal .project-filter__group--kleuren .options {
+  .project-filter__panel:modal .options {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -544,6 +569,7 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
 
   @media (prefers-reduced-motion: reduce) {
     .option__label,
+    .option--kleur .swatch,
     .action,
     .chevron {
       transition: none;
