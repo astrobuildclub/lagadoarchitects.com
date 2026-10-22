@@ -37,6 +37,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Netlify secrets scanning: `FONTS_URL` uitgezonderd (`SECRETS_SCAN_OMIT_KEYS`), de build faalde omdat de URL in de README staat.
 
 ### Gewijzigd
+- /wat: Materiaal (uitgeklapt onder "Tot op de mm") is twee rastersporen breed met de opties in twee kolommen als dat past (`columns: 2 5rem`). In de mobiele overlay blijven het rijen.
 - /wat: kleurfilter compact, alleen swatches zonder zichtbaar label. Naam en aantal staan in de tooltip en voor screenreaders (visually-hidden); aan = ring om de swatch, bij 0 projecten vervaagd. Kleur neemt nu één kolom in.
 - /wat: met "Tot op de mm" dicht verdelen Type, Vorm en Kleur de volle containerbreedte en staan de kleuren in drie rijtjes; uitgeklapt weer zes kolommen met kleuren in twee rijtjes.
 - /wat: filters als kolommen in plaats van rijen. Per groep het label erboven (mono, `--step--2`) en de opties onder elkaar; Kleur beslaat twee kolommen met de kleuren in twee rijtjes. Uitgeklapt lopen Status, Schaal en Materiaal in hetzelfde raster door (vanaf ±1000px alles op één rij). In de mobiele overlay blijven het rijen.
