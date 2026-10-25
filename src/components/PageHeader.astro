@@ -4,8 +4,10 @@ import { md } from '../lib/markdown';
 interface Props {
   title: string;
   intro?: string;
+  /** Intro over de volle breedte van de container in plaats van max 32ch (/wat). */
+  breed?: boolean;
 }
-const { title, intro } = Astro.props;
+const { title, intro, breed = false } = Astro.props;
 // Een link naar `#verras` in de intro wordt de knop "Verras me" van de projectfilters
 // (ProjectFilter zoekt `[data-random]`). Zonder JS blijft het uitgeschakelde, gewone tekst.
 const introHtml = md(intro).replace(
@@ -16,12 +18,12 @@ const introHtml = md(intro).replace(
 
 <header class="page-header">
   <h1>{title}</h1>
-  {intro && <div class="page-header__intro" set:html={introHtml} />}
+  {intro && <div class:list={['page-header__intro', breed && 'page-header__intro--breed']} set:html={introHtml} />}
 </header>
 
 <style>
   .page-header {
-    padding-block-start: var(--space-xl);
+    padding-block-start: var(--page-top);
   }
   .page-header__intro :global(.verras) {
     padding: 0;
@@ -48,5 +50,14 @@ const introHtml = md(intro).replace(
     font-size: var(--step-2);
     line-height: 1.3;
     max-inline-size: 32ch;
+  }
+  .page-header__intro--breed {
+    max-inline-size: none;
+  }
+  /* Eerste alinea groot; volgende alinea's kleiner op een eigen regel (bv. de filterzin op /wat). */
+  .page-header__intro :global(p + p) {
+    margin-block-start: var(--space-2xs);
+    font-size: var(--step-0);
+    line-height: 1.5;
   }
 </style>

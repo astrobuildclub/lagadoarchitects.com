@@ -5,12 +5,12 @@
 // Binnen één groep = OF, tussen groepen = EN. Elke optie toont hoeveel projecten je
 // overhoudt als je hem aanzet; bij 0 is hij uitgeschakeld, dus je komt nooit op niets uit.
 //
-// Opbouw als het factsheet op de projectpagina: één rij per groep, label (mono) links in
-// een vaste kolom, opties ernaast als kale tekst (actief = onderstreept). Volgorde volgens
+// Opbouw: elke groep een kolom, label (mono, klein) erboven, opties eronder als kale
+// tekst (actief = onderstreept). Volgorde volgens
 // Victor: Type, Vorm, Kleur (swatches, direct zichtbaar); Status, Schaal en Materiaal
-// onder "Tot op de mm". Daaronder één actieregel: Tot op de mm, Wis filters (alleen als er
-// iets aan staat) en rechts Raster / Lijst. "Verras me" is het woord "verrassen" in de
-// intro (link naar #verras in site.md), het aantal projecten staat boven de lijst.
+// onder "Tot op de mm". Daaronder één actieregel: Tot op de mm en Wis filters (alleen als
+// er iets aan staat). "Verras me" is het woord "verrassen" in de intro (link naar #verras
+// in site.md). Aantal projecten en Raster / Lijst staan op één regel boven de lijst.
 // Mobiel (< 40rem): de rijen staan in een overlay achter de knop "Filters", alle rijen open.
 import { KLEUR_SWATCH, label } from '../lib/labels';
 import { KLEUR, MATERIAAL, SCHAAL, STATUS, TYPE, VORM, type Project } from '../lib/schema';
@@ -73,17 +73,17 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
               groups.length > 0 && (
                 <div class:list={['project-filter__groups', i === 1 && 'project-filter__extra']} id={i === 1 ? 'filter-extra' : undefined} data-extra={i === 1 ? '' : undefined}>
                   {groups.map((g) => (
-                    <div class="project-filter__group" role="group" aria-labelledby={`filter-${g.key}`}>
+                    <div class={`project-filter__group project-filter__group--${g.key}`} role="group" aria-labelledby={`filter-${g.key}`}>
                       <span class="project-filter__label" id={`filter-${g.key}`}>
                         {g.legend}
                       </span>
                       <div class="options">
                         {g.values.map((v) => (
-                          <label class="option">
+                          <label class:list={['option', g.key === 'kleuren' && 'option--kleur']} title={g.key === 'kleuren' ? label(v) : undefined}>
                             <input type="checkbox" name={g.key} value={v} />
                             {g.key === 'kleuren' && <span class="swatch" style={`--swatch: ${KLEUR_SWATCH[v]}`} aria-hidden="true" />}
-                            <span class="option__label">{label(v)}</span>
-                            <span class="option__n" data-n />
+                            <span class:list={['option__label', g.key === 'kleuren' && 'visually-hidden']}>{label(v)}</span>{' '}
+                            <span class:list={['option__n', g.key === 'kleuren' && 'visually-hidden']} data-n />
                           </label>
                         ))}
                       </div>
@@ -123,10 +123,6 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
       )
     }
     <button type="reset" class="action" data-reset hidden>Wis filters</button>
-    <div class="project-filter__view" role="group" aria-label="Weergave">
-      <button type="button" class="action" data-view="raster" aria-pressed="true">Raster</button>
-      <button type="button" class="action" data-view="lijst" aria-pressed="false">Lijst</button>
-    </div>
   </div>
 </form>
 
@@ -189,8 +185,11 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
       for (const input of inputs) {
         const hits = cards.filter((card) => matches(card, active, input.name) && own(card, input.name).includes(input.value)).length;
         input.disabled = !input.checked && hits === 0;
-        const badge = input.parentElement!.querySelector('[data-n]');
+        const option = input.parentElement!;
+        const badge = option.querySelector('[data-n]');
         if (badge) badge.textContent = String(hits);
+        // Kleuren hebben geen zichtbaar label: naam en aantal in de tooltip.
+        if (option.title) option.title = `${option.querySelector('.option__label')!.textContent} (${hits})`;
       }
 
       // "Tot op de mm" open houden zolang daar iets aan staat.
@@ -253,7 +252,10 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
 
     // Weergave: raster of lijst. Zet `data-view` op de lijst; de keuze blijft per bezoeker
     // bewaard (localStorage, mag ontbreken of falen: dan raster).
-    const viewButtons = [...form.querySelectorAll<HTMLButtonElement>('[data-view]')];
+    // De knoppen staan boven de lijst (wat/index.astro), naast het aantal; zonder JS verborgen.
+    const viewGroup = document.querySelector<HTMLElement>(`[data-view-for="${form.dataset.target}"]`);
+    if (viewGroup) viewGroup.hidden = false;
+    const viewButtons = [...(viewGroup?.querySelectorAll<HTMLButtonElement>('button[data-view]') ?? [])];
     const setView = (view: string) => {
       list.dataset.view = view;
       viewButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === view)));
@@ -301,30 +303,93 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
     display: none;
   }
 
-  /* Rijen: label in een vaste kolom (mono, gedempt, zoals het factsheet), opties ernaast.
-     Elke rij een dunne lijn eronder; alle opties beginnen op dezelfde lijn. */
-  .project-filter__group {
+  /* Kolommen: elke groep een kolom met het label (mono, klein, gedempt) erboven en de
+     opties onder elkaar. Beide groepcontainers zijn `display: contents`, zodat ook de
+     groepen onder "Tot op de mm" in hetzelfde raster doorlopen. Kleur beslaat twee
+     kolommen met de opties in twee rijtjes, anders wordt hij veel langer dan de rest. */
+  .project-filter__body {
     display: grid;
-    grid-template-columns: 8rem 1fr;
-    align-items: baseline;
-    gap: var(--space-s);
-    padding-block: var(--space-3xs);
-    border-block-end: var(--border-width) solid var(--color-line);
+    grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+    gap: var(--space-s) var(--space-m);
+    padding-block: var(--space-s);
   }
-  .project-filter__label {
-    font-family: var(--font-mono);
-    color: var(--color-muted);
+  .project-filter__groups {
+    display: contents;
   }
   .project-filter__extra:not(.is-open) {
     display: none;
+  }
+  .project-filter__label {
+    display: block;
+    margin-block-end: var(--space-3xs);
+    font-family: var(--font-mono);
+    /* --step--2 (±10–11px): --step--3 (±8px) is in gedempt grijs niet goed leesbaar. */
+    font-size: var(--step--2);
+    color: var(--color-muted);
   }
 
   /* Opties en acties: kale tekst, actief = onderstreept. De checkbox blijft in de
      toegankelijkheidsboom (visueel weg); focus, aan en uitgeschakeld via :has(). */
   .options {
     display: flex;
+    flex-direction: column;
+    align-items: start;
+  }
+  /* Materiaal (de langste lijst): twee rastersporen breed, met de opties in twee kolommen
+     als er ruimte is voor twee van minstens 5rem (CSS multi-column: de browser kiest).
+     Op brede schermen vult hij zo de lege sporen naast de andere groepen. */
+  .project-filter__group--materialen {
+    grid-column: span 2;
+  }
+  .project-filter__group--materialen .options {
+    display: block;
+    columns: 2 5rem;
+    column-gap: var(--space-s);
+  }
+  .project-filter__group--materialen .option {
+    display: flex;
+    break-inside: avoid;
+  }
+  /* "Tot op de mm" dicht: Type, Vorm en Kleur verdeeld over de volle breedte. */
+  .project-filter__body:not(:has(.project-filter__extra.is-open)) {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+  }
+
+  /* Kleuren compact: alleen de swatch, naam en aantal voor screenreaders (visually-hidden)
+     en als tooltip. Aan = ring eromheen; geen underline. Kleur nooit als enige informatie
+     (WCAG 1.4.1): de naam staat in de toegankelijke naam en de tooltip. */
+  .project-filter__group--kleuren .options,
+  .project-filter__panel:modal .project-filter__group--kleuren .options {
+    display: flex;
+    flex-direction: row;
     flex-wrap: wrap;
-    gap: 0 var(--space-m);
+    gap: var(--space-3xs);
+  }
+  .option--kleur {
+    display: grid;
+    place-items: center;
+    inline-size: 1.75rem; /* raakvlak ≥ 24px (WCAG 2.5.8) */
+    block-size: 1.75rem;
+    border-radius: 50%;
+  }
+  .option--kleur .swatch {
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    transition: box-shadow var(--duration) var(--ease);
+  }
+  .option--kleur:hover .swatch {
+    box-shadow: 0 0 0 1px var(--color-line), 0 0 0 3px var(--color-bg), 0 0 0 4px var(--color-line);
+  }
+  .option--kleur:has(input:checked) .swatch {
+    box-shadow: 0 0 0 1px var(--color-line), 0 0 0 3px var(--color-bg), 0 0 0 5px currentColor;
+  }
+  .option--kleur:has(input:focus-visible) {
+    outline-offset: 0;
+  }
+  .option--kleur:has(input:disabled) {
+    opacity: 0.25;
   }
   .option,
   .action {
@@ -332,7 +397,7 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
     display: inline-flex;
     align-items: center;
     gap: 0.4em;
-    min-block-size: 2rem; /* raakvlak ≥ 24px (WCAG 2.5.8) */
+    min-block-size: 1.75rem; /* raakvlak ≥ 24px (WCAG 2.5.8) */
     cursor: pointer;
     user-select: none;
   }
@@ -407,11 +472,6 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
   .action[hidden] {
     display: none;
   }
-  .project-filter__view {
-    display: flex;
-    gap: var(--space-s);
-    margin-inline-start: auto;
-  }
   .project-filter__open {
     display: none;
   }
@@ -463,13 +523,23 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
     background: var(--color-bg);
     color: var(--color-fg);
   }
+  /* In de overlay: rijen in plaats van kolommen, opties naast elkaar en alles open. */
+  .project-filter__panel:modal .project-filter__body,
+  .project-filter__panel:modal .project-filter__groups,
   .project-filter__panel:modal .project-filter__extra {
     display: block;
   }
   .project-filter__panel:modal .project-filter__group {
-    grid-template-columns: 1fr;
-    gap: 0;
     padding-block: var(--space-xs);
+    border-block-end: var(--border-width) solid var(--color-line);
+  }
+  .project-filter__panel:modal .options,
+  .project-filter__panel:modal .project-filter__group--materialen .options {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0 var(--space-m);
+    columns: auto;
   }
   .project-filter__panel:modal .project-filter__head {
     display: flex;
@@ -516,6 +586,7 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
 
   @media (prefers-reduced-motion: reduce) {
     .option__label,
+    .option--kleur .swatch,
     .action,
     .chevron {
       transition: none;
