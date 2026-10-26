@@ -12,8 +12,8 @@ const page = { title: 'Projecten', fallbackDescription: `Architectuur en interie
 ---
 
 <BaseLayout title={pageTitle(settings, page)} description={pageDescription(settings, page)}>
-  <!-- Featurebreedte (.wrapper, max 78rem): filters erboven, projecten als raster of lijst. -->
-  <div class="wrapper wat">
+  <!-- Volle breedte (gutter tot gutter, gelijk met header en footer): filters erboven, projecten als raster of lijst. -->
+  <div class="wrapper wrapper--full wat">
     <PageHeader title="Projecten" intro={settings.projecten.intro} breed />
     <div class="wat__body">
       <ProjectFilter projects={projects} toonPrijs={settings.projecten.toonPrijsfilter} target="projecten" />

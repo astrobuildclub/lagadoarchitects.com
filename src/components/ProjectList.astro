@@ -17,13 +17,14 @@ const { projects, headingLevel, id, sized = false, weergave = false, zichtbaar }
 ---
 
 <div>
-  <ul role="list" class:list={['project-list', sized && 'project-list--sized']} id={id} data-view="raster">
+  <ul role="list" class:list={['project-list', sized && 'project-list--sized', weergave && 'project-list--vlak']} id={id} data-view="raster">
     {projects.map((project, i) => (
       <ProjectCard
         project={project}
         headingLevel={headingLevel}
         priority={i < 2}
         sized={sized}
+        vlak={sized || weergave}
         later={zichtbaar !== undefined && i >= zichtbaar}
       />
     ))}
@@ -136,6 +137,18 @@ const { projects, headingLevel, id, sized = false, weergave = false, zichtbaar }
     grid-auto-flow: dense;
     gap: 0;
   }
+  /* /projecten, rasterweergave: zelfde raster als de home, maar alle kaarten even groot (2 × 1). */
+  .project-list--vlak[data-view='raster'] {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: clamp(8rem, 5.5rem + 11.11vw, 16rem);
+    gap: 0;
+  }
+  @media (min-width: 60rem) {
+    .project-list--vlak[data-view='raster'] {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
   /* Mobiel: alles 2 breed, behalve `lang` (volle breedte). Hoogte zoals op desktop. */
   .project-list--sized :global(.project-card) {
     --k: 2;

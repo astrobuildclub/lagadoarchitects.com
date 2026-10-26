@@ -14,17 +14,19 @@ interface Props {
   priority?: boolean;
   /** Homepage-raster: spanning volgens homepageGrootte. */
   sized?: boolean;
+  /** Vlak zoals op de home (kaartvorm, typografie), maar zonder eigen maat: /projecten. */
+  vlak?: boolean;
   /** Pas zichtbaar na "Meer projecten". */
   later?: boolean;
 }
-const { project: p, headingLevel = 3, priority = false, sized = false, later = false } = Astro.props;
+const { project: p, headingLevel = 3, priority = false, sized = false, vlak = sized, later = false } = Astro.props;
 const Heading = `h${headingLevel}` as 'h2' | 'h3';
 const grootte = sized ? p.homepageGrootte : undefined;
 // Eerste vorm uit het filter; zonder vorm een rechthoek.
 const vorm = p.vorm[0] ?? 'recht';
 // Homeraster: eigen kaartvorm, anders afgeleid van de vorm (styles/vorm.css).
 const kaartvormVanVorm = { rond: 'ovaal', recht: 'zacht', schuin: 'schuin' } as const;
-const kaartvorm = sized ? (p.kaartvorm ?? kaartvormVanVorm[vorm]) : undefined;
+const kaartvorm = vlak ? (p.kaartvorm ?? kaartvormVanVorm[vorm]) : undefined;
 // 0 is een invulplek in de content, geen jaar.
 const jaar = p.jaarOplevering || p.jaarOpdracht || undefined;
 const kleur = await kaartkleur(p);
@@ -39,7 +41,7 @@ const homeSizes: Record<Project['homepageGrootte'], string> = {
   groot: '(min-width: 60rem) 50vw, 50vw',
   lang: '(min-width: 60rem) 67vw, 100vw',
 };
-const sizes = grootte ? homeSizes[grootte] : '(min-width: 60rem) 33vw, (min-width: 36rem) 50vw, 100vw';
+const sizes = grootte ? homeSizes[grootte] : vlak ? '(min-width: 60rem) 33vw, 50vw' : '(min-width: 60rem) 33vw, (min-width: 36rem) 50vw, 100vw';
 const filters = {
   type: p.type,
   vorm: p.vorm.join(' '),
@@ -53,7 +55,7 @@ const filters = {
 ---
 
 <li
-  class:list={['project-card', grootte && `project-card--home project-card--${grootte}`]}
+  class:list={['project-card', vlak && 'project-card--vlak', grootte && `project-card--${grootte}`]}
   data-vorm={vorm}
   data-kaartvorm={kaartvorm}
   data-later={later || undefined}
@@ -118,8 +120,8 @@ const filters = {
   :global([data-view='raster']) .project-card .project-card__vorm {
     clip-path: var(--vorm-clip);
   }
-  /* In het homeraster bepaalt het grid de maat. */
-  .project-card--home .project-card__vorm {
+  /* In het vlakkenraster (home, /projecten) bepaalt het grid de maat. */
+  .project-card--vlak .project-card__vorm {
     aspect-ratio: auto;
   }
 
@@ -166,56 +168,56 @@ const filters = {
     font-size: var(--step-1);
     line-height: var(--leading-tight);
   }
-  /* Homeraster (Figma): meta klein in mono kapitalen, titel groot. Mobiel staat alles onderin,
+  /* Vlakkenraster (Figma, home en /projecten), alleen in de rasterweergave: meta klein in mono kapitalen, titel groot. Mobiel staat alles onderin,
      vanaf 60rem de meta boven en de titel onder. */
-  .project-card--home .project-card__tekst {
+  :global([data-view='raster']) .project-card--vlak .project-card__tekst {
     justify-content: flex-end;
     padding: var(--space-m) var(--space-l);
   }
-  .project-card--home .project-card__boven {
+  :global([data-view='raster']) .project-card--vlak .project-card__boven {
     display: none;
   }
-  .project-card--home :is(.project-card__boven, .project-card__label) {
+  :global([data-view='raster']) .project-card--vlak :is(.project-card__boven, .project-card__label) {
     font-size: var(--step--3);
     letter-spacing: 0.12em;
     text-transform: uppercase;
     line-height: 1;
   }
-  .project-card--home .project-card__voet {
+  :global([data-view='raster']) .project-card--vlak .project-card__voet {
     gap: var(--space-2xs);
   }
   /* Op mobiel staat het label zichtbaar boven de titel. */
-  .project-card--home .project-card__label {
+  :global([data-view='raster']) .project-card--vlak .project-card__label {
     position: static;
     clip-path: none;
     inline-size: auto;
     block-size: auto;
   }
-  .project-card--home .project-card__title {
+  :global([data-view='raster']) .project-card--vlak .project-card__title {
     font-size: var(--step-1);
     font-weight: 400;
     letter-spacing: -0.04em;
     line-height: 1.125;
   }
   @media (min-width: 60rem) {
-    .project-card--home .project-card__tekst {
+    :global([data-view='raster']) .project-card--vlak .project-card__tekst {
       justify-content: space-between;
       padding: var(--space-2xl) var(--space-l);
     }
-    .project-card--home .project-card__boven {
+    :global([data-view='raster']) .project-card--vlak .project-card__boven {
       display: block;
       font-size: var(--step--1);
     }
-    .project-card--home .project-card__label {
+    :global([data-view='raster']) .project-card--vlak .project-card__label {
       clip-path: inset(50%);
       position: absolute;
       block-size: 1px;
       inline-size: 1px;
     }
-    .project-card--home .project-card__title {
+    :global([data-view='raster']) .project-card--vlak .project-card__title {
       font-size: var(--step-3);
     }
-    .project-card--home.project-card--mini .project-card__title {
+    :global([data-view='raster']) .project-card--vlak.project-card--mini .project-card__title {
       font-size: var(--step-1);
     }
   }
