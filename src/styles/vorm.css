@@ -1,0 +1,17 @@
+/*
+ * De drie vormen uit het filter `vorm`, gedeeld door projectkaarten en dienstentegels.
+ * Zet `data-vorm` op een element en gebruik --vorm-radius en --vorm-clip op het vlak:
+ * recht = afgeronde hoeken, rond = cirkel of pil, schuin = parallellogram.
+ */
+[data-vorm] {
+  --vorm-radius: var(--space-s);
+  --vorm-schuin: var(--space-l);
+  --vorm-clip: none;
+}
+[data-vorm='rond'] {
+  --vorm-radius: 100vmax;
+}
+[data-vorm='schuin'] {
+  --vorm-radius: 0;
+  --vorm-clip: polygon(var(--vorm-schuin) 0, 100% 0, calc(100% - var(--vorm-schuin)) 100%, 0 100%);
+}

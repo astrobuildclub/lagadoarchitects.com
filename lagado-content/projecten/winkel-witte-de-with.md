@@ -13,6 +13,7 @@ kleuren: [zwart]
 status: opgetekend
 schaal: kamer
 materialen: [metaal, glas]
+opgave: [interieur]
 prijsklasse: null
 
 locatie: { plaats: Rotterdam, wijk: Cool }
@@ -29,8 +30,8 @@ accentkleur: ""
 kleurpalet: []
 
 hero: { src: 01.jpg, alt: "" }
-featured: true
-homepageGrootte: s
+featured: false
+homepageGrootte: klein
 volgorde: 6
 gerelateerd: []
 

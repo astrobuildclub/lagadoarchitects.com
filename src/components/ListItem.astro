@@ -1,0 +1,43 @@
+---
+// Eén regel in een pers- of awardlijst (blocks/List.astro): jaar, titel (evt. link), resultaat, project.
+import { label } from '../lib/labels';
+
+interface Props {
+  jaar?: number;
+  titel?: string;
+  url?: string;
+  resultaat?: string;
+  project?: { slug: string; title: string };
+}
+const { jaar, titel, url, resultaat, project } = Astro.props;
+---
+
+<li class="list-item">
+  {jaar ? <span class="list-item__jaar">{jaar}</span> : null}
+  <span class="list-item__titel">
+    {url ? <a href={url} rel="noopener">{titel}</a> : titel}
+    {resultaat && <span class="muted"> ({label(resultaat)})</span>}
+  </span>
+  {project && <a class="list-item__project muted" href={`/projecten/${project.slug}`}>{project.title}</a>}
+</li>
+
+<style>
+  .list-item {
+    display: grid;
+    grid-template-columns: 4rem 1fr;
+    gap: var(--space-2xs) var(--space-s);
+    padding-block: var(--space-2xs);
+    border-block-end: var(--border-width) solid var(--color-line);
+  }
+  .list-item__jaar {
+    color: var(--color-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .list-item__titel {
+    grid-column: 2;
+  }
+  .list-item__project {
+    grid-column: 2;
+    font-size: var(--step--1);
+  }
+</style>

@@ -1,4 +1,4 @@
-// Lijstweergave op /wat: bij hover over een project hangt het projectbeeld aan de muis.
+// Lijstweergave op /projecten: bij hover over een project hangt het projectbeeld aan de muis.
 // ProjectList met `weergave` rendert `[data-hover-follow]` (een vaste laag met één <img>).
 //
 // Hoe het werkt:
@@ -9,6 +9,7 @@
 // - Volgen: gsap.quickTo maakt per as één herbruikbare tween. Elke pointermove zet alleen
 //   een nieuw doel; GSAP loopt er in 0,45 s met power3.out naartoe. Daardoor hangt het beeld
 //   een fractie achter de cursor, wat zacht aanvoelt zonder eigen requestAnimationFrame-lus.
+// - Het beeld krijgt de vorm van de kaart (data-vorm: recht, rond of schuin).
 // - Het beeld staat rechts van de cursor; vlak bij de rechterrand springt het naar links.
 // - Reduced motion: geen naloop en geen schaal, het beeld staat direct op zijn plek.
 // - ClientRouter: start op astro:page-load, ruimt op bij astro:before-swap.
@@ -49,6 +50,7 @@ function init() {
     if (!source) return;
     img.srcset = source.srcset;
     img.src = source.src;
+    layer.dataset.vorm = card.dataset.vorm;
     // Eerste keer: direct op de cursor zetten, anders vliegt het beeld in vanaf (0,0).
     if (!shown) place(e, true);
     shown = true;

@@ -6,24 +6,80 @@ import { has, type BlockProps } from './scope';
 type Props = BlockProps<'projectGrid'>;
 const { block } = Astro.props;
 const projects = await selectProjects(block);
+const stap = block.limit ?? projects.length;
+const id = 'projecten-uitgelicht';
+const links = [...(block.linkNaarOverzicht ? [block.linkNaarOverzicht] : []), ...block.links];
 ---
 
 {
   projects.length > 0 && (
-    <section class="project-grid feature">
+    <section class="project-grid full">
       {has(block.kop) && <h2>{block.kop}</h2>}
-      <ProjectList projects={projects} headingLevel={has(block.kop) ? 3 : 2} sized />
-      {block.linkNaarOverzicht && (
-        <p>
-          <a class="button" href={block.linkNaarOverzicht.href}>{block.linkNaarOverzicht.label}</a>
+      <ProjectList projects={projects} headingLevel={has(block.kop) ? 3 : 2} id={id} sized zichtbaar={stap} />
+      {(projects.length > stap || links.length > 0) && (
+        <p class="project-grid__acties">
+          {projects.length > stap && (
+            <button type="button" class="button" data-meer={id} data-stap={stap} aria-controls={id} hidden>
+              Meer projecten
+            </button>
+          )}
+          {links.map((l) => (
+            <a class="button" href={l.href}>{l.label}</a>
+          ))}
         </p>
       )}
     </section>
   )
 }
 
+<script>
+  // "Meer projecten": toont de volgende `data-stap` verborgen kaarten en zet de focus op de eerste
+  // nieuwe kaart (WCAG 2.4.3), zodat toetsenbord- en schermlezergebruikers verder gaan waar het nieuwe begint.
+  // Zonder JS blijft de knop verborgen; de link naar het overzicht toont dan alles.
+  function initMeer() {
+    document.querySelectorAll<HTMLButtonElement>('[data-meer]').forEach((knop) => {
+      const lijst = document.getElementById(knop.dataset.meer!);
+      if (!lijst) return;
+      const stap = Number(knop.dataset.stap);
+      knop.hidden = false;
+      knop.addEventListener('click', () => {
+        const wachtend = [...lijst.querySelectorAll<HTMLElement>('[data-later][hidden]')];
+        const nu = wachtend.slice(0, stap);
+        nu.forEach((kaart) => (kaart.hidden = false));
+        nu[0]?.querySelector('a')?.focus();
+        if (wachtend.length <= stap) knop.hidden = true;
+      });
+    });
+  }
+  document.addEventListener('astro:page-load', initMeer);
+</script>
+
 <style>
+  /* Breakout: over de volle paginabreedte, alleen de gutter eraf (gelijk met header en logo). */
+  .project-grid {
+    padding-inline: var(--gutter);
+  }
   .project-grid > * + * {
     margin-block-start: var(--space-m);
+  }
+  /* Knoppen onder het raster: onder elkaar op mobiel, vanaf 48rem naast elkaar, elk de helft. */
+  .project-grid__acties {
+    display: grid;
+    gap: var(--space-s);
+    margin-block-start: var(--space-xl);
+  }
+  .project-grid__acties .button {
+    justify-content: center;
+  }
+  /* .button is inline-flex en zou `hidden` anders overschrijven. */
+  .project-grid__acties .button[hidden] {
+    display: none;
+  }
+  @media (min-width: 48rem) {
+    .project-grid__acties {
+      /* Zichtbare knoppen naast elkaar, even breed. */
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr;
+    }
   }
 </style>

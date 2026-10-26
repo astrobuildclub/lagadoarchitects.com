@@ -13,6 +13,7 @@ kleuren: [geel, roze]
 status: af
 schaal: kamer
 materialen: [tegels, metaal]
+opgave: [interieur]
 prijsklasse: null
 
 locatie: { plaats: Rotterdam, wijk: Middelland }
@@ -29,8 +30,8 @@ accentkleur: ""
 kleurpalet: []
 
 hero: { src: 01.jpg, alt: "" }
-featured: true
-homepageGrootte: s
+featured: false
+homepageGrootte: breed
 volgorde: 3
 gerelateerd: []
 

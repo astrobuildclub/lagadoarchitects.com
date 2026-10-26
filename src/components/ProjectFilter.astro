@@ -1,19 +1,19 @@
 ---
-// Filters voor /wat. Progressive enhancement: zonder JS staat alles zichtbaar en zijn
+// Filters voor /projecten. Progressive enhancement: zonder JS staat alles zichtbaar en zijn
 // de filters verborgen. Met JS: kaarten krijgen `hidden`, keuze staat in de querystring
 // (deelbaar, werkt met terug-knop), aantal resultaten wordt voorgelezen.
 // Binnen één groep = OF, tussen groepen = EN. Elke optie toont hoeveel projecten je
 // overhoudt als je hem aanzet; bij 0 is hij uitgeschakeld, dus je komt nooit op niets uit.
 //
 // Opbouw: elke groep een kolom, label (mono, klein) erboven, opties eronder als kale
-// tekst (actief = onderstreept). Volgorde volgens
-// Victor: Type, Vorm, Kleur (swatches, direct zichtbaar); Status, Schaal en Materiaal
-// onder "Tot op de mm". Daaronder één actieregel: Tot op de mm en Wis filters (alleen als
-// er iets aan staat). "Verras me" is het woord "verrassen" in de intro (link naar #verras
-// in site.md). Aantal projecten en Raster / Lijst staan op één regel boven de lijst.
+// tekst (actief = onderstreept). Volgorde volgens Victor (teksten_v4): Vorm, Kleur
+// (swatches) en Verras me (dobbelsteen) direct zichtbaar; Bestemming, Schaal, Gebouwd en
+// Opgave onder "Verfijn tot op de millimeter". Daaronder één actieregel: die uitklap en
+// Wis filters (alleen als er iets aan staat). Materiaal staat nog in het factsheet, niet als
+// filter. Aantal projecten en Raster / Lijst staan op één regel boven de lijst.
 // Mobiel (< 40rem): de rijen staan in een overlay achter de knop "Filters", alle rijen open.
 import { KLEUR_SWATCH, label } from '../lib/labels';
-import { KLEUR, MATERIAAL, SCHAAL, STATUS, TYPE, VORM, type Project } from '../lib/schema';
+import { KLEUR, OPGAVE, SCHAAL, STATUS, TYPE, VORM, type Project } from '../lib/schema';
 
 interface Props {
   projects: Project[];
@@ -36,14 +36,14 @@ const group = (key: string, legend: string, order: readonly string[], used: stri
 });
 
 const main = [
-  group('type', 'Type', TYPE, projects.map((p) => p.type)),
   group('vorm', 'Vorm', VORM, projects.flatMap((p) => p.vorm)),
   group('kleuren', 'Kleur', KLEUR, projects.flatMap((p) => p.kleuren)),
 ];
 const extra = [
-  group('status', 'Status', STATUS, projects.map((p) => p.status)),
+  group('type', 'Bestemming', TYPE, projects.map((p) => p.type)),
   group('schaal', 'Schaal', SCHAAL, projects.flatMap((p) => (p.schaal ? [p.schaal] : []))),
-  group('materialen', 'Materiaal', MATERIAAL, projects.flatMap((p) => p.materialen)),
+  group('status', 'Gebouwd', STATUS, projects.map((p) => p.status)),
+  group('opgave', 'Opgave', OPGAVE, projects.flatMap((p) => p.opgave)),
   ...(toonPrijs
     ? [group('prijsklasse', 'Prijsklasse', ['laag', 'midden', 'hoog'], projects.flatMap((p) => (p.prijsklasse ? [p.prijsklasse] : [])))]
     : []),
@@ -89,6 +89,22 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
                       </div>
                     </div>
                   ))}
+                  {i === 0 && (
+                    <div class="project-filter__group project-filter__group--verras">
+                      <span class="project-filter__label" aria-hidden="true">Verrassing</span>
+                      <button type="button" class="verras-knop" data-random disabled>
+                        <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20">
+                          <rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="1.5" />
+                          <circle cx="8" cy="8" r="1.5" fill="currentColor" />
+                          <circle cx="16" cy="8" r="1.5" fill="currentColor" />
+                          <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+                          <circle cx="8" cy="16" r="1.5" fill="currentColor" />
+                          <circle cx="16" cy="16" r="1.5" fill="currentColor" />
+                        </svg>
+                        Verras me
+                      </button>
+                    </div>
+                  )}
                 </div>
               ),
           )}
@@ -115,7 +131,7 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
     {
       extraGroups.length > 0 && (
         <button type="button" class="action project-filter__more" aria-expanded="false" aria-controls="filter-extra" data-more>
-          Tot op de mm
+          Verfijn tot op de millimeter
           <svg class="chevron" aria-hidden="true" viewBox="0 0 16 16" width="12" height="12">
             <path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.75" />
           </svg>
@@ -153,7 +169,7 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
     const matches = (card: HTMLElement, active: Map<string, string[]>, skip?: string) =>
       [...active].every(([key, values]) => key === skip || values.some((v) => own(card, key).includes(v)));
 
-    // "Tot op de mm": extra rijen tonen of verbergen (op mobiel staan ze in de overlay altijd open).
+    // "Verfijn": extra rijen tonen of verbergen (op mobiel staan ze in de overlay altijd open).
     const setMore = (open: boolean) => {
       if (!extra || !moreButton) return;
       extra.classList.toggle('is-open', open);
@@ -192,7 +208,7 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
         if (option.title) option.title = `${option.querySelector('.option__label')!.textContent} (${hits})`;
       }
 
-      // "Tot op de mm" open houden zolang daar iets aan staat.
+      // "Verfijn" open houden zolang daar iets aan staat.
       if (extra?.querySelector('input:checked')) setMore(true);
 
       if (updateUrl) {
@@ -305,7 +321,7 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
 
   /* Kolommen: elke groep een kolom met het label (mono, klein, gedempt) erboven en de
      opties onder elkaar. Beide groepcontainers zijn `display: contents`, zodat ook de
-     groepen onder "Tot op de mm" in hetzelfde raster doorlopen. Kleur beslaat twee
+     groepen onder "Verfijn" in hetzelfde raster doorlopen. Kleur beslaat twee
      kolommen met de opties in twee rijtjes, anders wordt hij veel langer dan de rest. */
   .project-filter__body {
     display: grid;
@@ -335,22 +351,31 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
     flex-direction: column;
     align-items: start;
   }
-  /* Materiaal (de langste lijst): twee rastersporen breed, met de opties in twee kolommen
-     als er ruimte is voor twee van minstens 5rem (CSS multi-column: de browser kiest).
-     Op brede schermen vult hij zo de lege sporen naast de andere groepen. */
-  .project-filter__group--materialen {
-    grid-column: span 2;
+  /* Verras me: een echte knop met dobbelsteen, net als de opties kale tekst. */
+  .verras-knop {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
   }
-  .project-filter__group--materialen .options {
-    display: block;
-    columns: 2 5rem;
-    column-gap: var(--space-s);
+  .verras-knop:enabled:hover {
+    text-decoration: underline;
   }
-  .project-filter__group--materialen .option {
-    display: flex;
-    break-inside: avoid;
+  .verras-knop:disabled {
+    color: var(--color-muted);
+    cursor: default;
   }
-  /* "Tot op de mm" dicht: Type, Vorm en Kleur verdeeld over de volle breedte. */
+  .verras-knop:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  /* "Verfijn" dicht: Vorm, Kleur en Verras me verdeeld over de volle breedte. */
   .project-filter__body:not(:has(.project-filter__extra.is-open)) {
     grid-template-columns: none;
     grid-auto-flow: column;
@@ -503,7 +528,7 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
     display: none;
   }
 
-  /* Mobiel: knop "Filters" in de actieregel, "Tot op de mm" niet (in de overlay staat alles open). */
+  /* Mobiel: knop "Filters" in de actieregel, "Verfijn" niet (in de overlay staat alles open). */
   @media (width < 40rem) {
     .project-filter__open {
       display: inline-flex;
@@ -534,7 +559,7 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
     border-block-end: var(--border-width) solid var(--color-line);
   }
   .project-filter__panel:modal .options,
-  .project-filter__panel:modal .project-filter__group--materialen .options {
+  .project-filter__panel:modal .project-filter__group--opgave .options {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;

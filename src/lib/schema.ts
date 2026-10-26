@@ -3,20 +3,21 @@
 import { z } from 'astro/zod';
 
 // ── Waardenlijsten ─────────────────────────────────────────
-// Filters op /wat (Victors eigen woorden, zie README).
+// Filters op /projecten (Victors eigen woorden, zie README).
 export const TYPE = ['thuiskomen', 'de-hort-op'] as const;
 export const VORM = ['recht', 'rond', 'schuin'] as const;
 export const KLEUR = ['rood', 'oranje', 'geel', 'groen', 'blauw', 'paars', 'roze', 'wit', 'zwart', 'grijs'] as const;
 export const STATUS = ['af', 'bijna', 'opgetekend'] as const;
-export const SCHAAL = ['stoel', 'kamer', 'huis', 'stad'] as const;
+export const SCHAAL = ['stoel', 'kamer', 'huis', 'plein'] as const;
+export const OPGAVE = ['interieur', 'verbouw', 'nieuwbouw', 'landschap'] as const;
 export const MATERIAAL = ['hout', 'steen', 'beton', 'glas', 'tegels', 'metaal'] as const;
 
 export const PROGRAMMA = ['woning', 'winkel', 'horeca', 'kantoor', 'publiek', 'openbare-ruimte', 'meubel'] as const;
 export const OPDRACHTGEVER_TYPE = ['particulier', 'zakelijk', 'publiek'] as const;
 export const PRIJSKLASSE = ['laag', 'midden', 'hoog'] as const;
 export const BREEDTE = ['content', 'popout', 'feature', 'full'] as const;
-/** Kaartgrootte op de homepage (projectGrid). */
-export const HOMEPAGE_GROOTTE = ['s', 'm', 'l'] as const;
+/** Kaartgrootte op de homepage (projectGrid), in kolommen × rijen: klein 2×1, hoog 2×2, toren 2×3, breed 3×1, groot 3×2. */
+export const HOMEPAGE_GROOTTE = ['klein', 'hoog', 'toren', 'breed', 'groot'] as const;
 
 // ── Bouwstenen voor velden ─────────────────────────────────
 const text = z.string().optional();
@@ -60,7 +61,8 @@ const heroBlock = z.object({
   subkop: text,
   subkopWissel: z.array(z.string()).default([]),
   link: link.optional(),
-  beelden: z.array(imageRef.extend({ project: text })).min(1).max(5),
+  /** 0–5 beelden; leeg = hero zonder beeld. */
+  beelden: z.array(imageRef.extend({ project: text })).max(5).default([]),
 });
 
 const textBlock = z.object({
@@ -122,8 +124,19 @@ const projectGridBlock = z.object({
   kop: text,
   slugs: z.array(z.string()).optional(),
   filter: z.record(z.string(), z.string()).optional(),
+  /** Alleen projecten met `featured: true`. */
+  featured: z.boolean().optional(),
+  /** Zoveel kaarten eerst; de rest van de selectie komt per `limit` via "Meer projecten". */
   limit: z.number().optional(),
   linkNaarOverzicht: link.optional(),
+  /** Extra links onder het raster, naast linkNaarOverzicht (bv. naar de diensten op /over). */
+  links: z.array(link).default([]),
+});
+
+/** Grote, vette zin (mantra) over de breedte van de pagina. */
+const statementBlock = z.object({
+  type: z.literal('statement'),
+  tekst: z.string(),
 });
 
 const teamBlock = z.object({
@@ -148,6 +161,8 @@ const listBlock = z.object({
   /** Haal items uit een andere pagina (bv. `bureau`) in plaats van `items`. */
   toonUit: text,
   limit: z.number().optional(),
+  /** Zoveel items direct zichtbaar; de rest achter "Toon alles" (uitklap). */
+  zichtbaar: z.number().optional(),
 });
 
 const ctaBlock = z.object({
@@ -160,6 +175,10 @@ const ctaBlock = z.object({
 const servicesBlock = z.object({
   type: z.literal('services'),
   kop: text,
+  /** Anker voor links, bv. `diensten` → /over#diensten. */
+  anker: text,
+  /** Tegels in de kaartvormen (recht, rond, schuin om en om) en accentkleuren. */
+  vormen: z.boolean().default(false),
   items: z.array(z.object({ titel: z.string(), tekst: text })).default([]),
 });
 
@@ -189,6 +208,7 @@ export const block = z.discriminatedUnion('type', [
   colorsBlock,
   beforeAfterBlock,
   projectGridBlock,
+  statementBlock,
   teamBlock,
   listBlock,
   ctaBlock,
@@ -214,6 +234,8 @@ export const settingsSchema = z.object({
     tekst: text,
     links: z.array(z.object({ label: z.string(), href: z.string() })).default([]),
     privacy: z.string(),
+    /** Uitsmijter onderaan de footer (Gulliver). */
+    uitsmijter: z.object({ kop: z.string(), tekst: z.string(), beeld: z.object({ src: z.string(), alt: z.string() }).optional() }).optional(),
   }),
   seo: z.object({
     titelPatroon: z.string().default('%s'),
@@ -239,6 +261,10 @@ export const contactSchema = z.object({
   tekst: text,
   sfeerbeeld: z.object({ src: z.string(), alt: z.string() }).optional(),
   contactpersoon: z.object({ naam: z.string(), rol: text }).optional(),
+  /** Portret met quote van de oprichter. `quote` is markdown (links mogen). */
+  bio: z.object({ kop: text, foto: z.object({ src: z.string(), alt: z.string() }).optional(), quote: z.string() }).optional(),
+  /** Oproep voor stagiairs. `tekst` is markdown. */
+  stage: z.object({ kop: z.string(), tekst: z.string() }).optional(),
   email: z.string(),
   telefoon: text,
   adres: z.object({
@@ -256,6 +282,7 @@ export const contactSchema = z.object({
     kvk: text,
     btw: text,
     architectenregister: text,
+    bank: text,
     lidmaatschappen: z.array(z.object({ label: z.string(), href })).default([]),
   }),
   social: z.array(z.object({ label: z.string(), href: z.string() })).default([]),
@@ -274,13 +301,15 @@ export const projectSchema = z
     vraag: text,
     intro: z.string().min(1),
 
-    // Filters (volgorde zoals op /wat); ook getoond in het factsheet
+    // Filters (volgorde zoals op /projecten); ook getoond in het factsheet
     type: z.enum(TYPE),
     vorm: z.array(z.enum(VORM)).default([]),
     kleuren: z.array(z.enum(KLEUR)).default([]),
     status: z.enum(STATUS),
     schaal: z.enum(SCHAAL).nullable().optional(),
     materialen: z.array(z.enum(MATERIAAL)).default([]),
+    /** Soort opgave; filter onder "Verfijn tot op de millimeter". */
+    opgave: z.array(z.enum(OPGAVE)).default([]),
     prijsklasse: z.enum(PRIJSKLASSE).nullable().optional(),
 
     // Projectgegevens (factsheet)
@@ -302,8 +331,8 @@ export const projectSchema = z
 
     hero: imageRef.pick({ src: true, alt: true }),
     featured: z.boolean().default(false),
-    /** Kaartgrootte op de homepage: s (smal), m (standaard), l (breed). */
-    homepageGrootte: z.enum(HOMEPAGE_GROOTTE).default('m'),
+    /** Kaartgrootte op de homepage: klein, hoog, toren, breed of groot. */
+    homepageGrootte: z.enum(HOMEPAGE_GROOTTE).default('klein'),
     volgorde: z.number().default(0),
     gerelateerd: z.array(z.string()).max(3).default([]),
 

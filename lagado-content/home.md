@@ -10,52 +10,42 @@ blocks:
   - type: hero
     kop: |-                            # verplicht; een nieuwe regel hier = nieuwe regel op de site
       Wij zijn een serieus
-      buro voor
-    kopWissel:                         # optioneel; de eerste staat er zonder animatie
+      bureau voor
+    kopWissel:                         # optioneel; de eerste staat er vast, daarna harde wissel per zin
       - speelse architectuur
-      - spannende interieurs
-      - sportieve landschappen
+      - kleurrijke interieurs
+      - uitdagende landschappen
+      - heldere vormen
+      - krachtige kleuren
+      - slimme gelaagdheid
+      - ruimtes die verrassen
     subkop: We ontwerpen               # optioneel
     subkopWissel:
-      - van nok tot fundering          # het idee achter onze naam
       - van bed tot flat
       - van deur tot dorp
       - van kelder tot kap
-      - van neut tot nok
       - van plank tot plein
       - van tegel tot tuin
-    link: { label: over ons, href: /waarom }
-    beelden:                           # 1–5 beelden, verwijzing naar projectbeeld
-      - { project: workhome-playhome, src: 01.jpg, alt: "" }   # alt verplicht
+      - van stoel tot stad
+    link: { label: over ons, href: /over }
+    beelden: []                        # 0–5 beelden, verwijzing naar projectbeeld. Uitgezet: direct het projectraster.
+    #  - { project: workhome-playhome, src: 01.jpg, alt: "Woonkamer met oranje en roze wanden, de trap als sculptuur erboven en een lange eettafel" }
 
-  # 2. Statement: één korte alinea over hoe Lagado werkt.
-  - type: text
-    kop: ""
-    tekst: |
-      TODO: 2–3 zinnen. Bron: "We maken leefomgevingen die sociale interactie
-      bevorderen en uitnodigen tot divers gebruik."
+  # 2. Mantra: groot en vet (bron: teksten_v4).
+  - type: statement
+    tekst: Vorm, kleur, gelaagdheid. Ruimtes die verrassen.
 
-  # 3. Geselecteerd werk: handmatig gekozen; homepageGrootte (s/m/l) stuurt het raster.
+  # 3. Geselecteerd werk: projecten met `featured: true`, op `volgorde`. homepageGrootte stuurt het raster.
+  #    Eerst `limit` kaarten, daarna per `limit` meer via de knop "Meer projecten".
   - type: projectGrid
-    kop: Geselecteerd werk
-    slugs:
-      - workhome-playhome
-      - huis-aan-de-maas
-      - koffiebar-binnenweg
-      - atelier-kralingen
-      - speelplein-zuid
-      - winkel-witte-de-with
-    limit: 6
-    linkNaarOverzicht: { label: Alle projecten, href: /wat }
+    kop: ""                            # leeg = geen sectietitel
+    featured: true
+    limit: 12
+    linkNaarOverzicht: { label: Bekijk meer projecten, href: /projecten }
+    links:
+      - { label: Of ontdek hoe we je kunnen helpen, href: /over#diensten }
 
-  # 4. Pers & awards: logo's of namen, geen lange lijst.
-  - type: list
-    soort: pers
-    kop: Gepubliceerd in
-    toonUit: bureau                    # haalt de laatste 5 pers-items uit bureau.md
-    limit: 5
-
-  # 5. Afsluiter
+  # 4. Afsluiter
   - type: cta
     tekst: Een project in gedachten?
     label: Neem contact op

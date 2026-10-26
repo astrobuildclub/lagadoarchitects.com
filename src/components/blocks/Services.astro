@@ -1,18 +1,34 @@
 ---
+// Diensten of principes als tegels. Met `vormen: true` krijgt elke tegel om en om een van de
+// drie projectvormen (styles/vorm.css) en een kleurvlak; de tekstkleur is per vlak gekozen op
+// contrast (WCAG 1.4.3). `anker` maakt de sectie bereikbaar via bv. /over#diensten.
 import { md } from '../../lib/markdown';
 import { has, type BlockProps } from './scope';
 
 type Props = BlockProps<'services'>;
 const { block } = Astro.props;
+const VORMEN = ['recht', 'rond', 'schuin'] as const;
+// Vlak en tekst per tegel, om en om (kleuren uit KLEUR_SWATCH, labels.ts).
+const VLAKKEN = [
+  ['oklch(72% 0.18 52)', 'oklch(18% 0 0)'],
+  ['oklch(52% 0.2 262)', 'oklch(99% 0 0)'],
+  ['oklch(62% 0.15 150)', 'oklch(18% 0 0)'],
+  ['oklch(78% 0.13 350)', 'oklch(18% 0 0)'],
+  ['oklch(48% 0.2 300)', 'oklch(99% 0 0)'],
+  ['oklch(88% 0.17 95)', 'oklch(18% 0 0)'],
+] as const;
 ---
 
 {
   block.items.length > 0 && (
-    <section class="services popout">
+    <section class:list={['services popout', block.vormen && 'services--vormen']} id={has(block.anker) ? block.anker : undefined}>
       {has(block.kop) && <h2>{block.kop}</h2>}
       <ul role="list">
-        {block.items.map((item) => (
-          <li>
+        {block.items.map((item, i) => (
+          <li
+            data-vorm={block.vormen ? VORMEN[i % VORMEN.length] : undefined}
+            style={block.vormen ? `--tegel-vlak: ${VLAKKEN[i % VLAKKEN.length][0]}; --tegel-tekst: ${VLAKKEN[i % VLAKKEN.length][1]}` : undefined}
+          >
             <h3>{item.titel}</h3>
             {has(item.tekst) && <div class="prose" set:html={md(item.tekst)} />}
           </li>
@@ -23,6 +39,9 @@ const { block } = Astro.props;
 }
 
 <style>
+  .services {
+    scroll-margin-block-start: var(--space-xl);
+  }
   ul {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
@@ -31,5 +50,32 @@ const { block } = Astro.props;
   }
   h3 {
     margin-block-end: var(--space-2xs);
+  }
+
+  /* Tegels in vormen: vierkant vlak, tekst gecentreerd; rond wordt een cirkel. */
+  .services--vormen ul {
+    gap: var(--space-s);
+  }
+  .services--vormen li {
+    display: grid;
+    place-content: center;
+    aspect-ratio: 1;
+    padding: var(--space-m);
+    background: var(--tegel-vlak);
+    color: var(--tegel-tekst);
+    text-align: center;
+    hyphens: auto;
+    border-radius: var(--vorm-radius);
+    clip-path: var(--vorm-clip);
+  }
+  /* Schuin en rond snoepen ruimte van de zijkanten: daar extra binnenruimte. */
+  .services--vormen li[data-vorm='schuin'] {
+    padding-inline: calc(var(--space-m) + var(--vorm-schuin));
+  }
+  .services--vormen li[data-vorm='rond'] {
+    padding-inline: var(--space-l);
+  }
+  .services--vormen h3 {
+    font-size: var(--step-1);
   }
 </style>

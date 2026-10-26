@@ -27,3 +27,19 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     X-Content-Type-Options = "nosniff"
     Permissions-Policy = "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+
+# Oude menu-URL's (Wat/Waarom → Projecten/Over), zodat bestaande links blijven werken.
+[[redirects]]
+  from = "/wat"
+  to = "/projecten"
+  status = 301
+
+[[redirects]]
+  from = "/wat/*"
+  to = "/projecten/:splat"
+  status = 301
+
+[[redirects]]
+  from = "/waarom"
+  to = "/over"
+  status = 301

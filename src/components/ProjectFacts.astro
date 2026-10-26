@@ -1,6 +1,6 @@
 ---
 // Factsheet bovenaan een project, in twee helften: de filtereigenschappen (zelfde
-// volgorde en namen als op /wat, elke waarde linkt naar dat filter) en de projectgegevens.
+// volgorde en namen als op /projecten, elke waarde linkt naar dat filter) en de projectgegevens.
 // Lege velden worden weggelaten; prijsklasse nooit.
 import { KLEUR_SWATCH, label } from '../lib/labels';
 import type { Project } from '../lib/schema';
@@ -16,12 +16,12 @@ interface Filter {
   values: string[];
 }
 const filters: Filter[] = [
-  { term: 'Type', key: 'type', values: [p.type] },
   { term: 'Vorm', key: 'vorm', values: p.vorm },
   { term: 'Kleur', key: 'kleuren', values: p.kleuren },
-  { term: 'Status', key: 'status', values: [p.status] },
+  { term: 'Bestemming', key: 'type', values: [p.type] },
   { term: 'Schaal', key: 'schaal', values: p.schaal ? [p.schaal] : [] },
-  { term: 'Materiaal', key: 'materialen', values: p.materialen },
+  { term: 'Gebouwd', key: 'status', values: [p.status] },
+  { term: 'Opgave', key: 'opgave', values: p.opgave },
 ].filter((f) => f.values.length);
 
 const namen = (lijst: { naam: string }[]) =>
@@ -37,6 +37,8 @@ const jaar =
     : String(p.jaarOplevering || p.jaarOpdracht || '');
 
 const gegevens = [
+  // Materiaal is geen filter meer: gewone tekst, geen link.
+  ['Materiaal', p.materialen.map(label).join(', ')],
   ['Locatie', [p.locatie.wijk, p.locatie.plaats].filter(Boolean).join(', ')],
   ['Omvang', p.omvang ? `${p.omvang} m²` : ''],
   ['Opdrachtgever', p.opdrachtgever || (p.opdrachtgeverType ? label(p.opdrachtgeverType) : '')],
@@ -45,7 +47,7 @@ const gegevens = [
   ['Jaar', jaar],
 ].filter((f): f is [string, string] => !!f[1]);
 
-const filterUrl = (key: string, value: string) => `/wat?${new URLSearchParams({ [key]: value })}`;
+const filterUrl = (key: string, value: string) => `/projecten?${new URLSearchParams({ [key]: value })}`;
 ---
 
 <section class="facts" aria-label="Factsheet">

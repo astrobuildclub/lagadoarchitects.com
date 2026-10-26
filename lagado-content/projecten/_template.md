@@ -14,8 +14,9 @@ type: thuiskomen                       # verplicht: thuiskomen (particulier) | d
 vorm: []                               # recht | rond | schuin (meerdere mogelijk)
 kleuren: []                            # hoofdkleur(en), zie README (meerdere mogelijk)
 status: af                             # verplicht: af (gerealiseerd) | bijna (in ontwikkeling) | opgetekend (gepubliceerd)
-schaal: null                           # stoel | kamer | huis | stad
+schaal: null                           # stoel | kamer | huis | plein
 materialen: []                         # hout | steen | beton | glas | tegels | metaal (meerdere mogelijk)
+opgave: []                               # interieur | verbouw | nieuwbouw | landschap (meerdere mogelijk)
 prijsklasse: null                      # laag | midden | hoog — niet tonen zonder akkoord
 
 # ── Projectgegevens (factsheet) ────────────────────────────
@@ -30,13 +31,13 @@ jaarOplevering: 0                      # optioneel, verplicht als status = af
 programma: woning                      # verplicht: zie README (op de projectkaart, niet in het factsheet)
 
 # ── Kleur ──────────────────────────────────────────────────
-accentkleur: ""                        # optioneel, hex. Gebruikt voor typografie en details op de pagina
+accentkleur: ""                        # optioneel, hex. Pagina-accent en kaartkleur; leeg = kleur uit het hero-beeld
 kleurpalet: []                         # [{ label, hex }] — voedt het `colors`-blok
 
 # ── Beeld & weergave ───────────────────────────────────────
 hero: { src: 01.jpg, alt: "" }         # verplicht, alt verplicht
 featured: false                        # op home/uitgelicht
-homepageGrootte: m                     # s | m | l — alleen op de homepage-kaart
+homepageGrootte: klein                 # klein (2×1) | hoog (2×2) | toren (2×3) | breed (3×1) | groot (3×2) — alleen op de homepage
 volgorde: 0                            # handmatige sortering, laag = eerst
 gerelateerd: []                        # slugs, max 3
 

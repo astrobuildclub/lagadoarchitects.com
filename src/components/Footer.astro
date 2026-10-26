@@ -1,5 +1,7 @@
 ---
-import { downloadUrl } from '../lib/images';
+import Img from './Img.astro';
+import { downloadUrl, pageImage } from '../lib/images';
+import { md } from '../lib/markdown';
 import type { Contact, Settings } from '../lib/schema';
 
 interface Props {
@@ -11,15 +13,26 @@ const { adres, bedrijf } = contact;
 const links = [...settings.footer.links, ...contact.social]
   .filter((l, i, all) => l.href && all.findIndex((x) => x.href === l.href) === i);
 const downloads = contact.downloads.map((d) => ({ ...d, url: downloadUrl(d.bestand) })).filter((d) => d.url);
+const uitsmijter = settings.footer.uitsmijter;
+const uitsmijterBeeld = uitsmijter?.beeld?.src ? pageImage(uitsmijter.beeld.src) : undefined;
 const tel = contact.telefoon?.replace(/[^\d+]/g, '').replace('(0)', '');
 ---
 
 <footer class="site-footer">
-  <div class="wrapper wrapper--full site-footer__grid">
+  <div class="wrapper site-footer__grid">
     <div>
       <p class="site-footer__name">{settings.siteNaam}</p>
       <p class="muted">{settings.payoff}</p>
       {settings.footer.tekst && <p>{settings.footer.tekst}</p>}
+      {
+        uitsmijter && (
+          <aside class="site-footer__uitsmijter" aria-labelledby="uitsmijter-kop">
+            {uitsmijterBeeld && <Img src={uitsmijterBeeld} alt={uitsmijter.beeld!.alt} sizes="12rem" />}
+            <h2 id="uitsmijter-kop">{uitsmijter.kop}</h2>
+            <div set:html={md(uitsmijter.tekst)} />
+          </aside>
+        )
+      }
     </div>
 
     <address>
@@ -28,24 +41,24 @@ const tel = contact.telefoon?.replace(/[^\d+]/g, '').replace('(0)', '');
       {adres.postcode} {adres.plaats}
       {contact.email && <><br /><a href={`mailto:${contact.email}`}>{contact.email}</a></>}
       {contact.telefoon && <><br /><a href={`tel:${tel}`}>{contact.telefoon}</a></>}
+      {
+        links.length > 0 && (
+          <ul role="list" class="site-footer__social" aria-label="Social media">
+            {links.map((l) => (
+              <li>
+                <a href={l.href} rel="noopener">{l.label}</a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
     </address>
-
-    {
-      links.length > 0 && (
-        <ul role="list" aria-label="Social media">
-          {links.map((l) => (
-            <li>
-              <a href={l.href} rel="noopener">{l.label}</a>
-            </li>
-          ))}
-        </ul>
-      )
-    }
 
     <ul role="list" class="site-footer__legal">
       {bedrijf.kvk && <li>KvK {bedrijf.kvk}</li>}
       {bedrijf.btw && <li>btw {bedrijf.btw}</li>}
       {bedrijf.architectenregister && <li>Architectenregister {bedrijf.architectenregister}</li>}
+      {bedrijf.bank && <li>Bank {bedrijf.bank}</li>}
       {downloads.map((d) => <li><a href={d.url} download>{d.label}</a></li>)}
       <li><a href={settings.footer.privacy}>Privacy</a></li>
       <li>
@@ -54,6 +67,7 @@ const tel = contact.telefoon?.replace(/[^\d+]/g, '').replace('(0)', '');
       <li><a href="https://abcdinamo.com/typefaces/areal" rel="noopener">Areal by ABC Dinamo</a></li>
     </ul>
   </div>
+
 </footer>
 
 <style>
@@ -74,8 +88,27 @@ const tel = contact.telefoon?.replace(/[^\d+]/g, '').replace('(0)', '');
   address {
     font-style: normal;
   }
+  .site-footer__social {
+    margin-block-start: var(--space-xs);
+  }
   .site-footer__legal {
     color: var(--color-muted);
+  }
+  /* Uitsmijter: Gulliver, als leuk weetje onder de naam in de eerste kolom. */
+  .site-footer__uitsmijter {
+    margin-block-start: var(--space-m);
+  }
+  /* Zelfde maat en gewicht als de naam erboven. */
+  .site-footer__uitsmijter h2 {
+    margin-block-end: var(--space-3xs);
+    font-size: inherit;
+    font-weight: 700;
+    letter-spacing: normal;
+  }
+  .site-footer__uitsmijter :global(img) {
+    inline-size: 12rem;
+    block-size: auto;
+    margin-block-end: var(--space-xs);
   }
   .link-button {
     padding: 0;

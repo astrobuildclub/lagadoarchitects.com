@@ -68,7 +68,7 @@ src/
   components/blocks/ Eén component per bloktype
   layouts/           BaseLayout.astro
   lib/               schema, content (enige datalaag), images, seo, consent, …
-  pages/             Routes (/wat, /waarom, /contact …)
+  pages/             Routes (/projecten, /over, /contact …)
   scripts/           Client-side scripts (rotating-text.ts)
   styles/            tokens.scss (Utopia), layout, base, reset
 public/              favicon, og-default
@@ -79,7 +79,7 @@ TODO.md              Openstaande projecttaken
 
 - **Nu:** content in `lagado-content/`. Victor levert Word-sjabloon + beeldmap; wij zetten om naar `projecten/<slug>.md` volgens `_template.md`. Bouwfout = ontbrekend verplicht veld of beeld.
 - **Contentmodel:** `lagado-content/README.md` is leidend; `src/lib/schema.ts` volgt 1-op-1.
-- **Pagina's:** Home, Wat (`/wat`, projecten met filters), Project (`/wat/<slug>`), Waarom (`/waarom`, content in `bureau.md`), Contact (geen formulier), Privacy.
+- **Pagina's:** Home, Projecten (`/projecten`, met filters), Project (`/projecten/<slug>`), Over (`/over`, content in `bureau.md`), Contact (geen formulier), Privacy.
 - **Bouwstenen:** hero, text, image, gallery, columns, quote, video, colors, beforeAfter, projectGrid, team, list, cta, services, logos, downloads.
 - **Straks Sanity:**zelfde veldnamen; alleen `src/lib/content.ts` (en `images.ts`) wisselt.
 

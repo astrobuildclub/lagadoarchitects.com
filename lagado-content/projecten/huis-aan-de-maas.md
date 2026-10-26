@@ -13,6 +13,7 @@ kleuren: [groen, wit]
 status: af
 schaal: huis
 materialen: [steen, hout]
+opgave: [verbouw, interieur]
 prijsklasse: null
 
 locatie: { plaats: Rotterdam, wijk: Feijenoord }
@@ -29,8 +30,8 @@ accentkleur: ""
 kleurpalet: []
 
 hero: { src: 01.jpg, alt: "" }
-featured: true
-homepageGrootte: l
+featured: false
+homepageGrootte: breed
 volgorde: 2
 gerelateerd: []
 
