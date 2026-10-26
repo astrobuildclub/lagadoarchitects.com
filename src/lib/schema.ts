@@ -17,7 +17,9 @@ export const OPDRACHTGEVER_TYPE = ['particulier', 'zakelijk', 'publiek'] as cons
 export const PRIJSKLASSE = ['laag', 'midden', 'hoog'] as const;
 export const BREEDTE = ['content', 'popout', 'feature', 'full'] as const;
 /** Kaartgrootte op de homepage (projectGrid), in kolommen × rijen: klein 2×1, hoog 2×2, toren 2×3, breed 3×1, groot 3×2. */
-export const HOMEPAGE_GROOTTE = ['klein', 'hoog', 'toren', 'breed', 'groot'] as const;
+export const HOMEPAGE_GROOTTE = ['mini', 'klein', 'hoog', 'toren', 'breed', 'groot', 'lang'] as const;
+/** Vorm van de kaart in het homeraster; leeg = afgeleid van de eerste `vorm`. */
+export const KAARTVORM = ['ovaal', 'afgerond', 'zacht', 'recht', 'schuin'] as const;
 
 // ── Bouwstenen voor velden ─────────────────────────────────
 const text = z.string().optional();
@@ -61,6 +63,10 @@ const heroBlock = z.object({
   subkop: text,
   subkopWissel: z.array(z.string()).default([]),
   link: link.optional(),
+  /** Adres uit contact.md als kolom naast kop en subkop. */
+  adres: z.boolean().default(false),
+  /** Korte tekst (markdown) als laatste kolom, bv. de herkomst van de naam. */
+  tekst: text,
   /** 0–5 beelden; leeg = hero zonder beeld. */
   beelden: z.array(imageRef.extend({ project: text })).max(5).default([]),
 });
@@ -235,7 +241,6 @@ export const settingsSchema = z.object({
     links: z.array(z.object({ label: z.string(), href: z.string() })).default([]),
     privacy: z.string(),
     /** Uitsmijter onderaan de footer (Gulliver). */
-    uitsmijter: z.object({ kop: z.string(), tekst: z.string(), beeld: z.object({ src: z.string(), alt: z.string() }).optional() }).optional(),
   }),
   seo: z.object({
     titelPatroon: z.string().default('%s'),
@@ -333,6 +338,7 @@ export const projectSchema = z
     featured: z.boolean().default(false),
     /** Kaartgrootte op de homepage: klein, hoog, toren, breed of groot. */
     homepageGrootte: z.enum(HOMEPAGE_GROOTTE).default('klein'),
+    kaartvorm: z.enum(KAARTVORM).optional(),
     volgorde: z.number().default(0),
     gerelateerd: z.array(z.string()).max(3).default([]),
 

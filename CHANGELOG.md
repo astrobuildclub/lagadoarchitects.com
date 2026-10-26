@@ -8,6 +8,10 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 ## [Unreleased]
 
 ### Toegevoegd
+- Homepage volgens Figma (Home 01A, desktop en mobiel). Intro als vier kleine kolommen (kop en subkop met wisselwoorden, adres, herkomst van de naam; hero-velden `adres` en `tekst`). Projectraster zonder gap over de volle breedte, rijhoogte 128px (360) tot 256px (1512), 4 kolommen en vanaf 60rem 6. Knoppen "alle projecten" en "over" als grijze pillen, afsluiter met een kleine link.
+- `homepageGrootte` `mini` (1×1) en `lang` (4×1); veld `kaartvorm` (`ovaal`, `afgerond`, `zacht`, `recht`, `schuin`), leeg = uit `vorm`. Bright Light, Wooden House Deventer, Easehouse, Chinny en Concrete Dunes staan op maat en vorm uit Figma.
+- Header als donkere balk met het nieuwe (voorlopige) woordmerk; op mobiel klappen de links uit achter "menu".
+- Footer als donker vlak met het woordmerk over de volle breedte en vier kolommen (naam, adres, bedrijfsgegevens, privacy/cookies/credits). De Gulliver-uitsmijter staat nu in de intro op de home.
 - Teksten volgens Victors teksten_v4 (leidend). Over: prijzenkast "Onze hoogste punten" (6 zichtbaar, rest uitklapbaar), "Waarom samenwerken?", zes dienstentegels in de projectvormen (`/over#diensten`) met CTA, "Speels in ontwerp. Serieus in realisatie." en "De fundering onder ons werk" met de Deelder-quote. Contact: bio van Victor met portret, uitgebreide CTA en stage-oproep. Footer: uitsmijter "Onze naam, een open houding" (Gulliver) en bankregel.
 - Bloktype `statement` (mantra "Vorm, kleur, gelaagdheid. Ruimtes die verrassen." op de home); `list.zichtbaar`, `services.anker` en `services.vormen`, `projectGrid.links`.
 - Veld en filter `opgave` (interieur / verbouw / nieuwbouw / landschap), ingevuld voor alle projecten.
@@ -51,6 +55,8 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Netlify secrets scanning: `FONTS_URL` uitgezonderd (`SECRETS_SCAN_OMIT_KEYS`), de build faalde omdat de URL in de README staat.
 
 ### Gewijzigd
+- Zijruimte (`--gutter`) is nu `--space-s-3xl`: 16px op mobiel, ±64px op 1512, 108px op 2560; geldt voor header, raster en footer. Nieuwe spacestap `--space-5xl`, kleur `--color-ink`.
+- CTA-blok: grote vraag met een kleine link in plaats van een omlijnd blok met knop.
 - Paginatitels (h1) en het mantra krijgen dezelfde letterafstand als de hero-kop (-0.03em).
 - Home: het grote herobeeld staat uit (`beelden: []`, hero mag nu zonder beeld); het projectraster loopt over de volle paginabreedte (gutter tot gutter), toont 12 projecten en heeft 16 uitgelichte projecten. Nieuwe kaartmaat `toren` (2×3) voor meer variatie in hoogte.
 - Hero: wisselwoorden niet meer in de accentkleur maar met een dikke onderstreping (0,07em, met gaten bij staarten). Projecttitel niet meer in de accentkleur.

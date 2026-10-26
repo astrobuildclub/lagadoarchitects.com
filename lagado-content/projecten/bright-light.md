@@ -36,6 +36,7 @@ kleurpalet: []
 hero: { src: 02.jpg, alt: "Woonkamer met een gebogen oranje wand vol nissen en een rode deur naar de gang" }
 featured: true
 homepageGrootte: groot
+kaartvorm: ovaal                     # Figma home
 volgorde: 0
 gerelateerd: []
 

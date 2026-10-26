@@ -35,6 +35,7 @@ kleurpalet: []
 hero: { src: 01.jpg, alt: "Render van het houten huis met een schuine glazen gevel en een pergola op het dak" }
 featured: true
 homepageGrootte: breed
+kaartvorm: schuin                     # Figma home
 volgorde: 8
 gerelateerd: []
 

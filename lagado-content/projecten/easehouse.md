@@ -35,7 +35,8 @@ kleurpalet: []
 
 hero: { src: 01.jpg, alt: "Twee groene toiletten met een gevouwen dak in de speeltuin, met twee kinderen ervoor" }
 featured: true
-homepageGrootte: breed
+homepageGrootte: lang
+kaartvorm: afgerond                     # Figma home
 volgorde: 17
 gerelateerd: []
 

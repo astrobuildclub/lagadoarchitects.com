@@ -1,7 +1,8 @@
 ---
-import Img from './Img.astro';
-import { downloadUrl, pageImage } from '../lib/images';
-import { md } from '../lib/markdown';
+// Footer (Figma): donker vlak met het woordmerk over de volle breedte en daaronder vier kolommen:
+// naam en payoff, adres, bedrijfsgegevens, en privacy/cookies/credits.
+import Logo from './Logo.astro';
+import { downloadUrl } from '../lib/images';
 import type { Contact, Settings } from '../lib/schema';
 
 interface Props {
@@ -13,109 +14,103 @@ const { adres, bedrijf } = contact;
 const links = [...settings.footer.links, ...contact.social]
   .filter((l, i, all) => l.href && all.findIndex((x) => x.href === l.href) === i);
 const downloads = contact.downloads.map((d) => ({ ...d, url: downloadUrl(d.bestand) })).filter((d) => d.url);
-const uitsmijter = settings.footer.uitsmijter;
-const uitsmijterBeeld = uitsmijter?.beeld?.src ? pageImage(uitsmijter.beeld.src) : undefined;
 const tel = contact.telefoon?.replace(/[^\d+]/g, '').replace('(0)', '');
 ---
 
 <footer class="site-footer">
-  <div class="wrapper site-footer__grid">
-    <div>
-      <p class="site-footer__name">{settings.siteNaam}</p>
-      <p class="muted">{settings.payoff}</p>
-      {settings.footer.tekst && <p>{settings.footer.tekst}</p>}
-      {
-        uitsmijter && (
-          <aside class="site-footer__uitsmijter" aria-labelledby="uitsmijter-kop">
-            {uitsmijterBeeld && <Img src={uitsmijterBeeld} alt={uitsmijter.beeld!.alt} sizes="12rem" />}
-            <h2 id="uitsmijter-kop">{uitsmijter.kop}</h2>
-            <div set:html={md(uitsmijter.tekst)} />
-          </aside>
-        )
-      }
+  <div class="wrapper wrapper--full site-footer__inner">
+    <Logo class="site-footer__wordmark" />
+
+    <div class="site-footer__grid">
+      <div>
+        <p>{settings.siteNaam}</p>
+        <p>{settings.payoff}</p>
+        {settings.footer.tekst && <p>{settings.footer.tekst}</p>}
+      </div>
+
+      <address>
+        {adres.naam && <>{adres.naam}<br /></>}
+        {adres.straat}<br />
+        {adres.postcode} {adres.plaats}
+        {contact.telefoon && <><br /><a href={`tel:${tel}`}>{contact.telefoon}</a></>}
+        {contact.email && <><br /><a href={`mailto:${contact.email}`}>{contact.email}</a></>}
+      </address>
+
+      <ul role="list">
+        {bedrijf.kvk && <li>KVK: {bedrijf.kvk}</li>}
+        {bedrijf.btw && <li>BTW: {bedrijf.btw}</li>}
+        {bedrijf.architectenregister && <li>Architectenregister: {bedrijf.architectenregister}</li>}
+        {bedrijf.bank && <li>Bank: {bedrijf.bank}</li>}
+      </ul>
+
+      <ul role="list">
+        <li><a href={settings.footer.privacy}>Privacy</a></li>
+        <li>
+          <button type="button" class="link-button" data-cc="show-preferencesModal">Cookie-instellingen</button>
+        </li>
+        {links.map((l) => <li><a href={l.href} rel="noopener">{l.label}</a></li>)}
+        {downloads.map((d) => <li><a href={d.url} download>{d.label}</a></li>)}
+        <li><a href="https://abcdinamo.com/typefaces/areal" rel="noopener">Areal by ABC Dinamo</a></li>
+        <li><a href="https://allthis.digital" rel="noopener">allthis.digital</a></li>
+      </ul>
     </div>
-
-    <address>
-      {adres.naam && <>{adres.naam}<br /></>}
-      {adres.straat}<br />
-      {adres.postcode} {adres.plaats}
-      {contact.email && <><br /><a href={`mailto:${contact.email}`}>{contact.email}</a></>}
-      {contact.telefoon && <><br /><a href={`tel:${tel}`}>{contact.telefoon}</a></>}
-      {
-        links.length > 0 && (
-          <ul role="list" class="site-footer__social" aria-label="Social media">
-            {links.map((l) => (
-              <li>
-                <a href={l.href} rel="noopener">{l.label}</a>
-              </li>
-            ))}
-          </ul>
-        )
-      }
-    </address>
-
-    <ul role="list" class="site-footer__legal">
-      {bedrijf.kvk && <li>KvK {bedrijf.kvk}</li>}
-      {bedrijf.btw && <li>btw {bedrijf.btw}</li>}
-      {bedrijf.architectenregister && <li>Architectenregister {bedrijf.architectenregister}</li>}
-      {bedrijf.bank && <li>Bank {bedrijf.bank}</li>}
-      {downloads.map((d) => <li><a href={d.url} download>{d.label}</a></li>)}
-      <li><a href={settings.footer.privacy}>Privacy</a></li>
-      <li>
-        <button type="button" class="link-button" data-cc="show-preferencesModal">Cookie-instellingen</button>
-      </li>
-      <li><a href="https://abcdinamo.com/typefaces/areal" rel="noopener">Areal by ABC Dinamo</a></li>
-    </ul>
   </div>
-
 </footer>
 
 <style>
   .site-footer {
+    --color-focus: var(--color-on-ink);
     margin-block-start: var(--space-3xl);
-    padding-block: var(--space-xl);
-    border-block-start: var(--border-width) solid var(--color-line);
+    padding-block: var(--space-2xl);
+    background: var(--color-ink);
+    color: var(--color-on-ink);
     font-size: var(--step--1);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.125;
+  }
+  /* Woordmerk boven, kolommen onder; het vlak is minstens zo hoog als in Figma (720px). */
+  .site-footer__inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-3xl);
+    min-block-size: min(45rem, 90svh);
+  }
+  .site-footer :global(.site-footer__wordmark) {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
   }
   .site-footer__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
-    gap: var(--space-l);
+    gap: var(--space-m);
   }
-  .site-footer__name {
-    font-weight: 700;
+  @media (min-width: 48rem) {
+    .site-footer__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-m);
+    }
   }
   address {
     font-style: normal;
   }
-  .site-footer__social {
-    margin-block-start: var(--space-xs);
+  a {
+    text-decoration: none;
   }
-  .site-footer__legal {
-    color: var(--color-muted);
-  }
-  /* Uitsmijter: Gulliver, als leuk weetje onder de naam in de eerste kolom. */
-  .site-footer__uitsmijter {
-    margin-block-start: var(--space-m);
-  }
-  /* Zelfde maat en gewicht als de naam erboven. */
-  .site-footer__uitsmijter h2 {
-    margin-block-end: var(--space-3xs);
-    font-size: inherit;
-    font-weight: 700;
-    letter-spacing: normal;
-  }
-  .site-footer__uitsmijter :global(img) {
-    inline-size: 12rem;
-    block-size: auto;
-    margin-block-end: var(--space-xs);
+  a:hover {
+    text-decoration: underline;
   }
   .link-button {
     padding: 0;
     border: 0;
     background: none;
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
     cursor: pointer;
+  }
+  .link-button:hover {
+    text-decoration: underline;
   }
 </style>

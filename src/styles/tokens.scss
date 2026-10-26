@@ -39,15 +39,16 @@
     'maxWidth': 2560,
     'minSize': 16,
     'maxSize': 18,
-    'positiveSteps': (1.5, 2, 3, 4, 6, 7),
+    'positiveSteps': (1.5, 2, 3, 4, 6, 7, 8),
     'negativeSteps': (0.75, 0.5, 0.25, 0.1),
-    'customSizes': ('s-l', 'm-xl', 'l-2xl', 'xl-3xl'),
+    'customSizes': ('s-l', 's-3xl', 'm-xl', 'l-2xl', 'xl-3xl'),
     'prefix': 'space-',
     'relativeTo': 'viewport-width',
   ));
 
   /* Layout (breakout-grid, zie layout.css) */
-  --gutter: var(--space-s-l);
+  /* Zijruimte van header, raster en footer: 16px op mobiel, ±64px op 1512 (Figma), 108px op 2560. */
+  --gutter: var(--space-s-3xl);
   --content-width: 42rem;
   --popout-width: 6rem;
   --feature-width: 12rem;
@@ -68,6 +69,9 @@
   --color-line: oklch(85% 0 0);
   --color-accent: oklch(46.856% 0.30296 271.609);
   --color-on-accent: oklch(99% 0 0);
+  /* Inkt: header en footer, in beide thema's donker. */
+  --color-ink: oklch(12.75% 0.0148 293.14);
+  --color-on-ink: oklch(99% 0 0);
   --color-focus: var(--color-accent);
   /* Projectpagina's overschrijven --accent met de accentkleur van het project. */
   --accent: var(--color-accent);

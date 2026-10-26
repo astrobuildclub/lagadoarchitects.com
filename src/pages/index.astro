@@ -10,8 +10,20 @@ const hasHero = page.blocks[0]?.type === 'hero';
 ---
 
 <BaseLayout title={pageTitle(settings, page, true)} description={pageDescription(settings, page)}>
-  <div class="layout flow">
+  <div class="layout flow home">
     {!hasHero && <h1 class="visually-hidden">{settings.siteNaam}</h1>}
     <BlockRenderer blocks={page.blocks} />
   </div>
 </BaseLayout>
+
+<style>
+  /* Home (Figma): overal dezelfde ruimte tussen intro, raster en afsluiter. */
+  .home {
+    --flow-space: var(--space-l);
+  }
+  /* Afsluiter links op de gutter, gelijk met intro en raster. */
+  .home > :global(.cta) {
+    grid-column: full;
+    padding-inline: var(--gutter);
+  }
+</style>

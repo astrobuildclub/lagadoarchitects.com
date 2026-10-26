@@ -39,6 +39,7 @@ kleurpalet: []
 hero: { src: 01.jpg, alt: "De betonnen skatepool tussen de bomen van de Heemraadssingel, met een skater in de kom" }
 featured: true
 homepageGrootte: hoog
+kaartvorm: afgerond                     # Figma home
 volgorde: 18
 gerelateerd: []
 

@@ -37,7 +37,8 @@ kleurpalet: []                         # [{ label, hex }] — voedt het `colors`
 # ── Beeld & weergave ───────────────────────────────────────
 hero: { src: 01.jpg, alt: "" }         # verplicht, alt verplicht
 featured: false                        # op home/uitgelicht
-homepageGrootte: klein                 # klein (2×1) | hoog (2×2) | toren (2×3) | breed (3×1) | groot (3×2) — alleen op de homepage
+homepageGrootte: klein                 # mini (1×1) | klein (2×1) | hoog (2×2) | toren (2×3) | breed (3×1) | groot (3×2) | lang (4×1) — alleen op de homepage
+kaartvorm:                             # optioneel: ovaal | afgerond | zacht | recht | schuin — leeg = uit `vorm` (rond → ovaal, recht → zacht, schuin → schuin)
 volgorde: 0                            # handmatige sortering, laag = eerst
 gerelateerd: []                        # slugs, max 3
 

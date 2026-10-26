@@ -16,15 +16,6 @@ footer:
     - { label: Instagram, href: https://www.instagram.com/lagadoarchitects }   # TODO: controleren
     - { label: LinkedIn,  href: "" }                                           # TODO: url van Victor
   privacy: /privacy                    # verplicht (AVG)
-  # Uitsmijter onderaan de footer (teksten_v4). TODO: beeld "kaart van Lagado" (beeld: { src, alt }).
-  uitsmijter:
-    kop: Onze naam, een open houding
-    tekst: |
-      LAGADO is een verwijzing naar The Grand Academy of Lagado uit Gulliver’s Travels. Daar
-      werkte een architect die probeerde om huizen te bouwen, beginnend bij de nok en eindigend
-      met de fundering. Onze naam is een ode aan deze onbevangen, creatieve en optimistische
-      houding. Net als hij zoeken we naar onverwachte ruimtelijke oplossingen en denken we
-      altijd in mogelijkheden.
 
 seo:
   titelPatroon: "%s — LAGADO architects"

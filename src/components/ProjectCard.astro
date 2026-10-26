@@ -22,14 +22,24 @@ const Heading = `h${headingLevel}` as 'h2' | 'h3';
 const grootte = sized ? p.homepageGrootte : undefined;
 // Eerste vorm uit het filter; zonder vorm een rechthoek.
 const vorm = p.vorm[0] ?? 'recht';
+// Homeraster: eigen kaartvorm, anders afgeleid van de vorm (styles/vorm.css).
+const kaartvormVanVorm = { rond: 'ovaal', recht: 'zacht', schuin: 'schuin' } as const;
+const kaartvorm = sized ? (p.kaartvorm ?? kaartvormVanVorm[vorm]) : undefined;
 // 0 is een invulplek in de content, geen jaar.
 const jaar = p.jaarOplevering || p.jaarOpdracht || undefined;
 const kleur = await kaartkleur(p);
 const [, ...meer] = projectBeelden(p);
-const sizes =
-  grootte === 'groot' || grootte === 'breed'
-    ? '(min-width: 60rem) 50vw, 100vw'
-    : '(min-width: 60rem) 33vw, (min-width: 36rem) 50vw, 100vw';
+// Homeraster: 4 kolommen, vanaf 60rem 6 (ProjectList.astro).
+const homeSizes: Record<Project['homepageGrootte'], string> = {
+  mini: '(min-width: 60rem) 17vw, 50vw',
+  klein: '(min-width: 60rem) 33vw, 50vw',
+  hoog: '(min-width: 60rem) 33vw, 50vw',
+  toren: '(min-width: 60rem) 33vw, 50vw',
+  breed: '(min-width: 60rem) 50vw, 50vw',
+  groot: '(min-width: 60rem) 50vw, 50vw',
+  lang: '(min-width: 60rem) 67vw, 100vw',
+};
+const sizes = grootte ? homeSizes[grootte] : '(min-width: 60rem) 33vw, (min-width: 36rem) 50vw, 100vw';
 const filters = {
   type: p.type,
   vorm: p.vorm.join(' '),
@@ -43,8 +53,9 @@ const filters = {
 ---
 
 <li
-  class:list={['project-card', grootte && `project-card--${grootte}`]}
+  class:list={['project-card', grootte && `project-card--home project-card--${grootte}`]}
   data-vorm={vorm}
+  data-kaartvorm={kaartvorm}
   data-later={later || undefined}
   hidden={later}
   style={`--kaart-vlak: ${kleur.vlak}; --kaart-tekst: ${kleur.tekst}`}
@@ -104,15 +115,11 @@ const filters = {
     border-radius: var(--vorm-radius);
   }
   /* Alleen in het raster: in de lijstweergave is het vlak een gewone tekstrij. */
-  :global([data-view='raster']) .project-card[data-vorm='schuin'] .project-card__vorm {
+  :global([data-view='raster']) .project-card .project-card__vorm {
     clip-path: var(--vorm-clip);
   }
   /* In het homeraster bepaalt het grid de maat. */
-  .project-card--klein .project-card__vorm,
-  .project-card--hoog .project-card__vorm,
-  .project-card--toren .project-card__vorm,
-  .project-card--breed .project-card__vorm,
-  .project-card--groot .project-card__vorm {
+  .project-card--home .project-card__vorm {
     aspect-ratio: auto;
   }
 
@@ -159,6 +166,60 @@ const filters = {
     font-size: var(--step-1);
     line-height: var(--leading-tight);
   }
+  /* Homeraster (Figma): meta klein in mono kapitalen, titel groot. Mobiel staat alles onderin,
+     vanaf 60rem de meta boven en de titel onder. */
+  .project-card--home .project-card__tekst {
+    justify-content: flex-end;
+    padding: var(--space-m) var(--space-l);
+  }
+  .project-card--home .project-card__boven {
+    display: none;
+  }
+  .project-card--home :is(.project-card__boven, .project-card__label) {
+    font-size: var(--step--3);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .project-card--home .project-card__voet {
+    gap: var(--space-2xs);
+  }
+  /* Op mobiel staat het label zichtbaar boven de titel. */
+  .project-card--home .project-card__label {
+    position: static;
+    clip-path: none;
+    inline-size: auto;
+    block-size: auto;
+  }
+  .project-card--home .project-card__title {
+    font-size: var(--step-1);
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    line-height: 1.125;
+  }
+  @media (min-width: 60rem) {
+    .project-card--home .project-card__tekst {
+      justify-content: space-between;
+      padding: var(--space-2xl) var(--space-l);
+    }
+    .project-card--home .project-card__boven {
+      display: block;
+      font-size: var(--step--1);
+    }
+    .project-card--home .project-card__label {
+      clip-path: inset(50%);
+      position: absolute;
+      block-size: 1px;
+      inline-size: 1px;
+    }
+    .project-card--home .project-card__title {
+      font-size: var(--step-3);
+    }
+    .project-card--home.project-card--mini .project-card__title {
+      font-size: var(--step-1);
+    }
+  }
+
   /* Het label (type · jaar) is er voor schermlezers; zichtbaar alleen in de mobiele kleurbalk. */
   .project-card__label {
     clip-path: inset(50%);

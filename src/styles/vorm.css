@@ -15,3 +15,28 @@
   --vorm-radius: 0;
   --vorm-clip: polygon(var(--vorm-schuin) 0, 100% 0, calc(100% - var(--vorm-schuin)) 100%, 0 100%);
 }
+
+/*
+ * Kaartvorm in het homeraster (`kaartvorm`, anders afgeleid van `vorm`). Overschrijft de
+ * vorm hierboven: ovaal = pil of cirkel, afgerond = grote ronding, zacht = kleine ronding,
+ * recht = bijna haaks, schuin = parallellogram.
+ */
+[data-kaartvorm] {
+  --vorm-clip: none;
+}
+[data-kaartvorm='ovaal'] {
+  --vorm-radius: 100vmax;
+}
+[data-kaartvorm='afgerond'] {
+  --vorm-radius: var(--space-5xl);
+}
+[data-kaartvorm='zacht'] {
+  --vorm-radius: var(--space-s);
+}
+[data-kaartvorm='recht'] {
+  --vorm-radius: var(--space-4xs);
+}
+[data-kaartvorm='schuin'] {
+  --vorm-radius: 0;
+  --vorm-clip: polygon(var(--vorm-schuin) 0, 100% 0, calc(100% - var(--vorm-schuin)) 100%, 0 100%);
+}

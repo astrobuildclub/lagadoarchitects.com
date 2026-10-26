@@ -18,7 +18,10 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
       <Logo class="site-header__wordmark" />
       <span class="visually-hidden">{settings.siteNaam}</span>
     </a>
-    <nav aria-label="Hoofdmenu">
+    <button type="button" class="site-header__menu" aria-expanded="false" aria-controls="hoofdmenu" data-menu-toggle hidden>
+      menu
+    </button>
+    <nav aria-label="Hoofdmenu" id="hoofdmenu">
       <ul role="list">
         {
           settings.navigatie.map((item) => (
@@ -35,10 +38,39 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
   </div>
 </header>
 
+<script>
+  // Mobiel: het menu klapt uit onder de balk (Figma: "menu"). Zonder JS staan de links er gewoon.
+  function initMenu() {
+    const knop = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+    if (!knop) return;
+    const header = knop.closest<HTMLElement>('.site-header')!;
+    header.dataset.menu = 'dicht';
+    knop.hidden = false;
+    knop.addEventListener('click', () => {
+      const open = knop.getAttribute('aria-expanded') !== 'true';
+      knop.setAttribute('aria-expanded', String(open));
+      header.dataset.menu = open ? 'open' : 'dicht';
+    });
+    header.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && knop.getAttribute('aria-expanded') === 'true') {
+        knop.click();
+        knop.focus();
+      }
+    });
+  }
+  document.addEventListener('astro:page-load', initMenu);
+</script>
+
 <style>
+  /* Donkere balk (Figma): logo links, menu rechts. In beide thema's inkt. */
   .site-header {
-    padding-block: var(--space-s);
-    border-block-end: var(--border-width) solid var(--color-line);
+    --color-focus: var(--color-on-ink);
+    display: flex;
+    align-items: center;
+    min-block-size: 4.5rem;
+    padding-block: var(--space-m);
+    background: var(--color-ink);
+    color: var(--color-on-ink);
   }
   .site-header__inner {
     display: flex;
@@ -49,13 +81,10 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
   .site-header__logo {
     display: inline-flex;
     margin-inline-end: auto;
-    /* Het woordmerk is fill="currentColor": kleur hier sturen.
-       --color-accent, niet --accent: projectpagina's overschrijven die laatste. */
-    color: var(--color-accent);
   }
   .site-header__logo :global(.site-header__wordmark) {
-    /* Hoogte bepaalt de maat; breedte volgt de viewBox (65 × 14). */
-    block-size: calc(var(--step-0) * 0.9);
+    /* Hoogte bepaalt de maat; breedte volgt de viewBox (140 × 28). */
+    block-size: 1.75rem;
     inline-size: auto;
   }
   ul {
@@ -64,9 +93,52 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
     gap: var(--space-s);
   }
   nav a {
+    font-family: var(--font-mono);
+    font-size: var(--step-1);
+    font-weight: 500;
+    letter-spacing: -0.05em;
+    line-height: 1.125;
     text-decoration: none;
   }
+  .site-header__menu {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font-family: var(--font-mono);
+    font-size: var(--step-1);
+    font-weight: 500;
+    letter-spacing: -0.05em;
+    line-height: 1.125;
+    cursor: pointer;
+  }
+  .site-header__menu[hidden] {
+    display: none;
+  }
+  /* Mobiel met JS: links pas zichtbaar na "menu", onder de balk over de volle breedte. */
+  @media (max-width: 47.99rem) {
+    .site-header[data-menu] nav {
+      order: 1;
+      flex-basis: 100%;
+    }
+    .site-header[data-menu='dicht'] nav {
+      display: none;
+    }
+    .site-header[data-menu] ul {
+      flex-direction: column;
+      gap: var(--space-2xs);
+      padding-block: var(--space-s) var(--space-2xs);
+    }
+  }
+  @media (min-width: 48rem) {
+    .site-header__menu {
+      display: none;
+    }
+  }
+  nav a:hover,
   nav a[aria-current] {
     text-decoration: underline;
+    text-decoration-thickness: 0.07em;
+    text-underline-offset: 0.15em;
   }
 </style>
