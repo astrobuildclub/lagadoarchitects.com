@@ -11,7 +11,7 @@ const LABELS: Record<string, string> = {
   meubel: 'Meubel',
   af: 'Af',
   bijna: 'Bijna',
-  opgetekend: 'Opgetekend',
+  opgetekend: 'Papieren werkelijkheid',
   particulier: 'Particulier',
   zakelijk: 'Zakelijk',
   laag: '€',

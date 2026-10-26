@@ -1,5 +1,5 @@
 ---
-// Opening van een pagina: kop (h1) + 1–5 beelden. Eerste beeld is het LCP-beeld.
+// Opening van een pagina: kop (h1) + 0–5 beelden. Eerste beeld is het LCP-beeld.
 // Optioneel wisselen woorden na de kop en subkop (`kopWissel`, `subkopWissel`), zie
 // src/scripts/rotating-text.ts. Screenreaders krijgen één vaste zin met alle varianten;
 // zonder JS of met reduced motion staat de eerste variant er stil.
@@ -20,8 +20,9 @@ const zin = (items: string[]) => (items.length < 2 ? items.join('') : `${items.s
 /** Een nieuwe regel in `kop` (YAML `|-`) wordt een <br>; voor screenreaders een spatie. */
 const regels = (tekst: string) => tekst.trim().split(/\s*\n\s*/);
 const plat = (tekst: string) => regels(tekst).join(' ');
-/** Woorden in een masker, gescheiden door gewone spaties: zo breekt de regel per woord om. */
-const woorden = (phrase: string) => phrase.split(' ');
+/** Woorden met hun spatie erachter in één span (behalve het laatste): de onderstreping loopt
+ *  zo door onder de spaties en verdwijnt per woord mee. De regel breekt gewoon per woord om. */
+const woorden = (phrase: string) => phrase.split(' ').map((w, i, all) => (i < all.length - 1 ? `${w} ` : w));
 ---
 
 <section class="hero full" data-hero>
@@ -31,7 +32,7 @@ const woorden = (phrase: string) => phrase.split(' ');
         kopWissel.length > 0 ? (
           <>
             <span class="visually-hidden">{plat(block.kop)} {zin(kopWissel)}</span>
-            <span aria-hidden="true" data-rotate data-hold="2.5" data-delay="0.4">
+            <span aria-hidden="true" data-rotate data-hold="3" data-uit="0.5" data-leeg="2" data-in="1" data-fade="0.1" data-delay="0.2">
               {regels(block.kop).map((r, i) => (
                 <>
                   {i > 0 && <br />}
@@ -39,11 +40,8 @@ const woorden = (phrase: string) => phrase.split(' ');
                 </>
               ))}{' '}
               <span class="hero__wissel" data-words={JSON.stringify(kopWissel)}>
-                {woorden(kopWissel[0]).map((w, i) => (
-                  <>
-                    {i > 0 && ' '}
-                    <span class="w"><span class="w__i">{w}</span></span>
-                  </>
+                {woorden(kopWissel[0]).map((w) => (
+                  <span class="w"><span class="w__i">{w}</span></span>
                 ))}
               </span>
             </span>
@@ -59,14 +57,11 @@ const woorden = (phrase: string) => phrase.split(' ');
           {subkopWissel.length > 0 ? (
             <>
               <span class="visually-hidden">{block.subkop} {zin(subkopWissel)}</span>
-              <span aria-hidden="true" data-rotate data-hold="3.2" data-delay="1.6">
+              <span aria-hidden="true" data-rotate data-hold="4" data-uit="0.125" data-leeg="0.75" data-in="0.25" data-fade="0.3" data-delay="0.6">
                 {block.subkop}{' '}
                 <span class="hero__wissel" data-words={JSON.stringify(subkopWissel)}>
-                  {woorden(subkopWissel[0]).map((w, i) => (
-                    <>
-                      {i > 0 && ' '}
-                      <span class="w"><span class="w__i">{w}</span></span>
-                    </>
+                  {woorden(subkopWissel[0]).map((w) => (
+                    <span class="w"><span class="w__i">{w}</span></span>
                   ))}
                 </span>
               </span>
@@ -152,26 +147,21 @@ const woorden = (phrase: string) => phrase.split(' ');
     letter-spacing: -0.02em;
     line-height: var(--leading-tight);
   }
-  .hero__wissel {
-    color: var(--color-accent);
+  /* Wisselwoorden: geen kleur maar een dikke onderstreping, met gaten bij staarten (g, j, p). */
+  .hero__wissel :global(.w__i) {
+    text-decoration-line: underline;
+    text-decoration-thickness: 0.07em;
+    text-underline-offset: 0.12em;
+    text-decoration-skip-ink: auto;
   }
   .hero__subkop .hero__wissel {
     font-weight: 600;
   }
 
-  /* Masker per woord. clip-path: inset(0) knipt op de border-box, dus de padding geeft
-     ruimte aan stokken en staarten (j, p, g). De negatieve marge houdt de regelhoogte gelijk.
-     Geen overflow: dat zou de basislijn van een inline-block naar de onderrand verplaatsen.
-     :global omdat het script deze spans aanmaakt (zonder scope-attribuut). */
-  .hero__wissel :global(.w) {
-    display: inline-block;
-    padding-block: 0.2em;
-    margin-block: -0.2em;
-    clip-path: inset(0);
-  }
-  .hero__wissel :global(.w__i) {
-    display: inline-block;
-    transform-origin: 50% 100%;
+  /* Woord-spans (rotating-text.ts verbergt ze per woord). Gewoon inline, zodat de
+     onderstreping doorloopt. :global omdat het script deze spans aanmaakt. */
+  .hero__wissel :global(:is(.w, .w__i)) {
+    display: inline;
   }
 
   .hero__acties {

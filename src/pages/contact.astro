@@ -11,6 +11,7 @@ import { pageDescription, pageTitle } from '../lib/seo';
 const settings = await getSettings();
 const c = await getContact();
 const sfeerbeeld = c.sfeerbeeld?.src ? pageImage(c.sfeerbeeld.src) : undefined;
+const bioFoto = c.bio?.foto?.src ? pageImage(c.bio.foto.src) : undefined;
 const kaartBeeld = c.kaart?.statischBeeld?.src ? pageImage(c.kaart.statischBeeld.src) : undefined;
 const tel = c.telefoon?.replace('(0)', '').replace(/[^\d+]/g, '');
 const social = c.social.filter((s) => s.href);
@@ -29,7 +30,19 @@ const downloads = c.downloads.map((d) => ({ ...d, url: downloadUrl(d.bestand) })
       )
     }
 
-    {c.tekst && <div class="prose" set:html={md(c.tekst)} />}
+    {
+      c.bio && (
+        <section class="bio popout">
+          {bioFoto && <Img src={bioFoto} alt={c.bio.foto!.alt} sizes="(min-width: 48rem) 16rem, 60vw" class="bio__foto" />}
+          <div>
+            {c.bio.kop && <h2>{c.bio.kop}</h2>}
+            <blockquote class="prose" set:html={md(c.bio.quote)} />
+          </div>
+        </section>
+      )
+    }
+
+    {c.tekst && <div class="prose contact__cta" set:html={md(c.tekst)} />}
 
     <div class="contact popout">
       <section>
@@ -87,6 +100,15 @@ const downloads = c.downloads.map((d) => ({ ...d, url: downloadUrl(d.bestand) })
     </div>
 
     {
+      c.stage && (
+        <section class="stage prose">
+          <h2>{c.stage.kop}</h2>
+          <Fragment set:html={md(c.stage.tekst)} />
+        </section>
+      )
+    }
+
+    {
       kaartBeeld && (
         <figure class="feature">
           <Img src={kaartBeeld} alt={c.kaart!.statischBeeld!.alt} />
@@ -108,5 +130,35 @@ const downloads = c.downloads.map((d) => ({ ...d, url: downloadUrl(d.bestand) })
   }
   address {
     font-style: normal;
+  }
+
+  /* Portret naast de quote; op smalle schermen eronder. */
+  .bio {
+    display: grid;
+    gap: var(--space-m);
+    align-items: start;
+  }
+  @media (min-width: 48rem) {
+    .bio {
+      grid-template-columns: 16rem 1fr;
+    }
+  }
+  .bio :global(.bio__foto) {
+    inline-size: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+  .bio h2 {
+    margin-block-end: var(--space-s);
+  }
+  .bio blockquote {
+    font-size: var(--step-1);
+  }
+  .contact__cta {
+    font-size: var(--step-1);
+  }
+  .stage {
+    padding-block-start: var(--space-m);
+    border-block-start: var(--border-width) solid var(--color-line);
   }
 </style>

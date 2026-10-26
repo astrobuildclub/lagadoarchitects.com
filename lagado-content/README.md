@@ -28,7 +28,7 @@ lagado-content/
             └── 02.jpg …
 ```
 
-Bestandsnaam van een project = `slug` = URL (`/wat/workhome-playhome`).
+Bestandsnaam van een project = `slug` = URL (`/projecten/workhome-playhome`).
 
 ## Regels
 
@@ -51,14 +51,20 @@ Elk projectbestand heeft dezelfde volgorde als `projecten/_template.md`. Houd di
 | Groep | Velden | Waar op de pagina |
 |---|---|---|
 | Identiteit | `title`, `tagline`, `vraag`, `intro` | Hero (titel, tagline), daaronder de **vraag** groot, dan de intro |
-| Filters | `type`, `vorm`, `kleuren`, `status`, `schaal`, `materialen`, `prijsklasse` | Factsheet, eerste helft. Elke waarde linkt naar `/wat` met dat filter aan. Prijsklasse nooit |
+| Filters | `vorm`, `kleuren`, `type`, `schaal`, `status`, `opgave`, `materialen`, `prijsklasse` | Factsheet, eerste helft. Elke filterwaarde linkt naar `/projecten` met dat filter aan; materiaal is gewone tekst. Prijsklasse nooit |
 | Projectgegevens | `locatie`, `omvang`, `opdrachtgeverType`, `opdrachtgever`, `bouwteam`, `fotografie`, `jaarOpdracht`, `jaarOplevering`, `programma` | Factsheet, tweede helft. `programma` alleen op de projectkaart |
-| Kleur | `accentkleur`, `kleurpalet` | Accentkleur van de pagina, `colors`-blok |
-| Beeld & weergave | `hero`, `featured`, `homepageGrootte`, `volgorde`, `gerelateerd` | Hero-beeld, homepage, sortering |
+| Kleur | `accentkleur`, `kleurpalet` | Accentkleur van de pagina en kleur van de projectkaart, `colors`-blok |
+| Beeld & weergave | `hero`, `featured`, `homepageGrootte`, `volgorde`, `gerelateerd` | Hero-beeld, homepage (`featured`), sortering |
 | Credits, pers & awards | `credits`, `pers`, `awards`, `pressKit` | Onderaan de pagina |
 | | `seo`, `blocks` | Zoekmachines; het verhaal |
 
-**Factsheet** (labels zoals Victor ze gebruikt): Type · Vorm · Kleur · Status · Schaal · Materiaal, dan Locatie · Omvang · Opdrachtgever · Bouwteam · Fotograaf · Jaar. Lege velden worden weggelaten.
+**Projectkaart** (home en /projecten): een vlak in de projectkleur, in de vorm van het project, met bestemming · jaar en titel.
+- **Vorm:** de eerste waarde van `vorm`: `recht` = afgeronde hoeken, `rond` = cirkel of pil, `schuin` = parallellogram. Zonder vorm: `recht`.
+- **Kleur:** `accentkleur` als die is ingevuld, anders de bepalende kleur uit het hero-beeld (bij de build). Tekst wit of zwart, op contrast.
+- **Bovenregel:** bestemming (`type`) · `jaarOplevering`, anders `jaarOpdracht` (bv. "Thuiskomen · 2024").
+- **Beelden:** hover toont de foto; horizontaal bewegen scrubt door de hero en de beelden uit de blokken (max. 6). Op mobiel verschijnt de foto als de kaart in beeld is, met een kleurbalk (bestemming · jaar, titel).
+
+**Factsheet** (labels zoals Victor ze gebruikt, teksten_v4): Vorm · Kleur · Bestemming · Schaal · Gebouwd · Opgave, dan Materiaal · Locatie · Omvang · Opdrachtgever · Bouwteam · Fotograaf · Jaar. Lege velden worden weggelaten.
 
 - **Vraag:** de ontwerpvraag in één zin, als trigger voor bezoekers om hun eigen vraag in te herkennen ("Hoe maak je een uitgesproken woning in een nieuwbouwcasco?"). Vervangt de oude velden programma/functie in het factsheet.
 - **Omvang:** getal in m² (heette eerder `oppervlakte`).
@@ -70,20 +76,21 @@ Elk projectbestand heeft dezelfde volgorde als `projecten/_template.md`. Houd di
 
 | Veld | Waarden |
 |---|---|
-| `type` | `thuiskomen` (particuliere klant), `de-hort-op` (publiek project) |
+| `type` (Bestemming) | `thuiskomen` (woningen), `de-hort-op` (publieke projecten) |
 | `vorm` | `recht` (rechthoekig), `rond` (curves), `schuin` (schuine lijnen) — meerdere mogelijk |
 | `kleuren` | `rood`, `oranje`, `geel`, `groen`, `blauw`, `paars`, `roze`, `wit`, `zwart`, `grijs` — hoofdkleur(en), meerdere mogelijk |
-| `status` | `af` (gerealiseerd), `bijna` (in ontwikkeling), `opgetekend` (gepubliceerd, niet gebouwd) |
-| `schaal` | `stoel` (meubilair), `kamer` (interieur/verbouw), `huis` (nieuwbouw huis), `stad` (skatepark, groter wooncomplex) |
-| `materialen` | `hout`, `steen`, `beton`, `glas`, `tegels`, `metaal` — hoofdmateriaal/-materialen, meerdere mogelijk |
+| `status` (Gebouwd) | `af` (gerealiseerd), `bijna` (in ontwikkeling), `opgetekend` (label: "Papieren werkelijkheid": concept, nooit gebouwd) |
+| `schaal` | `stoel`, `kamer`, `huis`, `plein` (van klein naar groot; heette eerder `stad`) |
+| `opgave` | `interieur`, `verbouw`, `nieuwbouw`, `landschap` — meerdere mogelijk |
+| `materialen` | `hout`, `steen`, `beton`, `glas`, `tegels`, `metaal` — hoofdmateriaal/-materialen, meerdere mogelijk (factsheet, geen filter meer) |
 | `programma` | `woning`, `winkel`, `horeca`, `kantoor`, `publiek`, `openbare-ruimte`, `meubel` (alleen op de projectkaart, geen filter) |
 | `opdrachtgeverType` | `particulier`, `zakelijk`, `publiek` |
 | `prijsklasse` | `laag`, `midden`, `hoog` (optioneel, nooit tonen zonder akkoord) |
-| `homepageGrootte` | `s`, `m`, `l` — kaartbreedte op de homepage |
+| `homepageGrootte` | `klein` (2×1), `hoog` (2×2), `toren` (2×3), `breed` (3×1), `groot` (3×2) — kolommen × rijen in het homeraster (6 kolommen) |
 
-## Filters op /wat
+## Filters op /projecten
 
-Volgorde zoals Victor ze aanleverde. Direct zichtbaar: **Type**, **Vorm**, **Kleur** en **Verras me** (willekeurige filtercombinatie, altijd minstens één project). Onder "Tot op de mm" (uitklap): **Status**, **Schaal**, **Materiaal**. Binnen een groep = of, tussen groepen = en. Een groep met maar één waarde in de projecten wordt niet getoond.
+Volgens teksten_v4, onder "Ontdek ons werk op vorm, kleur of laat je verrassen." Direct zichtbaar: **Vorm**, **Kleur** en **Verras me** (dobbelsteen: willekeurige filtercombinatie, altijd minstens één project). Onder "Verfijn tot op de millimeter" (uitklap): **Bestemming**, **Schaal**, **Gebouwd**, **Opgave**. Binnen een groep = of, tussen groepen = en. Een groep met maar één waarde in de projecten wordt niet getoond.
 
 ## Bouwstenen (`blocks`)
 
@@ -97,12 +104,13 @@ Volgorde zoals Victor ze aanleverde. Direct zichtbaar: **Type**, **Vorm**, **Kle
 | `video` | YouTube/Vimeo achter klik | `url`, `titel`, `poster?`, `caption?` |
 | `colors` | Kleurpalet van het project | `kleuren[]` (`label`, `hex`) |
 | `beforeAfter` | Voor/na | `voor{src,alt}`, `na{src,alt}`, `caption?` |
-| `projectGrid` | Selectie projecten | `slugs[]` of `filter`, `limit?` |
+| `projectGrid` | Selectie projecten | `featured?`, `slugs[]` of `filter`, `limit?` (eerst zichtbaar; de rest per `limit` via "Meer projecten"), `linkNaarOverzicht?`, `links[]?` |
+| `statement` | Mantra: één grote, vette zin | `tekst` |
 | `team` | Personen | `personen[]` |
-| `list` | Pers, awards | `soort` (`pers`/`awards`), `items[]` |
+| `list` | Pers, awards, prijzenkast | `soort` (`pers`/`awards`), `items[]`, `zichtbaar?` (rest achter "Toon alles") |
 | `cta` | Afsluitende actie | `tekst`, `label`, `href` |
-| `hero` | Opening van een pagina | `kop`, `kopWissel?[]`, `subkop?`, `subkopWissel?[]`, `link?{label,href}`, `beelden[]` (`project?`, `src`, `alt`) |
-| `services` | Diensten / wat we doen | `kop?`, `items[]` (`titel`, `tekst`) |
+| `hero` | Opening van een pagina | `kop`, `kopWissel?[]`, `subkop?`, `subkopWissel?[]`, `link?{label,href}`, `beelden[]` (0–5; `project?`, `src`, `alt`) |
+| `services` | Diensten / principes | `kop?`, `anker?` (bv. `diensten` → `/over#diensten`), `vormen?` (tegels in de drie projectvormen), `items[]` (`titel`, `tekst`) |
 | `logos` | Klant- of perslogo's | `kop?`, `items[]` (`naam`, `logo?{src,alt}`, `href?`) |
 | `downloads` | Bestanden | `kop?`, `items[]` (`label`, `bestand`) |
 

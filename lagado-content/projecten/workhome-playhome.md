@@ -15,6 +15,7 @@ kleuren: [blauw, oranje, paars]
 status: af
 schaal: huis                           # bevestigen: Victor schreef "L"
 materialen: [hout, tegels]
+opgave: [nieuwbouw, interieur]
 prijsklasse: null                      # eigen huis, niet van toepassing
 
 locatie: { plaats: Rotterdam, wijk: Noordereiland }
@@ -40,9 +41,9 @@ kleurpalet:
   - { label: Paars en donkerblauw (slaapverdieping), hex: "" }
   - { label: Felblauw (overloop bovenverdieping),    hex: "" }
 
-hero: { src: 01.jpg, alt: "" }         # TODO alt
+hero: { src: 01.jpg, alt: "Woonkamer met oranje en roze wanden, de trap als sculptuur erboven en een lange eettafel" }
 featured: true
-homepageGrootte: l
+homepageGrootte: groot
 volgorde: 1
 gerelateerd: []
 
@@ -81,7 +82,7 @@ blocks:
 
   - type: image
     src: 02.jpg
-    alt: ""                            # TODO
+    alt: "Achtergevel van het rijtjeshuis op het Noordereiland bij schemer, boven de gedeelde tuin"
     caption: ""
     breedte: feature
 
@@ -121,7 +122,7 @@ blocks:
       oranje in de woonkamer. De uit het blad uitgespaarde ruimte voor planten in
       de bar bij het keukenraam en bovenop de kasten trekt het groen van de tuin
       nog verder het huis in.
-    image: { src: 03.jpg, alt: "", caption: "" }
+    image: { src: 03.jpg, alt: "Eethoek onder de oranje-roze trapsculptuur met een gele bank en een wandkast vol boeken", caption: "" }
     beeldPositie: rechts
 
   - type: columns
@@ -133,7 +134,7 @@ blocks:
       De trappen manifesteren zich in een gedurfd sculpturaal gebaar, met een
       dramatisch effect op de overloop op de eerste verdieping, het donkere hart
       van het huis.
-    image: { src: 04.jpg, alt: "", caption: "" }
+    image: { src: 04.jpg, alt: "Blauwe trap met driehoekige ramen die doorkijkjes naar de overloop geven", caption: "" }
     beeldPositie: links
 
   - type: columns
@@ -142,7 +143,7 @@ blocks:
       In de slaapkamer zorgen de kleuren en texturen van de kasten en gordijnen
       samen voor een levendige maar ontspannende sfeer, om het rustige karakter
       van deze ruimte te verbeteren.
-    image: { src: 05.jpg, alt: "", caption: "" }
+    image: { src: 05.jpg, alt: "Slaapverdieping met berken kasten, paarse kastwand en een blauw gordijn", caption: "" }
     beeldPositie: rechts
 
   - type: columns
@@ -152,7 +153,7 @@ blocks:
       pantry, waardoor het ideaal is voor meerdere toepassingen, zoals gasten
       ontvangen, werken, muziek spelen of als game room. De pantry is ook erg
       handig onderaan de trap naar het dakterras.
-    image: { src: 06.jpg, alt: "", caption: "" }
+    image: { src: 06.jpg, alt: "Lichtblauwe trap naar het dakterras in de open loft op de bovenste verdieping", caption: "" }
     beeldPositie: links
 
   - type: text
@@ -165,9 +166,12 @@ blocks:
   - type: gallery
     kolommen: 3
     images:
-      - { src: 07.jpg, alt: "", caption: "" }
-      - { src: 08.jpg, alt: "", caption: "" }
-      - { src: 09.jpg, alt: "", caption: "" }
+      - { src: 07.jpg, alt: "Keukenwand van berken multiplex met oranje randen, een kast vol boeken en een koelkast vol tekeningen", caption: "" }
+      - { src: 08.jpg, alt: "Keuken met blauwe bovenkasten, hangplanten voor het raam en een uitsparing voor planten in het blad", caption: "" }
+      - { src: 09.jpg, alt: "Doorkijk door de roze schuifdeuren naar de keuken met blauw rolgordijn", caption: "" }
+      - { src: 10.jpg, alt: "Pantry met blauwe tegels en kasten naast een kleine badkamer en de blauwe trap", caption: "" }
+      - { src: 11.jpg, alt: "Berken keukenkasten en een donkere koelkastdeur vol kindertekeningen", caption: "" }
+      - { src: 12.jpg, alt: "Paarse kastwand naast een doorgang met een driehoekig raam naar de blauwe trap", caption: "" }
 
   - type: text
     kop: Kleur en materiaal

@@ -1,6 +1,7 @@
 // Beelden staan in lagado-content/ (niet in src/), zodat de contentmap de enige bron blijft.
 // Alle beeldbestanden worden bij de build ingelezen; een ontbrekend bestand = bouwfout.
 import type { ImageMetadata } from 'astro';
+import type { Project } from './schema';
 
 const files = import.meta.glob<{ default: ImageMetadata }>('/lagado-content/**/*.{jpg,jpeg,png,webp,avif}', {
   eager: true,
@@ -44,4 +45,16 @@ export function downloadUrl(bestand: string | undefined): string | undefined {
   const url = downloads[`/lagado-content/${bestand}`];
   if (!url) throw new Error(`Download niet gevonden: lagado-content/${bestand}`);
   return url;
+}
+
+/** Beeldnamen van een project in leesvolgorde: hero, dan de beelden uit de blokken. Uniek, maximaal `max`. */
+export function projectBeelden(p: Pick<Project, 'hero' | 'blocks'>, max = 6): string[] {
+  const namen = [p.hero.src];
+  for (const b of p.blocks) {
+    if (b.type === 'image') namen.push(b.src);
+    else if (b.type === 'gallery') namen.push(...b.images.map((i) => i.src));
+    else if (b.type === 'columns') namen.push(b.image.src);
+    else if (b.type === 'beforeAfter') namen.push(b.voor.src, b.na.src);
+  }
+  return [...new Set(namen.filter(Boolean))].slice(0, max);
 }

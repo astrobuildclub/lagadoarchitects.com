@@ -1,137 +1,150 @@
 ---
-# WAAROM (URL /waarom) — verhaal, naam, hoogtepunten, Victor, fundering.
-# Bron: Victors "LAGADO website 2026 teksten_v2". Alleen typfouten verbeterd, verder niet geredigeerd.
-title: Waarom                           # verplicht (zichtbare h1)
-intro: |                               # optioneel, 1–2 zinnen, groot getoond
-  We werken samen met eigenzinnige opdrachtgevers aan bijzondere projecten.
+# OVER (URL /over) — hoogste punten, samenwerken, diensten, werkwijze, fundering.
+# Bron: Victors "LAGADO website 2026 teksten_v4" (leidend). Gulliver staat nu in de footer
+# (site.md), Victors bio op Contact.
+title: Over LAGADO                      # verplicht (zichtbare h1)
+intro: |                               # optioneel, groot getoond
+  We ontwerpen van boven naar beneden en van binnen naar buiten. Met open vizier.
+  We bevragen vanzelfsprekendheden en vertrekken niet vanuit aannames, maar vanuit
+  nieuwsgierigheid. We denken liever voor dan na, zodat we achteraf niet hoeven om te denken.
 seo:
-  titel: Waarom LAGADO
+  titel: Over LAGADO
   beschrijving: ""
 
 blocks:
   - type: text
-    kop: Onze naam, een open houding
+    kop: Onze hoogste punten
     niveau: 2
     tekst: |
-      LAGADO is een verwijzing naar The Grand Academy of Lagado in Gulliver's
-      Travels. Daar was een architect die probeerde om huizen te bouwen,
-      beginnend bij de nok en eindigend met de fundering. Onze naam is een ode
-      aan deze onbevangen en optimistische houding.
+      Sinds onze oprichting in 2011 valt ons werk positief op. Daar zijn we trots op,
+      maar belangrijker nog, het motiveert ons om de nok steeds hoger te leggen.
 
-      Net als hij is ons doel om onverwachte dingen te bouwen en denken we
-      altijd in mogelijkheden.
-  # TODO: beeld "kaart Lagado uit Gulliver's Travels" (wens Victor)
-
-  - type: text
-    kop: Hoogtepunten, tot de nok
-    niveau: 2
-    tekst: |
-      Sinds onze oprichting in 2011 valt ons werk positief op. Deze erkenningen
-      stijgen ons niet naar onze bol, maar vormen de motivatie om de lat hoog te
-      leggen. Anderen over ons:
-
-  # Victor wil hier links naar media/publicaties met beelden. url en jaar aanvullen.
+  # Prijzenkast: Victors volgorde (hoogste punten eerst). 6 zichtbaar, de rest achter "Toon alles".
+  # TODO Victor: url's naar artikelen/publicaties, eventueel beelden.
   - type: list
-    soort: pers
+    soort: awards
+    zichtbaar: 6
     items:
-      - { titel: "In onze beginjaren waren we finalisten in de Jonge Architectenprijs.", url: "" }
-      - { titel: "En wonnen we bijna de Stadsmeubel Turnhout prijsvraag. Net niet. Schrale troost is dat het winnende plan nooit is gebouwd. Gelukkig hebben we nog wel de gewonnen stoelen.", url: "" }
-      - { jaar: 2013, medium: Architectuur NL, titel: "‘Serieus bezig met speelse architectuur’", url: "" }
-      - { medium: March, titel: "Ons tijdelijke toiletgebouw Easehouse werd gepubliceerd, en français!", url: "" }
-      - { titel: "We werden opgenomen in het boek Emerging European Practices.", url: "" }
-      - { titel: "In het jaarverslag van de Welstandscommissie Rotterdam werden we door de voorzitter benoemd als favoriet project van het jaar.", url: "" }
-      - { medium: Binnenstebuiten, titel: "We verschenen op tv bij Binnenstebuiten.", url: "" }
-      - { medium: Volkskrant Magazine, titel: "Een special over nieuwbouw en hoe wij daar karakter aan geven.", url: "" }
-      - { medium: Financial Times, titel: "De Financial Times nam een kijkje in onze keuken.", url: "" }
-      - { titel: "Meerdere keren genomineerd voor de Rotterdam Architectuurprijs, onder andere met een voorbeeldstellende verbouwing van een generieke woning.", url: "" }
-      - { medium: HIG journal, titel: "We bespraken onze manier van werken met HIG journal.", url: "" }
-      - { jaar: 2025, titel: "We wonnen de NRP Gulden Feniks Wildcard renovatieprijs!", url: "" }
+      - { jaar: 2026, naam: "House of the Year. Bijna dan. Villa Rollada, onze vrolijke rolstoeltoegankelijke woning, dingt mee naar de Archello Awards met de laatste 10 internationale woningen tot 150 m².", project: wheelchair-house, url: "" }
+      - { jaar: 2025, naam: "We wonnen de NRP Gulden Feniks Wildcard renovatieprijs met een jaren ’80 verbouwing van 3 woningcomplexen!", project: we-love-the-80s, url: "" }
+      - { jaar: 2024, naam: "Ons tv-debuut, bij Binnenstebuiten met ons Workhome Playhome.", project: workhome-playhome, url: "" }
+      - { jaar: 2024, naam: "De Financial Times nam een kijkje in onze keuken.", url: "" }
+      - { jaar: 2023, naam: "Genomineerd voor de Rotterdam Architectuurprijs, met een voorbeeldstellende verbouwing van een generieke woning.", project: curves-colours-cutouts, url: "" }
+      - { jaar: 2022, naam: "We stonden in Volkskrant Magazine in een special over nieuwbouw en hoe we hier karakter aan geven.", url: "" }
+      - { jaar: 2026, naam: "We bespraken onze manier van werken met HIG journal ter ere van de intrek in ons nieuwe kantoor in Het Industriegebouw.", url: "" }
+      - { jaar: 2022, naam: "We werden als een van de weinige Nederlandse bureaus opgenomen in het boek Emerging European Practices.", url: "" }
+      - { jaar: 2022, naam: "In het jaarverslag van de Welstandscommissie Rotterdam werd ons project We love the 80’s! benoemd als favoriet project van het jaar door de voorzitter.", project: we-love-the-80s, url: "" }
+      - { jaar: 2020, naam: "We werden door Archdaily benoemd tot Emerging Practice.", url: "" }
+      - { jaar: 2016, naam: "Ons tijdelijke toiletgebouw Easehouse werd gepubliceerd in vakblad March, en français!", project: easehouse, url: "" }
+      - { jaar: 2013, naam: "Vakblad Architectuur NL beschreef onze houding als ‘Serieus bezig met speelse architectuur’.", url: "" }
+      - { jaar: 2012, naam: "Runner-up bij de Stadsmeubel Turnhout prijsvraag. Wel twee stoelen als troostprijs. En het winnende plan is nooit gebouwd.", project: softcore, url: "" }
+      - { jaar: 2012, naam: "In onze beginjaren waren we finalisten van de Jonge Architectenprijs.", project: jap2012, url: "" }
+      - { jaar: 1989, naam: "De basis werd al vroeg gelegd. Victor is de trotse Lego Bouwmeester van Vlaardingen.", url: "" }
 
   - type: text
-    kop: Waarom wij met jullie en jullie met ons willen werken
+    kop: Waarom samenwerken?
     niveau: 2
     tekst: |
-      We werken samen met eigenzinnige opdrachtgevers aan bijzondere projecten.
-      Unieke nieuwbouw, gedurfde verbouwingen en spannende interieurs. Altijd met
-      onverwachte ruimtelijke oplossingen vol karakter.
+      We werken graag samen met eigenzinnige particuliere en professionele opdrachtgevers
+      aan bijzondere projecten. Unieke nieuwbouw, gedurfde verbouwingen en spannende
+      interieurs. Altijd met onverwachte ruimtelijke oplossingen vol karakter.
 
-      We werken het liefst rechtstreeks met particulieren: mensen die zelf in het
-      huis gaan wonen, in plaats van abstracte ‘eindgebruikers’. In onze optiek
-      wordt een gebouw niet alleen beleefd vanaf de stoep, maar juist van
-      binnenuit. Architectuur, interieur, voor ons is er geen onderscheid.
+      Het liefst werken we rechtstreeks voor de mensen die een gebouw daadwerkelijk gaan
+      gebruiken. Want architectuur stopt niet bij de voordeur. Een gebouw beleef je niet
+      alleen vanaf de stoep, maar juist van binnenuit.
 
-      De serieuze kant van ons bureau zorgt voor een strak en professioneel
-      ontwerp- en bouwbegeleidingsproces. Met als doel om tot een speels en fris
-      resultaat te komen, dat de verwachtingen overtreft. We zijn onderzoekend,
-      volhoudend en oprecht enthousiast om tot gewaagde oplossingen te komen.
-      Daarnaast hebben we een speelse kant, zijn creatief en daarmee in staat om
-      complexe projecten te ontwerpen, vergund te krijgen en te laten bouwen.
+      Voor ons is er geen harde scheidslijn tussen architectuur en interieur. Beide bepalen
+      hoe een plek eruitziet, voelt, werkt en gebruikt wordt. Voor wie er langsloopt en voor
+      wie er verblijft.
 
-  - type: team
-    kop: Het bureau wordt geleid door architect en oprichter Victor Verhagen
-    personen:
-      - naam: Victor Verhagen
-        rol: Architect en oprichter
-        foto: { src: images/bureau/victor.jpg, alt: "" }   # TODO: portretfoto + alt
-        bio: |
-          “Ik combineer een achtergrond in bouwkunde en architectuur met een
-          interesse in interieur en gebruik van ruimte. Ik ben adviseur bij diverse
-          commissies omgevingskwaliteit. Opgeleid aan de TU Delft met een
-          uitwisseling met het Southern California Institute of Architecture in
-          Los Angeles. Daarnaast heb ik lesgegeven aan masterstudenten en was ik
-          architectuurgids voor particulieren en professionals. Voordat ik
-          architect werd was ik een gesponsorde skateboarder, wat mijn blik op de
-          omgeving voorgoed heeft veranderd, en ik ben de trotse Lego-bouwmeester
-          van Vlaardingen van 1989.”
-        linkedin: ""                   # optioneel
+  # Diensten: tegels in de drie projectvormen. Anker voor de link op de home (/over#diensten).
+  - type: services
+    kop: Waar kunnen we je mee helpen?
+    anker: diensten
+    vormen: true
+    items:
+      - { titel: Eerste verkenning, tekst: "Check op bestemmingsplan, vergunningvrije mogelijkheden en welstand." }
+      - { titel: Kleur bekennen, tekst: "Kleuradvies voor interieur, architectuur en erfgoed." }
+      - { titel: Meer ruimte. Zelfde muren., tekst: "Interieurs, indelingen en maatwerkmeubelen." }
+      - { titel: Een tweede leven, tekst: "Verbouw, renovatie en transformatie. Ook van monumenten." }
+      - { titel: Van nok tot fundering, tekst: "Nieuwbouw van eerste idee tot oplevering." }
+      - { titel: Van schets tot sleutel, tekst: "Vergunningen, techniek en bouwbegeleiding." }
+
+  - type: cta
+    tekst: Benieuwd of we een goede match zijn? Kom langs bij onze studio in Het Industriegebouw om eens kennis te maken en van gedachten te wisselen over je plannen.
+    label: Maak een afspraak
+    href: /contact
+
+  - type: text
+    kop: Speels in ontwerp. Serieus in realisatie.
+    niveau: 2
+    tekst: |
+      Goede ideeën ontstaan door onderzoek, experiment en nieuwsgierigheid. Om ze
+      werkelijkheid te laten worden, zijn structuur, techniek en ervaring nodig. En het
+      enthousiasme om voor iets bijzonders te gaan, juist als de praktijk weerbarstig is.
+
+      Daarom begeleiden we projecten van eerste idee tot oplevering. Met workshops,
+      schetsen, 3D-modellen en technische tekeningen maken we keuzes inzichtelijk en
+      brengen we plannen stap voor stap tot leven.
+
+      We werken samen met een betrouwbaar netwerk van stevige constructeurs, bekwame
+      aannemers, creatieve makers en zorgvuldige adviseurs. Zo blijven de kwaliteit hoog en
+      de cijfers helder, wordt het plan vergund en is de bouw haalbaar.
+
+      Duurzaamheid zien we niet als een losse ambitie, maar als een vanzelfsprekend
+      onderdeel van een goed ontwerp. We bouwen met biobased materialen zoals CLT en
+      houtvezelisolatie en detailleren losmaakbare gevels met karakter. Een goed gebouw
+      biedt ook ruimte aan veranderingen in de toekomst. En aan andere diersoorten dan
+      alleen de mens.
+
+      Ons doel is eenvoudig: een goed ontwerp, een soepel proces en een resultaat dat de
+      verwachtingen overtreft.
 
   - type: text
     kop: De fundering onder ons werk
     niveau: 2
-    tekst: |
-      De omgeving van de mens is de medemens, maar je omgeving maakt je ook mede
-      mens. Een ruimte die goed is doordacht, doet iets met wie erin leeft. Deze
-      overtuiging vormt het fundament onder al ons werk: we maken positieve
-      omgevingen die het dagelijks leven verbeteren.
+    tekst: ""
 
-      Wij noemen dit Cheer Up City. Dat vertalen we niet in grote woorden, maar in
-      een afkorting: GVK. Drie concrete principes die we elk project terugbrengen
-      tot de essentie: Gelaagdheid, Vorm en Kleur.
+  - type: quote
+    tekst: De omgeving van de mens is de medemens
+    naam: Jules Deelder
 
-  - type: image
-    src: images/bureau/01.jpg            # TODO: foto Cheer Up City-project
-    alt: ""
-    caption: ""
-    breedte: feature
-
-  - type: services
-    kop: GVK
-    items:
-      - titel: Gelaagdheid
-        tekst: |
-          We werken aan gelaagdheid, om ruimtes groter te laten lijken dan ze zijn
-          en om de lichtinval gedurende de dag te optimaliseren. Ook leggen we
-          spannende relaties tussen verschillende ruimtes met doorzichten.
-      - titel: Vorm
-        tekst: |
-          We passen uitgesproken vormen toe, voortkomend uit beweging en gebruik,
-          maar ook om interesse te wekken en iets onverwachts toe te voegen.
-      - titel: Kleur
-        tekst: |
-          Kleur is intrinsiek onderdeel van onze wereld. Juist door verschillende
-          kleuren toe te passen komen ruimtes en gebouwen tot leven.
+  - type: quote
+    tekst: Je omgeving maakt je ook mede mens. Een goed ontworpen ruimte heeft direct invloed op hoe je woont, werkt, beweegt en samenleeft. Daarom maken we positieve leefomgevingen die het dagelijks leven verrijken.
+    naam: LAGADO architects
 
   - type: text
     tekst: |
-      Want uiteindelijk maken we geen architectuur of interieurs. We maken jouw
+      Dat vertalen we niet in grote woorden, maar in drie principes: vorm, kleur en
+      gelaagdheid. Samen maken ze ruimtes die verrassen.
+
+  - type: services
+    items:
+      - titel: Vorm
+        tekst: |
+          We passen uitgesproken vormen toe, voortkomend uit de logica van de plek,
+          beweging en gebruik. Vorm helpt om richting te geven, karakter op te bouwen en
+          iets onverwachts toe te voegen.
+      - titel: Kleur
+        tekst: |
+          Kleur is een intrinsiek onderdeel van onze wereld. Juist door sprekende kleuren
+          toe te passen komen ruimtes tot leven. Kleuren zijn geen toevoeging achteraf,
+          maar een essentieel onderdeel van het ontwerp.
+      - titel: Gelaagdheid
+        tekst: |
+          Met slimme indelingen, onverwachte zichtlijnen en zorgvuldig geplaatste
+          doorzichten maken we ruimtes groter, rijker en interessanter. Door verschillende
+          lagen en relaties ontstaat een omgeving die telkens iets nieuws laat zien. Ook het
+          veranderende licht gedurende de dag speelt daarin een actieve rol.
+
+  - type: text
+    tekst: |
+      Want uiteindelijk ontwerpen we geen architectuur of interieurs. We maken jouw
       positieve leefomgeving. **Van nok tot fundering.**
+
+      [Bekijk hoe we dit toepassen in onze projecten](/projecten)
 
   - type: logos
     kop: Opdrachtgevers
     items: []                          # [{ naam, logo: { src, alt }, href }] — logo's leveren we los aan
-
-  - type: cta
-    tekst: Een project in gedachten?
-    label: Neem contact op
-    href: /contact
 ---

@@ -1,0 +1,21 @@
+---
+// Mantra: één grote, vette zin over de featurebreedte.
+import type { BlockProps } from './scope';
+
+type Props = BlockProps<'statement'>;
+const { block } = Astro.props;
+---
+
+<p class="statement feature">{block.tekst}</p>
+
+<style>
+  .statement {
+    max-inline-size: 20ch;
+    font-size: var(--step-5);
+    font-weight: 700;
+    line-height: var(--leading-tight);
+    /* Zelfde letterafstand als de hero-kop. */
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+  }
+</style>

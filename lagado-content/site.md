@@ -6,8 +6,8 @@ taal: nl
 url: https://lagadoarchitects.com      # verplicht, zonder slash aan het eind
 
 navigatie:                             # verplicht, max 5 items
-  - { label: Wat,     href: /wat }        # alternatief: Projecten / Werk
-  - { label: Waarom,  href: /waarom }     # alternatief: Bureau / Over
+  - { label: Projecten, href: /projecten }
+  - { label: Over,      href: /over }        # content in bureau.md
   - { label: Contact,   href: /contact }
 
 footer:
@@ -16,6 +16,15 @@ footer:
     - { label: Instagram, href: https://www.instagram.com/lagadoarchitects }   # TODO: controleren
     - { label: LinkedIn,  href: "" }                                           # TODO: url van Victor
   privacy: /privacy                    # verplicht (AVG)
+  # Uitsmijter onderaan de footer (teksten_v4). TODO: beeld "kaart van Lagado" (beeld: { src, alt }).
+  uitsmijter:
+    kop: Onze naam, een open houding
+    tekst: |
+      LAGADO is een verwijzing naar The Grand Academy of Lagado uit Gulliver’s Travels. Daar
+      werkte een architect die probeerde om huizen te bouwen, beginnend bij de nok en eindigend
+      met de fundering. Onze naam is een ode aan deze onbevangen, creatieve en optimistische
+      houding. Net als hij zoeken we naar onverwachte ruimtelijke oplossingen en denken we
+      altijd in mogelijkheden.
 
 seo:
   titelPatroon: "%s — LAGADO architects"
@@ -23,12 +32,10 @@ seo:
   deelAfbeelding: { src: "", alt: "" } # optioneel, 1200×630, anders /og-default.png
 
 projecten:
-  # Ondertitel op /wat; TODO: Victor. Eerste alinea groot, de tweede kleiner op een eigen regel.
-  # Link naar #verras = de knop die een willekeurige filtercombinatie kiest.
+  # Ondertitel op /projecten (teksten_v4). Eerste alinea groot, een tweede alinea kleiner.
+  # Een link naar #verras wordt ook een "Verras me"-knop; de dobbelsteen staat al bij de filters.
   intro: |
-    Woningen, winkels, plekken om samen te komen en alles daartussen.
-
-    Filter op wat je zoekt, of laat je [verrassen](#verras).
+    Ontdek ons werk op vorm, kleur of laat je verrassen.
   toonPrijsfilter: false               # prijsklasse nooit tonen zonder akkoord van Victor
 
 # Statistiek: cookieloos script, alleen actief als PUBLIC_ANALYTICS_* in .env staat

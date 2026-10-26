@@ -7,4 +7,5 @@
 @import './tokens.scss' layer(tokens);
 @import './base.css' layer(base);
 @import './layout.css' layer(layout);
+@import './vorm.css' layer(components);
 @import './utilities.css' layer(utilities);

@@ -6,19 +6,30 @@ interface Props {
   projects: Project[];
   headingLevel?: 2 | 3;
   id?: string;
-  /** Homepage: s/m/l kaarten in een bento-raster. */
+  /** Homepage: kaarten per homepageGrootte in een raster met spans. */
   sized?: boolean;
-  /** /wat: raster of lijst (wisselknop in ProjectFilter). In de lijst hangt het beeld aan de muis. */
+  /** Zoveel kaarten eerst; de rest wacht op "Meer projecten" (ProjectGrid). */
+  zichtbaar?: number;
+  /** /projecten: raster of lijst (wisselknop in ProjectFilter). In de lijst hangt het beeld aan de muis. */
   weergave?: boolean;
 }
-const { projects, headingLevel, id, sized = false, weergave = false } = Astro.props;
+const { projects, headingLevel, id, sized = false, weergave = false, zichtbaar } = Astro.props;
 ---
 
-<ul role="list" class:list={['project-list', sized && 'project-list--sized']} id={id} data-view="raster">
-  {projects.map((project, i) => (
-    <ProjectCard project={project} headingLevel={headingLevel} priority={i < 2} sized={sized} />
-  ))}
-</ul>
+<!-- De wrapper is de container voor de rijhoogte van het homeraster (cqi). -->
+<div class:list={[sized && 'project-list-raster']}>
+  <ul role="list" class:list={['project-list', sized && 'project-list--sized']} id={id} data-view="raster">
+    {projects.map((project, i) => (
+      <ProjectCard
+        project={project}
+        headingLevel={headingLevel}
+        priority={i < 2}
+        sized={sized}
+        later={zichtbaar !== undefined && i >= zichtbaar}
+      />
+    ))}
+  </ul>
+</div>
 {
   weergave && id && (
     <div class="project-hover" data-hover-follow={id} aria-hidden="true">
@@ -29,6 +40,7 @@ const { projects, headingLevel, id, sized = false, weergave = false } = Astro.pr
 
 <script>
   import '../scripts/hover-follow';
+  import '../scripts/project-card';
 </script>
 
 <style>
@@ -53,8 +65,24 @@ const { projects, headingLevel, id, sized = false, weergave = false } = Astro.pr
   .project-list[data-view='lijst'] :global(.project-card[hidden]) {
     display: none;
   }
-  .project-list[data-view='lijst'] :global(.project-card img) {
+  /* Vlak, beelden en jaar weg; de titel blijft als gewone tekst in de rij staan. */
+  .project-list[data-view='lijst'] :global(:is(.project-card__beelden, .project-card__scrub, .project-card__boven)) {
     display: none;
+  }
+  .project-list[data-view='lijst'] :global(:is(.project-card__vorm, .project-card__tekst, .project-card__voet)) {
+    position: static;
+    display: block;
+    aspect-ratio: auto;
+    padding: 0;
+    background: none;
+    color: inherit;
+    border-radius: 0;
+    clip-path: none;
+    text-align: start;
+    justify-items: start;
+  }
+  .project-list[data-view='lijst'] :global(:is(.project-card__tagline, .project-card__meta)) {
+    display: block;
   }
   .project-list[data-view='lijst'] :global(.project-card a::after) {
     content: '';
@@ -93,36 +121,53 @@ const { projects, headingLevel, id, sized = false, weergave = false } = Astro.pr
     block-size: 100%;
     object-fit: cover;
   }
-
-  .project-list--sized {
-    grid-template-columns: repeat(6, 1fr);
+  /* Zelfde vorm als de kaart (data-vorm wordt gezet door hover-follow.ts, zie styles/vorm.css). */
+  .project-hover img {
+    border-radius: var(--vorm-radius, 0);
+    clip-path: var(--vorm-clip, none);
   }
 
+  /* Homeraster: vierkante cellen (rijhoogte = kolombreedte), kaarten spannen kolommen × rijen.
+     `dense` vult gaten op; de tabvolgorde blijft die van de content. */
+  .project-list-raster {
+    container-type: inline-size;
+  }
+  .project-list--sized {
+    --kolommen: 2;
+    --gap: var(--space-s);
+    grid-template-columns: repeat(var(--kolommen), 1fr);
+    grid-auto-rows: calc((100cqi - (var(--kolommen) - 1) * var(--gap)) / var(--kolommen));
+    grid-auto-flow: dense;
+    gap: var(--gap);
+  }
   .project-list--sized :global(.project-card) {
-    grid-column: span 6;
+    --k: 2;
+    --r: 1;
+    grid-column: span var(--k);
+    grid-row: span var(--r);
+  }
+  .project-list--sized :global(:is(.project-card--hoog, .project-card--groot)) {
+    --r: 2;
+  }
+  .project-list--sized :global(.project-card--toren) {
+    --r: 3;
   }
 
   @media (min-width: 36rem) {
-    .project-list--sized :global(.project-card--s) {
-      grid-column: span 3;
+    .project-list--sized {
+      --kolommen: 4;
     }
-    .project-list--sized :global(.project-card--m) {
-      grid-column: span 3;
-    }
-    .project-list--sized :global(.project-card--l) {
-      grid-column: span 6;
+    .project-list--sized :global(:is(.project-card--breed, .project-card--groot)) {
+      --k: 4;
     }
   }
 
   @media (min-width: 60rem) {
-    .project-list--sized :global(.project-card--s) {
-      grid-column: span 2;
+    .project-list--sized {
+      --kolommen: 6;
     }
-    .project-list--sized :global(.project-card--m) {
-      grid-column: span 3;
-    }
-    .project-list--sized :global(.project-card--l) {
-      grid-column: span 4;
+    .project-list--sized :global(:is(.project-card--breed, .project-card--groot)) {
+      --k: 3;
     }
   }
 </style>

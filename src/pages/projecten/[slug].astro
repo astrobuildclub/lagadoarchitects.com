@@ -1,0 +1,179 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlockRenderer from '../../components/BlockRenderer.astro';
+import Img from '../../components/Img.astro';
+import NextProject from '../../components/NextProject.astro';
+import ProjectCredits from '../../components/ProjectCredits.astro';
+import ProjectFacts from '../../components/ProjectFacts.astro';
+import { getNextProject, getProjects, getSettings } from '../../lib/content';
+import { hexToOklch } from '../../lib/color';
+import { projectImage } from '../../lib/images';
+import { md } from '../../lib/markdown';
+import { pageDescription, pageTitle } from '../../lib/seo';
+import type { Project } from '../../lib/schema';
+import { cleanPath } from '../../lib/url';
+
+export const getStaticPaths = (async () => {
+  const projects = await getProjects();
+  return projects.map((project) => ({ params: { slug: project.slug }, props: { project } }));
+}) satisfies GetStaticPaths;
+
+const { project } = Astro.props as { project: Project };
+const settings = await getSettings();
+const next = await getNextProject(project);
+const hero = projectImage(project.slug, project.hero.src);
+const url = new URL(cleanPath(Astro.url.pathname), settings.url).href;
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: project.title,
+    headline: project.tagline,
+    description: project.intro.trim(),
+    url,
+    creator: { '@id': `${settings.url}/#organisatie` },
+    locationCreated: { '@type': 'Place', name: [project.locatie.wijk, project.locatie.plaats].filter(Boolean).join(', ') },
+    ...(project.jaarOplevering && { dateCreated: String(project.jaarOplevering) }),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', settings.url).href },
+      { '@type': 'ListItem', position: 2, name: 'Projecten', item: new URL('/projecten', settings.url).href },
+      { '@type': 'ListItem', position: 3, name: project.title, item: url },
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title={pageTitle(settings, project)}
+  description={pageDescription(settings, { ...project, fallbackDescription: `${project.tagline} ${project.intro}` })}
+  image={hero}
+  imageAlt={project.hero.alt}
+  type="article"
+  accent={hexToOklch(project.accentkleur)}
+  jsonLd={jsonLd}
+>
+  <article class="layout flow">
+    <header class="project-hero full">
+      <div class="wrapper">
+        <nav class="project-hero__crumb" aria-label="Kruimelpad">
+          <ol>
+            <li><a href="/">Home</a></li>
+            <li><a href="/projecten">Projecten</a></li>
+          </ol>
+        </nav>
+        <div data-words-in>
+          <h1>
+            {
+              project.title.split(' ').map((woord, i) => (
+                <>
+                  {i > 0 && ' '}
+                  <span class="w">
+                    <span class="w__i">{woord}</span>
+                  </span>
+                </>
+              ))
+            }
+          </h1>
+          <p class="project-hero__tagline">
+            <span class="w">
+              <span class="w__i">{project.tagline}</span>
+            </span>
+          </p>
+        </div>
+      </div>
+      <Img src={hero} alt={project.hero.alt} priority sizes="100vw" class="project-hero__image" />
+    </header>
+
+    {
+      project.vraag && (
+        <p class="project-vraag popout" data-ink>
+          <span class="project-vraag__label">Vraag</span>
+          {project.vraag.split(' ').map((woord, i) => (
+            <>
+              {i > 0 && ' '}
+              <span class="ink">{woord}</span>
+            </>
+          ))}
+        </p>
+      )
+    }
+    <div class="project-intro prose" set:html={md(project.intro)} />
+    <div class="feature"><ProjectFacts project={project} /></div>
+
+    <BlockRenderer blocks={project.blocks} scope={{ project: project.slug, kleurpalet: project.kleurpalet }} />
+
+    <ProjectCredits project={project} />
+    {next && <NextProject project={next} />}
+  </article>
+</BaseLayout>
+
+<script>
+  import '../../scripts/words-in';
+  import '../../scripts/ink-in';
+</script>
+
+<style>
+  .project-hero h1 {
+    font-size: var(--step-6);
+  }
+  .project-hero__crumb {
+    font-size: var(--step--1);
+    padding-block-start: var(--page-top);
+    margin-block-end: var(--space-s);
+  }
+  .project-hero__crumb ol {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  .project-hero__crumb li + li::before {
+    content: '›';
+    margin-inline: 0.5em;
+    color: var(--color-muted);
+  }
+  .project-hero__tagline {
+    font-size: var(--step-1);
+    margin-block: var(--space-2xs) var(--space-l);
+  }
+  .project-hero :global(.project-hero__image) {
+    inline-size: 100%;
+    max-block-size: 85svh;
+    object-fit: cover;
+  }
+  .project-vraag {
+    font-size: var(--step-4);
+    font-weight: 700;
+    line-height: var(--leading-tight);
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    color: var(--accent);
+  }
+  /* Inkleuren bij scrollen (ink-in.ts): gedimd tot het woord aan de beurt is. */
+  .project-vraag[data-ink-on] .ink {
+    color: color-mix(in oklch, var(--accent) 22%, var(--color-bg));
+    transition: color 0.35s var(--ease);
+  }
+  .project-vraag[data-ink-on] .ink.is-in {
+    color: var(--accent);
+  }
+  .project-vraag__label {
+    display: block;
+    margin-block-end: var(--space-2xs);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--color-muted);
+  }
+  .project-intro {
+    font-size: var(--step-1);
+  }
+</style>

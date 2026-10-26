@@ -4,7 +4,7 @@ import { md } from '../lib/markdown';
 interface Props {
   title: string;
   intro?: string;
-  /** Intro over de volle breedte van de container in plaats van max 32ch (/wat). */
+  /** Intro over de volle breedte van de container in plaats van max 32ch (/projecten). */
   breed?: boolean;
 }
 const { title, intro, breed = false } = Astro.props;
@@ -54,7 +54,7 @@ const introHtml = md(intro).replace(
   .page-header__intro--breed {
     max-inline-size: none;
   }
-  /* Eerste alinea groot; volgende alinea's kleiner op een eigen regel (bv. de filterzin op /wat). */
+  /* Eerste alinea groot; volgende alinea's kleiner op een eigen regel (bv. de filterzin op /projecten). */
   .page-header__intro :global(p + p) {
     margin-block-start: var(--space-2xs);
     font-size: var(--step-0);

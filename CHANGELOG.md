@@ -8,6 +8,17 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 ## [Unreleased]
 
 ### Toegevoegd
+- Teksten volgens Victors teksten_v4 (leidend). Over: prijzenkast "Onze hoogste punten" (6 zichtbaar, rest uitklapbaar), "Waarom samenwerken?", zes dienstentegels in de projectvormen (`/over#diensten`) met CTA, "Speels in ontwerp. Serieus in realisatie." en "De fundering onder ons werk" met de Deelder-quote. Contact: bio van Victor met portret, uitgebreide CTA en stage-oproep. Footer: uitsmijter "Onze naam, een open houding" (Gulliver) en bankregel.
+- Bloktype `statement` (mantra "Vorm, kleur, gelaagdheid. Ruimtes die verrassen." op de home); `list.zichtbaar`, `services.anker` en `services.vormen`, `projectGrid.links`.
+- Veld en filter `opgave` (interieur / verbouw / nieuwbouw / landschap), ingevuld voor alle projecten.
+- Gedeelde vormstijlen in `src/styles/vorm.css` (`data-vorm` → `--vorm-radius`, `--vorm-clip`) voor kaarten, hover-beeld en dienstentegels.
+- 33 projecten uit de Dropbox-map (Concrete en Paper) met 277 beelden (max. 2400 px) en alt-teksten. Gegevens en teksten van de huidige site en de tekstbestanden in Dropbox, vertaald naar het Nederlands; per bestand een TODO voor Victor. Tasgram en Tommy Jeans staan als concept (`_*.md`, niet gebouwd) tot er een opleverjaar is. Overgeslagen: mappen zonder beelden (Tritents, Witte Panden, Heemraadssingel Hills, Sponge 3, Unstable, Temporadical, Insane terrain, Gateway House, Dissolving Landscape) en GoSidewalkSurfing (alleen een archieffoto van derden).
+- Project Bright Light (gegevens van de huidige site, 17 foto's van Loes van Duijvendijk met alt-teksten, uitgelicht op home als groot). Intro is een concept; vraag, verhaal, materialen en omvang nog van Victor.
+- Workhome Playhome: echte foto's (12, uit de Dropbox-map) in plaats van placeholders, met alt-teksten.
+- Projectkaart in de vorm van het project (eerste `vorm`: `recht` = afgeronde hoeken, `rond` = cirkel/pil, `schuin` = parallellogram) als vlak in de projectkleur, met jaar (oplevering, anders opdracht) en titel. Kleur: `accentkleur`, anders bij de build de bepalende kleur uit het hero-beeld (`src/lib/projectkleur.ts`, sharp); tekst wit of zwart op contrast.
+- Projectkaart met muis: hover toont de foto, horizontaal bewegen scrubt door de hero en de beelden uit de blokken (max. 6, pas geladen bij de eerste hover). Touch: foto zodra de kaart midden in beeld staat, met een kleurbalk voor type, jaar en titel; bij reduced motion direct de foto (`src/scripts/project-card.ts`).
+- Home: "Meer projecten" toont de volgende `limit` uitgelichte projecten en zet de focus op de eerste nieuwe kaart.
+- /wat, lijstweergave: het beeld aan de muis krijgt de vorm van het project.
 - /wat: weergave Raster of Lijst (knoppen rechts in de filterbalk, keuze onthouden per bezoeker). In de lijst één rij per project zonder beeld; met een muis hangt het projectbeeld bij hover aan de cursor (GSAP `quickTo`, `src/scripts/hover-follow.ts`, zonder naloop bij reduced motion).
 - Projectdetail: kruimelpad Home › Wat (ook in de JSON-LD), meer ruimte boven de titel. Titel en tagline schuiven per woord van onder in (`words-in.ts`).
 - Projectdetail: de vraag kleurt woord voor woord in terwijl je scrollt (`src/scripts/ink-in.ts`); zonder JS of met reduced motion staat hij gewoon in kleur.
@@ -33,10 +44,27 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - `utopia-core-scss` + Sass: type- en spaceschaal in `tokens.scss` (360→2560, tweakbaar).
 
 ### Opgelost
+- /wat, lijstweergave: de vorm (parallellogram) sneed de projecttitel af.
+- Home: "Meer projecten" bleef zichtbaar na het laatste project (`.button` overschreef `hidden`).
+- Kaartkleur werd in dev niet ververst na het vervangen van een foto.
 - Typefouten in het script van `ThemeToggle.astro` (`astro check` is weer schoon): `theme` getypeerd, knop als `HTMLButtonElement` opgevraagd.
 - Netlify secrets scanning: `FONTS_URL` uitgezonderd (`SECRETS_SCAN_OMIT_KEYS`), de build faalde omdat de URL in de README staat.
 
 ### Gewijzigd
+- Paginatitels (h1) en het mantra krijgen dezelfde letterafstand als de hero-kop (-0.03em).
+- Home: het grote herobeeld staat uit (`beelden: []`, hero mag nu zonder beeld); het projectraster loopt over de volle paginabreedte (gutter tot gutter), toont 12 projecten en heeft 16 uitgelichte projecten. Nieuwe kaartmaat `toren` (2×3) voor meer variatie in hoogte.
+- Hero: wisselwoorden niet meer in de accentkleur maar met een dikke onderstreping (0,07em, met gaten bij staarten). Projecttitel niet meer in de accentkleur.
+- Menu Projecten / Over / Contact: `/wat` → `/projecten`, `/waarom` → `/over` (301-redirects in `netlify.toml`). De content van Over staat nog in `bureau.md`.
+- Hero: timing per regel via data-attributen (`data-hold`, `data-uit`, `data-leeg`, `data-in`, `data-fade`). Kop: 5 s staan, woord voor woord weg (0,5 s per woord), 2 s leeg, nieuwe woorden met 1 s per woord en een fade van 0,3 s. Subkop: idem, maar 0,125 s per woord weg, 0,75 s leeg en 0,25 s per woord erin. Nieuwe woorden worden onzichtbaar aangemaakt, zodat ze niet vooraf flitsen; nieuwe wisselwoorden en subkop-reeks volgens v4.
+- Filters: direct zichtbaar Vorm, Kleur en Verras me (dobbelsteen); onder "Verfijn tot op de millimeter" Bestemming, Schaal, Gebouwd en Opgave. Materiaal is geen filter meer (wel in het factsheet). Schaal `stad` heet nu `plein`; `opgetekend` heet "Papieren werkelijkheid".
+- Projectkaart: bovenregel is bestemming · jaar (bv. "Thuiskomen · 2024").
+- Home: "Bekijk meer projecten" en "Of ontdek hoe we je kunnen helpen" onder het raster; het lege pers-blok is weg.
+- De vijf testprojecten staan niet meer op de home (`featured: false`).
+- Home: geen sectietitel boven het projectraster; "Meer projecten" en "Alle projecten" staan met meer ruimte erboven naast elkaar, elk de halve breedte (onder elkaar op mobiel).
+- Projectkaart: alle titels even groot; scrubben wisselt de beelden hard (alleen het tonen van de foto fadet).
+- Home: het projectraster toont projecten met `featured: true` (op `volgorde`) in plaats van een lijst `slugs`.
+- `homepageGrootte` is nu `klein` (2×1), `hoog` (2×2), `breed` (3×1) of `groot` (3×2): kolommen × rijen in een raster van 6 vierkante kolommen met `grid-auto-flow: dense` (4 kolommen op tablet, alles vol breed op mobiel).
+- /wat, raster: kaarten tonen alleen jaar en titel; tagline en plaats/programma alleen nog in de lijstweergave.
 - /wat: Materiaal (uitgeklapt onder "Tot op de mm") is twee rastersporen breed met de opties in twee kolommen als dat past (`columns: 2 5rem`). In de mobiele overlay blijven het rijen.
 - /wat: kleurfilter compact, alleen swatches zonder zichtbaar label. Naam en aantal staan in de tooltip en voor screenreaders (visually-hidden); aan = ring om de swatch, bij 0 projecten vervaagd. Kleur neemt nu één kolom in.
 - /wat: met "Tot op de mm" dicht verdelen Type, Vorm en Kleur de volle containerbreedte en staan de kleuren in drie rijtjes; uitgeklapt weer zes kolommen met kleuren in twee rijtjes.

@@ -1,12 +1,20 @@
 // Wisselende woorden in de hero (Hero.astro, `kopWissel` / `subkopWissel`).
 //
 // Hoe het werkt:
-// - De wisselzin staat inline in de gewone tekst. Elk woord zit in een masker
-//   (`.w`, clip-path) met daarin het bewegende deel (`.w__i`). Tussen de woorden staan
-//   gewone spaties, dus de browser breekt per woord om, net als normale tekst.
-// - Eén wissel = drie stappen na elkaar, geen overlap: oude woorden schuiven omhoog
-//   het masker uit (stagger), de tekst wordt vervangen, nieuwe woorden komen van onderen
-//   in met een kleine veer (back.out). Daarna wacht een delayedCall `hold` seconden.
+// - De wisselzin staat inline in de gewone tekst. Elk woord zit met zijn spatie in een
+//   eigen span (`.w` met `.w__i`), dus de browser breekt per woord om en de onderstreping
+//   loopt door onder de spaties.
+// - Eén wissel, zonder beweging. Alle tijden in seconden, per regel als data-attribuut op
+//   `[data-rotate]` (Hero.astro):
+//     data-hold  zo lang staat de zin
+//     data-uit   stap per woord bij het verdwijnen (0 = alle woorden tegelijk weg, hard)
+//     data-leeg  zo lang blijft het daarna leeg
+//     data-in    stap per woord bij het verschijnen
+//     data-fade  duur van de fade-in per woord (opacity 0 → 1; 0 = hard aan)
+//   Volgorde: staan → weg (van achter naar voor) → leeg → nieuwe woorden één voor één erin.
+// - Nieuwe woorden worden onzichtbaar aangemaakt (inline visibility: hidden) en verschijnen
+//   door die stijl weer weg te halen. Zo is er geen frame waarin de nieuwe zin al te zien is,
+//   en erft de meetkloon (reserve) nooit een geforceerd zichtbaar woord.
 // - De hoogte van de kop/subkop wordt vooraf gereserveerd: een onzichtbare kloon op
 //   dezelfde breedte meet elke variant en het blok krijgt de grootste hoogte als
 //   min-block-size. Zo schuift de inhoud eronder niet als een variant langer is.
@@ -21,6 +29,10 @@ interface Rotator {
   phrases: string[];
   hold: number;
   delay: number;
+  uit: number;
+  leeg: number;
+  in: number;
+  fade: number;
   index: number;
   /** Lopende tween of wachttijd; nieuwe stappen ontstaan in callbacks. */
   current?: gsap.core.Tween | gsap.core.Timeline;
@@ -29,15 +41,17 @@ interface Rotator {
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
 let teardown: (() => void) | undefined;
 
-function fill(target: HTMLElement, phrase: string) {
+function fill(target: HTMLElement, phrase: string, hidden = false) {
   target.replaceChildren();
-  phrase.split(' ').forEach((word, i) => {
-    if (i > 0) target.append(' ');
+  const words = phrase.split(' ');
+  words.forEach((word, i) => {
     const mask = document.createElement('span');
     mask.className = 'w';
     const inner = document.createElement('span');
     inner.className = 'w__i';
-    inner.textContent = word;
+    // Spatie in het woord zelf (zie Hero.astro): de onderstreping loopt door en verdwijnt mee.
+    inner.textContent = i < words.length - 1 ? `${word} ` : word;
+    if (hidden) inner.style.visibility = 'hidden';
     mask.append(inner);
     target.append(mask);
   });
@@ -78,7 +92,22 @@ function init() {
     const block = root.closest<HTMLElement>('[data-rotate-block]');
     const phrases: string[] = target ? JSON.parse(target.dataset.words ?? '[]') : [];
     if (!target || !block || phrases.length < 2) return [];
-    return [{ block, target, phrases, hold: Number(root.dataset.hold ?? 3), delay: Number(root.dataset.delay ?? 0), index: 0 }];
+    const d = root.dataset;
+    const num = (v: string | undefined, standaard: number) => (v === undefined || v === '' ? standaard : Number(v));
+    return [
+      {
+        block,
+        target,
+        phrases,
+        hold: num(d.hold, 5),
+        delay: num(d.delay, 0),
+        uit: num(d.uit, 0),
+        leeg: num(d.leeg, 1),
+        in: num(d.in, 0.5),
+        fade: num(d.fade, 0.2),
+        index: 0,
+      },
+    ];
   });
   if (!rotators.length) return;
 
@@ -96,39 +125,24 @@ function init() {
   const wait = (r: Rotator, seconds: number) => track(r, gsap.delayedCall(seconds, () => swap(r)));
 
   function swap(r: Rotator) {
-    const outgoing = r.target.querySelectorAll('.w__i');
-    track(
-      r,
-      gsap.to(outgoing, {
-        y: '-1.3em',
-        opacity: 0,
-        rotation: -2,
-        duration: 0.38,
-        stagger: 0.045,
-        ease: 'power2.in',
-        onComplete: () => {
-          r.index = (r.index + 1) % r.phrases.length;
-          fill(r.target, r.phrases[r.index]);
-          const incoming = r.target.querySelectorAll('.w__i');
-          track(
-            r,
-            gsap.fromTo(
-              incoming,
-              { y: '1.3em', opacity: 0, rotation: 2 },
-              {
-                y: 0,
-                opacity: 1,
-                rotation: 0,
-                duration: 0.62,
-                stagger: 0.055,
-                ease: 'back.out(1.2)',
-                onComplete: () => wait(r, r.hold),
-              },
-            ),
-          );
-        },
-      }),
-    );
+    const outgoing = [...r.target.querySelectorAll<HTMLElement>('.w__i')].reverse();
+    const uit = gsap.timeline({ onComplete: () => verschijn(r) });
+    outgoing.forEach((w, i) => uit.set(w, { visibility: 'hidden' }, i * r.uit));
+    uit.set({}, {}, Math.max(outgoing.length - 1, 0) * r.uit + r.leeg);
+    track(r, uit);
+  }
+
+  function verschijn(r: Rotator) {
+    r.index = (r.index + 1) % r.phrases.length;
+    fill(r.target, r.phrases[r.index], true);
+    const incoming = [...r.target.querySelectorAll<HTMLElement>('.w__i')];
+    const tl = gsap.timeline({ onComplete: () => wait(r, r.hold) });
+    incoming.forEach((w, i) => {
+      // Zichtbaar maken door de inline verberging weg te halen (zie fill), dan de fade.
+      tl.call(() => w.style.removeProperty('visibility'), [], i * r.in);
+      if (r.fade > 0) tl.fromTo(w, { opacity: 0 }, { opacity: 1, duration: r.fade, ease: 'none' }, i * r.in);
+    });
+    track(r, tl);
   }
 
   const sync = () => rotators.forEach((r) => (isPaused() ? r.current?.pause() : r.current?.resume()));

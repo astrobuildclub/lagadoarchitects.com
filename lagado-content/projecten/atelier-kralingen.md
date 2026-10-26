@@ -13,6 +13,7 @@ kleuren: [wit, grijs]
 status: bijna
 schaal: kamer
 materialen: [beton, glas]
+opgave: [verbouw]
 prijsklasse: null
 
 locatie: { plaats: Rotterdam, wijk: Kralingen }
@@ -29,8 +30,8 @@ accentkleur: ""
 kleurpalet: []
 
 hero: { src: 01.jpg, alt: "" }
-featured: true
-homepageGrootte: m
+featured: false
+homepageGrootte: hoog
 volgorde: 4
 gerelateerd: []
 

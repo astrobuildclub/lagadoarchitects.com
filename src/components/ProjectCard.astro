@@ -1,7 +1,10 @@
 ---
-// Kaart in een projectraster. De data-*-attributen voeden de filters op /wat.
+// Kaart in een projectraster: een vlak in de projectkleur, in de vorm van het project, met bestemming · jaar en titel.
+// Hover (muis) of in beeld (touch) toont de foto; met de muis horizontaal scrubben door de beelden (project-card.ts).
+// De data-*-attributen voeden de filters op /projecten.
 import Img from './Img.astro';
-import { projectImage } from '../lib/images';
+import { projectBeelden, projectImage } from '../lib/images';
+import { kaartkleur } from '../lib/projectkleur';
 import { label } from '../lib/labels';
 import type { Project } from '../lib/schema';
 
@@ -9,12 +12,24 @@ interface Props {
   project: Project;
   headingLevel?: 2 | 3;
   priority?: boolean;
-  /** Homepage-raster: s/m/l spanning. */
+  /** Homepage-raster: spanning volgens homepageGrootte. */
   sized?: boolean;
+  /** Pas zichtbaar na "Meer projecten". */
+  later?: boolean;
 }
-const { project: p, headingLevel = 3, priority = false, sized = false } = Astro.props;
+const { project: p, headingLevel = 3, priority = false, sized = false, later = false } = Astro.props;
 const Heading = `h${headingLevel}` as 'h2' | 'h3';
 const grootte = sized ? p.homepageGrootte : undefined;
+// Eerste vorm uit het filter; zonder vorm een rechthoek.
+const vorm = p.vorm[0] ?? 'recht';
+// 0 is een invulplek in de content, geen jaar.
+const jaar = p.jaarOplevering || p.jaarOpdracht || undefined;
+const kleur = await kaartkleur(p);
+const [, ...meer] = projectBeelden(p);
+const sizes =
+  grootte === 'groot' || grootte === 'breed'
+    ? '(min-width: 60rem) 50vw, 100vw'
+    : '(min-width: 60rem) 33vw, (min-width: 36rem) 50vw, 100vw';
 const filters = {
   type: p.type,
   vorm: p.vorm.join(' '),
@@ -22,60 +37,203 @@ const filters = {
   status: p.status,
   schaal: p.schaal ?? '',
   materialen: p.materialen.join(' '),
+  opgave: p.opgave.join(' '),
   prijsklasse: p.prijsklasse ?? '',
 };
 ---
 
 <li
   class:list={['project-card', grootte && `project-card--${grootte}`]}
+  data-vorm={vorm}
+  data-later={later || undefined}
+  hidden={later}
+  style={`--kaart-vlak: ${kleur.vlak}; --kaart-tekst: ${kleur.tekst}`}
   {...Object.fromEntries(Object.entries(filters).map(([k, v]) => [`data-${k}`, v]))}
 >
-  <a href={`/wat/${p.slug}`}>
-    <Img
-      src={projectImage(p.slug, p.hero.src)}
-      alt={p.hero.alt}
-      sizes={
-        grootte === 'l'
-          ? '(min-width: 60rem) 66vw, 100vw'
-          : grootte === 's'
-            ? '(min-width: 60rem) 25vw, (min-width: 36rem) 50vw, 100vw'
-            : '(min-width: 60rem) 33vw, (min-width: 36rem) 50vw, 100vw'
+  <a href={`/projecten/${p.slug}`}>
+    <div class="project-card__vorm">
+      <div class="project-card__beelden">
+        <Img src={projectImage(p.slug, p.hero.src)} alt={p.hero.alt} sizes={sizes} priority={priority} class="project-card__beeld is-actief" />
+        {
+          meer.length > 0 && (
+            <template data-meer-beelden>
+              {meer.map((src) => (
+                <Img src={projectImage(p.slug, src)} alt="" sizes={sizes} class="project-card__beeld" />
+              ))}
+            </template>
+          )
+        }
+      </div>
+      {
+        meer.length > 0 && (
+          <span class="project-card__scrub" aria-hidden="true">
+            {[p.hero.src, ...meer].map((_, i) => <span class:list={[i === 0 && 'is-actief']} />)}
+          </span>
+        )
       }
-      priority={priority}
-    />
-    <Heading class="project-card__title">{p.title}</Heading>
+      <div class="project-card__tekst">
+        <p class="project-card__boven" aria-hidden="true">{label(p.type)}{jaar && ` · ${jaar}`}</p>
+        <div class="project-card__voet">
+          <p class="project-card__label">{label(p.type)}{jaar && ` · ${jaar}`}</p>
+          <Heading class="project-card__title">{p.title}</Heading>
+        </div>
+      </div>
+    </div>
   </a>
   <p class="project-card__tagline">{p.tagline}</p>
   <p class="project-card__meta muted">
-    {p.locatie.plaats} · {label(p.programma)}{p.jaarOplevering ? ` · ${p.jaarOplevering}` : ''}
+    {p.locatie.plaats} · {label(p.programma)}{jaar ? ` · ${jaar}` : ''}
   </p>
 </li>
 
 <style>
   .project-card a {
     display: block;
+    block-size: 100%;
     text-decoration: none;
+    border-radius: var(--vorm-radius);
   }
-  .project-card :global(img) {
-    inline-size: 100%;
+
+  .project-card__vorm {
+    position: relative;
+    overflow: hidden;
+    block-size: 100%;
     aspect-ratio: 4 / 3;
+    background: var(--kaart-vlak);
+    color: var(--kaart-tekst);
+    border-radius: var(--vorm-radius);
+  }
+  /* Alleen in het raster: in de lijstweergave is het vlak een gewone tekstrij. */
+  :global([data-view='raster']) .project-card[data-vorm='schuin'] .project-card__vorm {
+    clip-path: var(--vorm-clip);
+  }
+  /* In het homeraster bepaalt het grid de maat. */
+  .project-card--klein .project-card__vorm,
+  .project-card--hoog .project-card__vorm,
+  .project-card--toren .project-card__vorm,
+  .project-card--breed .project-card__vorm,
+  .project-card--groot .project-card__vorm {
+    aspect-ratio: auto;
+  }
+
+  .project-card__beelden,
+  .project-card__beelden :global(img) {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
     object-fit: cover;
   }
-  .project-card--l :global(img) {
-    aspect-ratio: 16 / 9;
+  /* De foto's faden samen in; tussen de beelden (scrubben) wisselt het hard. */
+  .project-card__beelden {
+    opacity: 0;
+    transition: opacity var(--duration) var(--ease);
   }
-  .project-card--s :global(img) {
-    aspect-ratio: 1 / 1;
+  .project-card__beelden :global(img:not(.is-actief)) {
+    visibility: hidden;
+  }
+
+  .project-card__tekst {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-m) var(--space-l);
+    text-align: center;
+    transition: opacity var(--duration) var(--ease);
+  }
+  .project-card__boven,
+  .project-card__label {
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+  .project-card__voet {
+    display: grid;
+    gap: var(--space-3xs);
+    justify-items: center;
   }
   .project-card__title {
-    margin-block-start: var(--space-xs);
+    margin: 0;
     font-size: var(--step-1);
+    line-height: var(--leading-tight);
   }
-  .project-card a:hover .project-card__title {
-    text-decoration: underline;
+  /* Het label (type · jaar) is er voor schermlezers; zichtbaar alleen in de mobiele kleurbalk. */
+  .project-card__label {
+    clip-path: inset(50%);
+    position: absolute;
+    block-size: 1px;
+    inline-size: 1px;
+    overflow: hidden;
+    white-space: nowrap;
   }
-  .project-card__tagline {
-    margin-block-start: var(--space-3xs);
+
+  .project-card__scrub {
+    position: absolute;
+    inset-block-end: var(--space-xs);
+    inset-inline: 0;
+    display: flex;
+    justify-content: center;
+    gap: var(--space-3xs);
+    opacity: 0;
+    transition: opacity var(--duration) var(--ease);
+  }
+  .project-card__scrub span {
+    inline-size: var(--space-s);
+    block-size: 2px;
+    background: oklch(99% 0 0 / 0.5);
+  }
+  .project-card__scrub span.is-actief {
+    background: oklch(99% 0 0);
+  }
+
+  /* Alleen in de rasterweergave; in de lijst op /projecten hangt het beeld aan de muis (hover-follow.ts). */
+  /* Muis en toetsenbord: foto tonen, tekst weg. */
+  @media (hover: hover) {
+    :global([data-view='raster']) .project-card:is(:hover, :focus-within) .project-card__beelden {
+      opacity: 1;
+    }
+    :global([data-view='raster']) .project-card:is(:hover, :focus-within) .project-card__tekst {
+      opacity: 0;
+    }
+    :global([data-view='raster']) .project-card:hover .project-card__scrub {
+      opacity: 1;
+    }
+  }
+
+  /* Touch: foto zodra de kaart in beeld is (.is-open), met een kleurbalk voor type, jaar en titel. */
+  @media (hover: none) {
+    :global([data-view='raster']) .project-card.is-open .project-card__beelden {
+      opacity: 1;
+    }
+    :global([data-view='raster']) .project-card.is-open .project-card__boven {
+      opacity: 0;
+    }
+    /* Balk over de volle breedte, tegen de onderkant van de vorm. */
+    :global([data-view='raster']) .project-card.is-open .project-card__tekst {
+      padding-inline: 0;
+      padding-block-end: 0;
+    }
+    .project-card__voet {
+      transition: background-color var(--duration) var(--ease);
+    }
+    :global([data-view='raster']) .project-card.is-open .project-card__voet {
+      align-self: stretch;
+      padding: var(--space-xs) var(--space-l) var(--space-s);
+      background: var(--kaart-vlak);
+    }
+    :global([data-view='raster']) .project-card.is-open .project-card__label {
+      position: static;
+      clip-path: none;
+      inline-size: auto;
+      block-size: auto;
+    }
+  }
+
+  .project-card__tagline,
+  .project-card__meta {
+    display: none;
   }
   .project-card__meta {
     font-family: var(--font-mono);

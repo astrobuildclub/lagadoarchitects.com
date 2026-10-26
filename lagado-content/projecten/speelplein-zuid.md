@@ -11,8 +11,9 @@ type: de-hort-op
 vorm: [rond]
 kleuren: [rood, geel, blauw]
 status: opgetekend
-schaal: stad
+schaal: plein
 materialen: [beton]
+opgave: [landschap]
 prijsklasse: null
 
 locatie: { plaats: Rotterdam, wijk: Charlois }
@@ -29,8 +30,8 @@ accentkleur: ""
 kleurpalet: []
 
 hero: { src: 01.jpg, alt: "" }
-featured: true
-homepageGrootte: l
+featured: false
+homepageGrootte: hoog
 volgorde: 5
 gerelateerd: []
 

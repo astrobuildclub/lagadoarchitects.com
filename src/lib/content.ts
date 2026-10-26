@@ -33,9 +33,12 @@ export async function getProject(slug: string): Promise<Project | undefined> {
   return (await getProjects()).find((p) => p.slug === slug);
 }
 
-/** Selectie voor een projectGrid-blok: expliciete slugs (in die volgorde) of een filter. */
-export async function selectProjects(opts: { slugs?: string[]; filter?: Record<string, string>; limit?: number }) {
-  const all = await getProjects();
+/**
+ * Selectie voor een projectGrid-blok: expliciete slugs (in die volgorde), `featured` of een filter.
+ * Geeft de hele selectie terug; `limit` bepaalt in het blok hoeveel er eerst zichtbaar zijn.
+ */
+export async function selectProjects(opts: { slugs?: string[]; filter?: Record<string, string>; featured?: boolean }) {
+  const all = (await getProjects()).filter((p) => !opts.featured || p.featured);
   const list = opts.slugs?.length
     ? opts.slugs.map((s) => all.find((p) => p.slug === s)).filter((p): p is Project => !!p)
     : all.filter((p) =>
@@ -44,7 +47,7 @@ export async function selectProjects(opts: { slugs?: string[]; filter?: Record<s
           return Array.isArray(value) ? value.includes(v) : String(value) === v;
         }),
       );
-  return opts.limit ? list.slice(0, opts.limit) : list;
+  return list;
 }
 
 /** Teaser onderaan een project: eerste `gerelateerd`, anders het volgende op volgorde (rondlopend). */
