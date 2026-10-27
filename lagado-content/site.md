@@ -1,7 +1,7 @@
 ---
 # Globale instellingen. Wordt in Sanity het singleton-document `siteSettings`.
 siteNaam: LAGADO architects            # verplicht
-payoff: Een serieus buro voor speelse architectuur   # verplicht
+payoff: Een serieus bureau voor speelse architectuur   # verplicht
 taal: nl
 url: https://lagadoarchitects.com      # verplicht, zonder slash aan het eind
 

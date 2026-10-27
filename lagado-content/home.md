@@ -8,7 +8,7 @@ seo:
 blocks:
   # 1. Intro (Figma): vier kolommen klein. Kop en subkop met wisselende woorden, adres, herkomst van de naam.
   - type: hero
-    kop: Wij zijn een serieus buro voor  # verplicht; het wisselwoord staat op een eigen regel
+    kop: Wij zijn een serieus bureau voor  # verplicht; het wisselwoord staat op een eigen regel
     kopWissel:                         # optioneel; de eerste staat er vast, daarna wissel per zin
       - speelse architectuur
       - kleurrijke interieurs
