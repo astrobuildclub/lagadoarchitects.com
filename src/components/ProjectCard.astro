@@ -148,7 +148,7 @@ const filters = {
     inline-size: auto;
     block-size: auto;
     font-family: var(--font-mono);
-    font-size: var(--step--1);
+    font-size: var(--step--2);
     letter-spacing: 0.12em;
     text-transform: uppercase;
     line-height: 1;
@@ -206,15 +206,15 @@ const filters = {
     font-size: var(--step-2);
   }
   :global([data-view='raster']) .project-card--vlak .project-card__label {
-    font-size: var(--step-0);
+    font-size: var(--step--1);
   }
-  /* Tekst een stap groter dan in Figma (meta step-0, titel step-2). Kaarten van 1 rij: meta een stap
+  /* Titel een stap groter dan in Figma (step-2), meta step--1. Kaarten van 1 rij: meta een stap
      kleiner, meer lucht tussen meta en titel. */
   .project-card--vlak:not(.project-card--hoog, .project-card--toren, .project-card--groot) .project-card__voet {
     gap: var(--space-xs);
   }
   :global([data-view='raster']) .project-card--vlak:not(.project-card--hoog, .project-card--toren, .project-card--groot) .project-card__label {
-    font-size: var(--step--1);
+    font-size: var(--step--2);
   }
   @media (hover: hover) {
     .project-card--vlak:is(:hover, :focus-within) .project-card__beelden {
