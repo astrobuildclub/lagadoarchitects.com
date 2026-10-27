@@ -50,6 +50,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - `utopia-core-scss` + Sass: type- en spaceschaal in `tokens.scss` (360→2560, tweakbaar).
 
 ### Opgelost
+- Beeldviewer (gallery-lightbox): alle beelden stonden tegelijk in beeld, de nog niet geladen als kapot beeld met alt-tekst (`display: grid` overschreef `hidden`). Nu één beeld tegelijk, het vorige en volgende worden vooraf geladen, de pagina scrolt niet mee en de knoppen zijn grijze pillen.
 - /wat, lijstweergave: de vorm (parallellogram) sneed de projecttitel af.
 - Home: "Meer projecten" bleef zichtbaar na het laatste project (`.button` overschreef `hidden`).
 - Kaartkleur werd in dev niet ververst na het vervangen van een foto.
