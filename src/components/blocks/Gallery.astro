@@ -15,7 +15,7 @@ const items = await Promise.all(
     return { ...item, image, large: large.src };
   }),
 );
-const sizes = block.kolommen === 2 ? '(min-width: 48rem) 50vw, 100vw' : '(min-width: 48rem) 33vw, 100vw';
+const sizes = block.kolommen === 2 ? '50vw' : '(min-width: 48rem) 33vw, 50vw';
 ---
 
 {
@@ -104,8 +104,10 @@ const sizes = block.kolommen === 2 ? '(min-width: 48rem) 50vw, 100vw' : '(min-wi
 </script>
 
 <style>
+  /* Mobiel twee kolommen, vanaf 48rem het aantal uit de content (2 of 3). */
   .gallery__grid {
     display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--space-xs);
   }
   @media (min-width: 48rem) {

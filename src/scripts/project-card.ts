@@ -5,10 +5,12 @@
 //   overige beelden uit de <template> in de kaart (zo laden ze pas als iemand ze wil zien).
 //   /projecten: de horizontale positie van de muis kiest het beeld (links het eerste, rechts het
 //   laatste). Home: elke seconde het volgende beeld. Bij pointerleave terug naar het hero-beeld.
-// - Touch (`hover: none`): een IntersectionObserver zet `.is-open` zodra de kaart in de
-//   middelste strook van het scherm staat (rootMargin -30% boven en onder) en haalt hem weer weg
-//   als de kaart uit beeld gaat. CSS toont dan de foto met de kleurbalk.
-// - Reduced motion op touch: geen wissel bij scrollen, de foto staat er direct.
+// - Touch (`hover: none`), home: niets bij scrollen. Een tik zet `.is-open` (de hoverstand) op de
+//   kaart; die blijft staan tijdens de paginatransitie. Gaat de vinger in een scroll over
+//   (pointercancel), dan gaat hij er weer af.
+// - Touch, /projecten: een IntersectionObserver zet `.is-open` zodra de kaart in de middelste
+//   strook van het scherm staat (rootMargin -30% boven en onder) en haalt hem weer weg als de
+//   kaart uit beeld gaat. Met reduced motion staat de hoverstand er direct.
 // - In de lijstweergave op /projecten gebeurt er niets; daar hangt het beeld aan de muis (hover-follow.ts).
 // - ClientRouter: start op astro:page-load, ruimt op bij astro:before-swap.
 const hover = window.matchMedia('(hover: hover)');
@@ -82,14 +84,22 @@ function init() {
 
   if (hover.matches) {
     cards.forEach((card) => initMuis(card, ac.signal));
-  } else if (reduce.matches) {
-    cards.forEach((card) => card.classList.add('is-open'));
   } else {
-    observer = new IntersectionObserver(
-      (entries) => entries.forEach((e) => e.target.classList.toggle('is-open', e.isIntersecting)),
-      { rootMargin: '-30% 0px -30% 0px' },
-    );
-    cards.forEach((card) => observer!.observe(card));
+    const home = cards.filter((card) => card.classList.contains('project-card--vlak'));
+    const overig = cards.filter((card) => !home.includes(card));
+    home.forEach((card) => {
+      card.addEventListener('pointerdown', () => card.classList.add('is-open'), { signal: ac.signal });
+      card.addEventListener('pointercancel', () => card.classList.remove('is-open'), { signal: ac.signal });
+    });
+    if (reduce.matches) {
+      overig.forEach((card) => card.classList.add('is-open'));
+    } else if (overig.length) {
+      observer = new IntersectionObserver(
+        (entries) => entries.forEach((e) => e.target.classList.toggle('is-open', e.isIntersecting)),
+        { rootMargin: '-30% 0px -30% 0px' },
+      );
+      overig.forEach((card) => observer!.observe(card));
+    }
   }
 
   teardown = () => {

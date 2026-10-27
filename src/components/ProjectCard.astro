@@ -1,7 +1,7 @@
 ---
 // Kaart in een projectraster, met type • jaar en titel. Twee varianten (Figma):
 // - Home (`sized`, 447:2103): de foto vult de kaart, daarop een vorm in de projectkleur met de tekst.
-//   Hover (muis) of in beeld (touch) keert dat om: de kaart krijgt de kleur, de foto krimpt tot de vorm.
+//   Hover (muis) of een tik (touch) keert dat om: de kaart krijgt de kleur, de foto krimpt tot de vorm.
 // - /projecten (`vlak`, 462:8670): de foto in de kaartvorm met de tekst eronder; hover kleurt de kaart.
 // Met de muis horizontaal scrubben door de beelden (project-card.ts).
 // De data-*-attributen voeden de filters op /projecten.
@@ -156,7 +156,7 @@ const filters = {
 
   /* ── Home (Figma 447:2103) ─────────────────────────────────────────────
      De foto vult de kaart (radius xs); daarop, op --kaart-pad afstand, de vorm in de projectkleur
-     met de tekst gecentreerd. Omgekeerd bij hover/focus (muis) of in beeld (touch): de kaart wordt
+     met de tekst gecentreerd. Omgekeerd bij hover/focus (muis) of een tik (touch): de kaart wordt
      de kleur en de foto krimpt via clip-path tot precies de vorm; inset() en polygon() animeren
      vloeiend tussen de twee standen. */
   .project-card--vlak {
