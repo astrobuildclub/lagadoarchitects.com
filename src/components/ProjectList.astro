@@ -128,7 +128,8 @@ const { projects, headingLevel, id, sized = false, weergave = false, zichtbaar }
   }
 
   /* Homeraster (Figma): geen gap, vaste rijhoogte die meeschaalt van 128px (360) tot 256px (1512).
-     4 kolommen, vanaf 60rem 6, vanaf 110rem 8 (zelfde spans, dus kleinere tegels en meer per rij). Kaarten spannen kolommen × rijen volgens homepageGrootte;
+     4 kolommen, vanaf 60rem 6, vanaf 110rem 12 (zelfde spans, dus tegels half zo breed en twee keer zoveel per rij;
+     6 en 12 zijn allebei deelbaar door 2 en 3, dus helften en derden blijven mogelijk). Kaarten spannen kolommen × rijen volgens homepageGrootte;
      `dense` vult gaten op, de tabvolgorde blijft die van de content. */
   .project-list--sized {
     --kolommen: 4;
@@ -185,7 +186,7 @@ const { projects, headingLevel, id, sized = false, weergave = false, zichtbaar }
 
   @media (min-width: 110rem) {
     .project-list--sized {
-      --kolommen: 8;
+      --kolommen: 12;
     }
   }
 </style>

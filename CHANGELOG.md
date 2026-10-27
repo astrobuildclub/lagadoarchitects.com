@@ -9,7 +9,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 
 ### Toegevoegd
 - Homepage volgens Figma (Home 01A, desktop en mobiel). Intro als vier kleine kolommen (kop en subkop met wisselwoorden, adres, herkomst van de naam; hero-velden `adres` en `tekst`). Projectraster zonder gap over de volle breedte, rijhoogte 128px (360) tot 256px (1512), 4 kolommen en vanaf 60rem 6. Knoppen "alle projecten" en "over" als grijze pillen, afsluiter met een kleine link.
-- Breed scherm (vanaf 110rem, ±1760px): homeraster 8 kolommen met dezelfde spans, /projecten 4 kaarten per rij.
+- Breed scherm (vanaf 110rem, ±1760px): homeraster 12 kolommen met dezelfde spans (tegels half zo breed; helften en derden blijven mogelijk), /projecten 4 kaarten per rij.
 - /projecten, rasterweergave: zelfde vlakken als de home (kaartvorm, typografie, geen gap), alle kaarten even groot (2 per rij, vanaf 60rem 3). De pagina loopt van gutter tot gutter. De lijstweergave blijft zoals hij was.
 - `homepageGrootte` `mini` (1×1) en `lang` (4×1); veld `kaartvorm` (`ovaal`, `afgerond`, `zacht`, `recht`, `schuin`), leeg = uit `vorm`. Bright Light, Wooden House Deventer, Easehouse, Chinny en Concrete Dunes staan op maat en vorm uit Figma.
 - Header als donkere balk met het nieuwe (voorlopige) woordmerk; op mobiel klappen de links uit achter "menu".
