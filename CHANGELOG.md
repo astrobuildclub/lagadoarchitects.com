@@ -57,7 +57,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Netlify secrets scanning: `FONTS_URL` uitgezonderd (`SECRETS_SCAN_OMIT_KEYS`), de build faalde omdat de URL in de README staat.
 
 ### Gewijzigd
-- /projecten, filters: "Verras me" is geen eigen kolom meer maar staat rechts in de actieregel (naast "Verfijn", op mobiel naast "Filters") en in de overlay onder "Toon n projecten", met een nieuw dobbelsteen-icoon dat bij hover even samenknijpt (CSS, stil bij reduced motion). Vanaf 64rem een kolom per filtergroep, ook dicht. De lijn onder de actieregel staat er op desktop alleen als "Verfijn" open is.
+- /projecten, filters: "Verras me" is geen eigen kolom meer maar staat rechts in de actieregel (naast "Verfijn", op mobiel naast "Filters") en in de overlay onder "Toon n projecten", met een nieuw dobbelsteen-icoon. Bij hover of focus speelt de Lottie-animatie "hover-pinch" (`lottie-web`, lichte SVG-speler, pas geladen bij de eerste hover; `src/scripts/verras-dobbelsteen.ts`); zonder JS of met reduced motion het statische icoon. Vanaf 64rem een kolom per filtergroep, ook dicht. De lijn onder de actieregel staat er op desktop alleen als "Verfijn" open is.
 - /projecten, filters: vanaf 64rem ook met "Verfijn" open uitgevuld over de volle breedte, alle groepen even breed. Het aantal loopt direct achter een lang label ("Papieren werkelijkheid 12") in plaats van als losse kolom.
 - Header en footer omgekeerd t.o.v. het thema: licht thema = donker vlak, donker thema = licht vlak (`--color-ink`, `--color-on-ink`, DRKM-as volgt mee). Logo (20px hoog) en menu (step-0) kleiner, balk lager.
 - "Een serieus bureau voor speelse architectuur" (was "buro") in kop, payoff, paginatitel en footer, volgens teksten_v4.

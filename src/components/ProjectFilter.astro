@@ -143,6 +143,10 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
 </form>
 
 <script>
+  import '../scripts/verras-dobbelsteen';
+</script>
+
+<script>
   // Document-listeners (overlay, breakpoint, transitie) per pagina opnieuw koppelen, oude opruimen.
   let controller: AbortController | undefined;
 
@@ -352,7 +356,7 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
     align-items: start;
   }
   /* Verras me: een echte knop met dobbelsteen. Rechts in de actieregel, in de overlay
-     onder "Toon projecten". Bij hover knijpt de dobbelsteen even samen. */
+     onder "Toon projecten". Bij hover speelt de dobbelsteen een Lottie-animatie af. */
   .verras-knop {
     display: inline-flex;
     align-items: center;
@@ -374,21 +378,25 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
   .verras-knop__icoon {
     flex: none;
   }
-  @media (prefers-reduced-motion: no-preference) {
-    .verras-knop:enabled:is(:hover, :focus-visible) .verras-knop__icoon {
-      animation: knijp 0.6s var(--ease);
-    }
+  /* Lottie-versie (scripts/verras-dobbelsteen.ts): vervangt het icoon zodra hij geladen is.
+     :global omdat het script de elementen aanmaakt; kleur volgt de tekst. */
+  .verras-knop :global(.verras-knop__lottie) {
+    display: none;
+    flex: none;
+    inline-size: 20px;
+    block-size: 20px;
   }
-  @keyframes knijp {
-    30% {
-      scale: 0.8;
-    }
-    60% {
-      scale: 1.08;
-    }
-    100% {
-      scale: 1;
-    }
+  .verras-knop[data-lottie='klaar'] :global(.verras-knop__lottie) {
+    display: block;
+  }
+  .verras-knop[data-lottie='klaar'] .verras-knop__icoon {
+    display: none;
+  }
+  .verras-knop :global(.verras-knop__lottie [fill]:not([fill='none'])) {
+    fill: currentColor;
+  }
+  .verras-knop :global(.verras-knop__lottie [stroke]:not([stroke='none'])) {
+    stroke: currentColor;
   }
   .project-filter__verras {
     margin-inline-start: auto;
