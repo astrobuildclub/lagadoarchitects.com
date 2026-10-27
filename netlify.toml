@@ -43,3 +43,1071 @@
   from = "/waarom"
   to = "/over"
   status = 301
+
+# Oude WordPress-site (Mies-thema): projecten, nieuwsberichten en pagina's.
+# Bron: wp-sitemap.xml op 27-10-2026. Nieuws zonder bijbehorend project → /over (pers en prijzen).
+
+[[redirects]]
+  from = "/lagado-architects-founded"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/lagado-goes-international"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/creative-urbans-lecture"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/finetuning"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/archikidz"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/greetings-from-agios-mammas"
+  to = "/projecten/thalassa"
+  status = 301
+
+[[redirects]]
+  from = "/the-great-indoors"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/concrete-works"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/going-monumental"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/building-burocracy"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/practice-what-you-preach"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/singeldingen-are-going-to-happen"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/let-the-building-begin"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/skatepool-heemraadssingel-blogged-by-de-architect"
+  to = "/projecten/concrete-dunes"
+  status = 301
+
+[[redirects]]
+  from = "/public-toilet-for-stichting-singeldingen-designed"
+  to = "/projecten/easehouse"
+  status = 301
+
+[[redirects]]
+  from = "/the-building-process-off-the-concrete-skatepool-at-the-heemraadssingel-in-rotterdam-has-begun"
+  to = "/projecten/concrete-dunes"
+  status = 301
+
+[[redirects]]
+  from = "/heemraadspool-longlisted-for-van-der-leeuw-award-2012"
+  to = "/projecten/concrete-dunes"
+  status = 301
+
+[[redirects]]
+  from = "/open-sesame"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/rietveld-academy-and-sandberg-institute-extension"
+  to = "/projecten/rietveld-171"
+  status = 301
+
+[[redirects]]
+  from = "/poolparty"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/skatepool-heemraadssingel-officially-opened"
+  to = "/projecten/concrete-dunes"
+  status = 301
+
+[[redirects]]
+  from = "/young-architects-award-round-1-exhibition-at-materia-inspiration-center-amsterdam"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/selected-as-finalists-for-stadsmeubel-turnhout-competition"
+  to = "/projecten/softcore"
+  status = 301
+
+[[redirects]]
+  from = "/skatepool-heemraadssingel-on-archined"
+  to = "/projecten/concrete-dunes"
+  status = 301
+
+[[redirects]]
+  from = "/high-five"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/stadsmeubel-turnhout-exhibition-at-mastermeubel"
+  to = "/projecten/softcore"
+  status = 301
+
+[[redirects]]
+  from = "/air-startup-presentation-at-dependance-schieblock"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/8th-place-in-overall-rankings-dutch-young-architects-award-2012"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/multitasker-table-finished"
+  to = "/projecten/multitasker"
+  status = 301
+
+[[redirects]]
+  from = "/selected-for-research-plug-rdam-by-air"
+  to = "/projecten/plug-st-janstraat"
+  status = 301
+
+[[redirects]]
+  from = "/unsollicited-design-westblaak-ii-finished"
+  to = "/projecten/skatepark-westblaak"
+  status = 301
+
+[[redirects]]
+  from = "/quoted-in-an-article-by-astrid-aarsen-in-de-architect"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/skatepool-featured-in-article-about-air-startup-in-haacs4"
+  to = "/projecten/concrete-dunes"
+  status = 301
+
+[[redirects]]
+  from = "/startup-grant-issued-for-research-skateboarding-and-public-space"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/easehouse-under-construction"
+  to = "/projecten/easehouse"
+  status = 301
+
+[[redirects]]
+  from = "/dometent-design"
+  to = "/projecten/hunehuis-havelte"
+  status = 301
+
+[[redirects]]
+  from = "/building-permit-granted-for-our-greek-house"
+  to = "/projecten/thalassa"
+  status = 301
+
+[[redirects]]
+  from = "/easehouse-public-toilets-for-singeldingen-opened-in-the-heemraadspark"
+  to = "/projecten/concrete-dunes"
+  status = 301
+
+[[redirects]]
+  from = "/westblaak-budget-tripled-due-to-our-unsolicited-design-and-campaign"
+  to = "/projecten/skatepark-westblaak"
+  status = 301
+
+[[redirects]]
+  from = "/atelier-house-in-greece-under-construction"
+  to = "/projecten/thalassa"
+  status = 301
+
+[[redirects]]
+  from = "/collective-installation-at-30kuub-gallery"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/victor-gives-an-architectour-in-rotterdam-for-bogue-webtv"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/final-presentation-plug-rdam"
+  to = "/projecten/plug-st-janstraat"
+  status = 301
+
+[[redirects]]
+  from = "/meanwhile-in-greece"
+  to = "/projecten/thalassa"
+  status = 301
+
+[[redirects]]
+  from = "/working-on-a-new-design-for-skatepark-westblaak"
+  to = "/projecten/skatepark-westblaak"
+  status = 301
+
+[[redirects]]
+  from = "/easehouse-on-dezeen-inhabitat-and-morfae"
+  to = "/projecten/easehouse"
+  status = 301
+
+[[redirects]]
+  from = "/westblaak-ii-sketch-design-phase-1-finished"
+  to = "/projecten/skatepark-westblaak"
+  status = 301
+
+[[redirects]]
+  from = "/rotterdam-pooligans-skate-contest"
+  to = "/projecten/concrete-dunes"
+  status = 301
+
+[[redirects]]
+  from = "/skatespotting-tour-for-parfum-de-boemboem"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/sketch-design-skatepark-westblaak-rotterdam-finished"
+  to = "/projecten/skatepark-westblaak"
+  status = 301
+
+[[redirects]]
+  from = "/rotterdam-pooligans-skate-contest-was-a-big-success"
+  to = "/projecten/concrete-dunes"
+  status = 301
+
+[[redirects]]
+  from = "/highest-point-reached-in-greece"
+  to = "/projecten/thalassa"
+  status = 301
+
+[[redirects]]
+  from = "/we-have-our-own-day-next-year"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/interview-on-vers-beton"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/interview-in-architectuurnl-magazine"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/rotterdam-koolhaas-and-skateboards"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/merry-christmas-and-a-playful-2014"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/critical-opinion-about-skatepark-westblaak-process-by-tijs-niessen"
+  to = "/projecten/skatepark-westblaak"
+  status = 301
+
+[[redirects]]
+  from = "/tribute-to-an-avenue-for-parfum-de-boemboem"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/interior-works-on-the-way"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/lagado-architects-speaks-on-symposium-de-energieke-stad"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/lagado-architects-featured-in-nrc-in-article-about-playing-in-the-city"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/come-see-the-city-from-our-skaters-and-architects-perspective-at-zigzagcity-festival"
+  to = "/projecten/zitzatcity"
+  status = 301
+
+[[redirects]]
+  from = "/multifunctional-urban-landscape-opened-at-open-zoho"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/3rd-edition-rotterdam-pooligans-skate-contest"
+  to = "/projecten/concrete-dunes"
+  status = 301
+
+[[redirects]]
+  from = "/two-projects-longlisted-for-the-rotterdamse-architectuurprijs-2014"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/skate-design-advice-for-water-square-tiel-by-de-urbanisten"
+  to = "/projecten/waterplein-tiel"
+  status = 301
+
+[[redirects]]
+  from = "/our-easehouse-story-travels-around-the-world"
+  to = "/projecten/easehouse"
+  status = 301
+
+[[redirects]]
+  from = "/today-is-official-easehouse-day"
+  to = "/projecten/easehouse"
+  status = 301
+
+[[redirects]]
+  from = "/skatepark-westblaak-will-be-built"
+  to = "/projecten/skatepark-westblaak"
+  status = 301
+
+[[redirects]]
+  from = "/skatepool-heemraadssingel-featured-in-a10-new-european-architecture-magazine"
+  to = "/projecten/concrete-dunes"
+  status = 301
+
+[[redirects]]
+  from = "/skateable-watersquare-published-in-buiten-spelen-magazine"
+  to = "/projecten/waterplein-tiel"
+  status = 301
+
+[[redirects]]
+  from = "/skatepool-heemraadssingel-published-in-a10-new-european-architecture"
+  to = "/projecten/concrete-dunes"
+  status = 301
+
+[[redirects]]
+  from = "/visiting-critic-at-fontys-academy-of-architecture-and-urbanism"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/898-2"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/watersquare-tiel-under-construction"
+  to = "/projecten/waterplein-tiel"
+  status = 301
+
+[[redirects]]
+  from = "/skatepark-westblaak-under-construction"
+  to = "/projecten/skatepark-westblaak"
+  status = 301
+
+[[redirects]]
+  from = "/interview-on-dearchitect-nl-about-skateboarding-and-architecture"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/skatepark-westblaak-ii-open-to-the-public"
+  to = "/projecten/skatepark-westblaak"
+  status = 301
+
+[[redirects]]
+  from = "/district-a-sneak-preview"
+  to = "/projecten/district-a"
+  status = 301
+
+[[redirects]]
+  from = "/our-easehouse-among-the-10-coolest-public-toilets-in-the-world"
+  to = "/projecten/easehouse"
+  status = 301
+
+[[redirects]]
+  from = "/oh-la-la-our-easehouse-story-in-le-courier-de-larchitecte"
+  to = "/projecten/easehouse"
+  status = 301
+
+[[redirects]]
+  from = "/thalassas-first-publication-in-rotterdamse-kunstkalender-2016"
+  to = "/projecten/thalassa"
+  status = 301
+
+[[redirects]]
+  from = "/lagado-in-urban-sports-special-in-buitenspelen-magazine"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/playscape-and-watersquare-tiel-almost-finished"
+  to = "/projecten/waterplein-tiel"
+  status = 301
+
+[[redirects]]
+  from = "/last-hand-on-skatepark-westblaak"
+  to = "/projecten/skatepark-westblaak"
+  status = 301
+
+[[redirects]]
+  from = "/new-website-live"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/haarlem-home-refurbishment"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/start-building-of-rietveld-academy"
+  to = "/projecten/rietveld-171"
+  status = 301
+
+[[redirects]]
+  from = "/guestcritic-fontys-academy-masters-of-architecture-and-urbanism"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/water-square-tiel-opened"
+  to = "/projecten/waterplein-tiel"
+  status = 301
+
+[[redirects]]
+  from = "/skatepark-westblaak-ii-officially-opened"
+  to = "/projecten/skatepark-westblaak"
+  status = 301
+
+[[redirects]]
+  from = "/skateable-watersquare-tiel-on-worldlandscapearchitect-com"
+  to = "/projecten/waterplein-tiel"
+  status = 301
+
+[[redirects]]
+  from = "/westblaak-ii-opening-video-live-action"
+  to = "/projecten/skatepark-westblaak"
+  status = 301
+
+[[redirects]]
+  from = "/keeping-it-street"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/district-a-featured-on-de-architect"
+  to = "/projecten/district-a"
+  status = 301
+
+[[redirects]]
+  from = "/skatepark-westblaak-shortlisted-for-rotterdam-architectuurprijs"
+  to = "/projecten/skatepark-westblaak"
+  status = 301
+
+[[redirects]]
+  from = "/easehouse-published-in-french-amc-magazine"
+  to = "/projecten/easehouse"
+  status = 301
+
+[[redirects]]
+  from = "/letter-featured-in-forum-magazine"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/masterclass-developing-without-a-client"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/watersquare-tiel-published-in-blauwe-kamer"
+  to = "/projecten/waterplein-tiel"
+  status = 301
+
+[[redirects]]
+  from = "/architectural-tour-through-rotterdam-for-ensap"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/expert-meetup-connected-innercity"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/workhome-under-construction"
+  to = "/projecten/workhome-playhome"
+  status = 301
+
+[[redirects]]
+  from = "/district-a-360-view"
+  to = "/projecten/district-a"
+  status = 301
+
+[[redirects]]
+  from = "/selected-for-designlab-bladel-egyptische-poort"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/maria-nominated-for-marina-van-damme-grant"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/new-project-calvin-klein-shop-at-modernistic-state-monument-lijnbaan-in-rotterdam"
+  to = "/projecten/calvin-klein-lijnbaan"
+  status = 301
+
+[[redirects]]
+  from = "/maria-awarded-runner-up-prize-for-marina-van-damme-grant"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/new-plans-for-egyptische-poort-presented-to-municipality-of-bladel"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/egyptische-poort-redevelopment-scenarios-presented-on-site-at-totaal-festival-bladel"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/first-glimpse-of-our-colourful-noordereiland-workhome-playhome"
+  to = "/projecten/workhome-playhome"
+  status = 301
+
+[[redirects]]
+  from = "/come-have-a-peak-in-our-workhome-playhome-for-gluren-bij-de-buren-open-house"
+  to = "/projecten/workhome-playhome"
+  status = 301
+
+[[redirects]]
+  from = "/surface-pavillion-performed-at-nacht-van-de-kunsten-at-art-academy-tilburg"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/building-permit-handed-in-for-calvin-klein-shop-at-lijnbaan-rotterdam"
+  to = "/projecten/calvin-klein-lijnbaan"
+  status = 301
+
+[[redirects]]
+  from = "/1628-2"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/lagado-architects-competes-in-next-step-program"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/building-permit-granted-for-calvin-klein-lijnbaan-rotterdam-lets-build"
+  to = "/projecten/calvin-klein-lijnbaan"
+  status = 301
+
+[[redirects]]
+  from = "/maria-finished-post-graduate-course-on-urbanism"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/calvin-klein-shop-under-construction-at-lijnbaan"
+  to = "/projecten/calvin-klein-lijnbaan"
+  status = 301
+
+[[redirects]]
+  from = "/discussing-urbanisation-at-nextstepprogram-at-tudelft"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/new-project-interior-design-for-seats2meet-in-lochal-tilburg"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/calvin-klein-underwear-rotterdam-lijnbaan-open"
+  to = "/projecten/calvin-klein-lijnbaan"
+  status = 301
+
+[[redirects]]
+  from = "/lecture-on-the-influence-of-colour-and-material-on-the-education-environment-on-behalf-of-roosros-for-centrum-voor-gezonde-scholen"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/work-home-play-home"
+  to = "/projecten/workhome-playhome"
+  status = 301
+
+[[redirects]]
+  from = "/calvin-klein-lijnbaan-and-work-home-play-home-up-for-rotterdam-architectuurprijs-2018"
+  to = "/projecten/calvin-klein-lijnbaan"
+  status = 301
+
+[[redirects]]
+  from = "/new-project-home-refurbishment-and-extension-in-leiden"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/interior-seats2meet-lochal-tilburg-sneak-peak"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/new-project-our-second-restaurant-and-second-project-on-the-lijnbaan"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/local-architect-for-tommy-jeans-lijnbaan-remodel"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/chinny-lijnbaan-opened-for-easter"
+  to = "/projecten/chinny"
+  status = 301
+
+[[redirects]]
+  from = "/building-permit-delivered-for-tommy-jeans-lijnbaan"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/watersquare-tiel-featured-in-detail-magazine-architektur-und-wasser-79-2019"
+  to = "/projecten/waterplein-tiel"
+  status = 301
+
+[[redirects]]
+  from = "/selected-for-skatepark-design-competion-by-bouwmeestermaitrearchitecte-brussels"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/orange-core-house-delivered"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/tommy-jeans-lijnbaan-building-permit-granted-and-under-construction"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/presenting-our-work-in-rome-on-september-6th-at-new-generations-festival-at-macro-museum-of-contemporary-art"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/presenting-at-and-participating-in-new-generations-festival-in-rome"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/2017-2"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/tommy-jeans-lijnbaan-remodel-delivered"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/cheer-up-city-exhibited-at-casa-cava-in-matera-italy"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/dezeen-frame-archdaily-archello-and-architectenweb-published-our-workhome-playhome"
+  to = "/projecten/workhome-playhome"
+  status = 301
+
+[[redirects]]
+  from = "/skate-recyclepark-brussels-competition"
+  to = "/projecten/skatepark-demets"
+  status = 301
+
+[[redirects]]
+  from = "/2135-2"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/featured-practice-on-archdaily"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/cheer-up-city-exhibited-at-parete-art-museum"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/we-designed-a-childcentre-as-a-serious-and-simple-enclosure-for-a-playful-and-diverse-interior"
+  to = "/projecten/kc-hofland"
+  status = 301
+
+[[redirects]]
+  from = "/storage-wall-house-under-construction"
+  to = "/projecten/beam-on-a-box"
+  status = 301
+
+[[redirects]]
+  from = "/bouwen-zonder-vergunning-met-lagado-architects-in-rotterdam"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/curvy-and-colourful-interior-metamorphosis"
+  to = "/projecten/curves-colours-cutouts"
+  status = 301
+
+[[redirects]]
+  from = "/spuifront-oud-beijerland-will-be-built-this-year"
+  to = "/projecten/spuifront"
+  status = 301
+
+[[redirects]]
+  from = "/work-home-play-home-nominated-by-archdaily-for-building-of-the-year-award-interior"
+  to = "/projecten/workhome-playhome"
+  status = 301
+
+[[redirects]]
+  from = "/peaublique-waterpavillion-sluisbuurt-amsterdam"
+  to = "/projecten/peaublique"
+  status = 301
+
+[[redirects]]
+  from = "/runner-up-heart-for-ambacht-100-clt-homes"
+  to = "/projecten/heart-for-ambacht"
+  status = 301
+
+[[redirects]]
+  from = "/work"
+  to = "/projecten"
+  status = 301
+
+[[redirects]]
+  from = "/work/frontpage/projects"
+  to = "/projecten"
+  status = 301
+
+[[redirects]]
+  from = "/work/frontpage/werkwijze/news-2"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/work/frontpage/over-ons"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/work/frontpage/werkwijze"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/easehouse"
+  to = "/projecten/easehouse"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/concrete-dunes"
+  to = "/projecten/concrete-dunes"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/janstraat"
+  to = "/projecten/plug-st-janstraat"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/softcore"
+  to = "/projecten/softcore"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/thalassa"
+  to = "/projecten/thalassa"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/multitasker"
+  to = "/projecten/multitasker"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/tritents"
+  to = "/projecten"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/jap2012"
+  to = "/projecten/jap2012"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/it-takes-tree"
+  to = "/projecten/it-takes-tree"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/interview-dearchitect-nl"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/skatepark-westblaak-ii"
+  to = "/projecten/skatepark-westblaak"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/watersquare-tiel"
+  to = "/projecten/waterplein-tiel"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/district-a-vietnamese-streetfood-2"
+  to = "/projecten/district-a"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/interview-architectuurnl-magazine"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/interview-vers-beton-x-rdamse-nieuwe"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/door-de-ogen-van-lagado"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/air-startup-lecture-and-video"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/urban-sports-buitenspelen-magazine"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/watersquare-tiel-in-blauwe-kamer"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/workhome"
+  to = "/projecten/workhome-playhome"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/calvin-klein-lijnbaan"
+  to = "/projecten/calvin-klein-lijnbaan"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/chinny-surinam-streetfood"
+  to = "/projecten/chinny"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/storage-wall-house"
+  to = "/projecten/beam-on-a-box"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/orange-core-house"
+  to = "/projecten"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/skate-recypark-brussels"
+  to = "/projecten/skatepark-demets"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/childcentre-hofland"
+  to = "/projecten/kc-hofland"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/emerging-european-practice-profile-on-newgenerationsweb"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/camphouse"
+  to = "/projecten/hunehuis-havelte"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/architect-aan-zet"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/spuifront-oud-beijerland"
+  to = "/projecten/spuifront"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/peaublique"
+  to = "/projecten/peaublique"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/heart-for-ambacht"
+  to = "/projecten/heart-for-ambacht"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/curves-colours-and-cutouts"
+  to = "/projecten/curves-colours-cutouts"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/wheelchair-house"
+  to = "/projecten/wheelchair-house"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/gatehouse"
+  to = "/projecten/gatehouse"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/wooden-house"
+  to = "/projecten/wooden-house-deventer"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/zwaanshals-witte-zwaanhof-and-zaagmolenstraat"
+  to = "/projecten/we-love-the-80s"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/stealth-house"
+  to = "/projecten/stealth-house"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/cheer-up-city"
+  to = "/projecten"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/conversation-pit"
+  to = "/projecten/conversation-pit"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/bright-light"
+  to = "/projecten/bright-light"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/stairway-shuffle"
+  to = "/projecten/stairway-shuffle"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/colour-blocks"
+  to = "/projecten/colour-blocks"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio/double-apartment"
+  to = "/projecten/cpo-appartement"
+  status = 301
+
+[[redirects]]
+  from = "/category/wat-we-doen"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/category/services"
+  to = "/over"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio_category/under-construction"
+  to = "/projecten"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio_category/design-development"
+  to = "/projecten"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio_category/publications"
+  to = "/projecten"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio_category/at-home"
+  to = "/projecten"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio_category/playing-around"
+  to = "/projecten"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio_category/going-out"
+  to = "/projecten"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio_category/at-work"
+  to = "/projecten"
+  status = 301
+
+[[redirects]]
+  from = "/portfolio_category/realised"
+  to = "/projecten"
+  status = 301
