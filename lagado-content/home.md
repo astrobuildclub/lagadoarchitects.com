@@ -26,21 +26,16 @@ blocks:
       - van plank tot plein
       - van tegel tot tuin
       - van stoel tot stad
-    adres: true                        # adres uit contact.md als derde kolom
-    tekst: |                           # optioneel, vierde kolom (bron: teksten_v4, voorheen de uitsmijter in de footer)
-      LAGADO is een verwijzing naar The Grand Academy of Lagado uit Gulliver’s Travels. Daar
-      werkte een architect die probeerde om huizen te bouwen, beginnend bij de nok en eindigend
-      met de fundering. Onze naam is een ode aan deze onbevangen, creatieve en optimistische
-      houding. Net als hij zoeken we naar onverwachte ruimtelijke oplossingen en denken we
-      altijd in mogelijkheden.
+    adres: false                       # Figma (447:2103): alleen kop en subkop; adres en tekst staan in de footer
     beelden: []                        # 0–5 beelden; uitgezet: direct het projectraster.
 
   # 2. Geselecteerd werk: projecten met `featured: true`, op `volgorde`. Per project kiest
-  #    `homepageGrootte` de maat en `kaartvorm` de vorm. Eerst `limit` kaarten, daarna "Meer projecten".
+  #    `kaartvorm` de vorm. Vast aantal: `limit` kaarten in de vaste indeling uit Figma (halve kaart midden boven).
   - type: projectGrid
     kop: ""                            # leeg = geen sectietitel
     featured: true
-    limit: 12
+    limit: 8
+    meer: false                        # vast aantal, geen "Meer projecten"
     linkNaarOverzicht: { label: alle projecten, href: /projecten }
     links:
       - { label: over, href: /over }

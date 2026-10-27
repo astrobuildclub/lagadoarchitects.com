@@ -3,8 +3,8 @@
 // Hoe het werkt:
 // - Muis (`hover: hover`): CSS toont bij hover de foto. Bij de eerste pointerenter zetten we de
 //   overige beelden uit de <template> in de kaart (zo laden ze pas als iemand ze wil zien).
-//   Daarna kiest de horizontale positie van de muis het beeld: links het eerste, rechts het
-//   laatste. Bij pointerleave terug naar het hero-beeld.
+//   /projecten: de horizontale positie van de muis kiest het beeld (links het eerste, rechts het
+//   laatste). Home: elke seconde het volgende beeld. Bij pointerleave terug naar het hero-beeld.
 // - Touch (`hover: none`): een IntersectionObserver zet `.is-open` zodra de kaart in de
 //   middelste strook van het scherm staat (rootMargin -30% boven en onder) en haalt hem weer weg
 //   als de kaart uit beeld gaat. CSS toont dan de foto met de kleurbalk.
@@ -20,7 +20,6 @@ function initMuis(card: HTMLElement, signal: AbortSignal) {
   const beelden = card.querySelector<HTMLElement>('.project-card__beelden');
   const template = card.querySelector<HTMLTemplateElement>('template[data-meer-beelden]');
   if (!vlak || !beelden || !template) return;
-  const streepjes = [...card.querySelectorAll('.project-card__scrub > span')];
   let imgs: HTMLImageElement[] = [];
   let actief = 0;
 
@@ -28,7 +27,6 @@ function initMuis(card: HTMLElement, signal: AbortSignal) {
     if (i === actief) return;
     actief = i;
     imgs.forEach((img, j) => img.classList.toggle('is-actief', j === i));
-    streepjes.forEach((s, j) => s.classList.toggle('is-actief', j === i));
   };
 
   card.addEventListener(
@@ -42,6 +40,26 @@ function initMuis(card: HTMLElement, signal: AbortSignal) {
     },
     { signal },
   );
+  // Home: geen scrub, maar een diavoorstelling zolang de muis op de kaart staat: elke seconde het
+  // volgende beeld, hard (zonder fade), beginnend bij het eerste. Met reduced motion blijft het eerste staan.
+  if (card.classList.contains('project-card--vlak')) {
+    let timer: number | undefined;
+    card.addEventListener(
+      'pointerenter',
+      () => {
+        if (reduce.matches || imgs.length < 2) return;
+        timer = window.setInterval(() => zet((actief + 1) % imgs.length), 1000);
+      },
+      { signal },
+    );
+    const stop = () => {
+      window.clearInterval(timer);
+      zet(0);
+    };
+    card.addEventListener('pointerleave', stop, { signal });
+    signal.addEventListener('abort', () => window.clearInterval(timer));
+    return;
+  }
   card.addEventListener(
     'pointermove',
     (e) => {

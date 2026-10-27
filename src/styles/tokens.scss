@@ -41,7 +41,7 @@
     'maxSize': 18,
     'positiveSteps': (1.5, 2, 3, 4, 6, 7, 8),
     'negativeSteps': (0.75, 0.5, 0.25, 0.1),
-    'customSizes': ('s-l', 's-3xl', 'm-xl', 'l-2xl', 'xl-3xl'),
+    'customSizes': ('s-l','s-3xl', 'm-xl', 'l-2xl', 'xl-3xl'),
     'prefix': 'space-',
     'relativeTo': 'viewport-width',
   ));
@@ -54,6 +54,8 @@
   --feature-width: 12rem;
   /* Ruimte tussen de header en het begin van elke pagina (hero, paginakop, projectkop). */
   --page-top: var(--space-4xl);
+  /* Ruimte tussen de projecttegels op de home (Figma: 27px op 1512). */
+  --tile-gap: var(--space-m);
 
   /* Vormen & beweging */
   --radius: 0;

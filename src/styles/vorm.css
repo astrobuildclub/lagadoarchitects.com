@@ -18,8 +18,8 @@
 
 /*
  * Kaartvorm in het homeraster (`kaartvorm`, anders afgeleid van `vorm`). Overschrijft de
- * vorm hierboven: ovaal = pil of cirkel, afgerond = grote ronding, zacht = kleine ronding,
- * recht = bijna haaks, schuin = parallellogram.
+ * vorm hierboven: ovaal = pil of cirkel, afgerond = grote ronding, zacht = ronding s (16px),
+ * recht = kleine ronding (12px, Figma), schuin = parallellogram.
  */
 [data-kaartvorm] {
   --vorm-clip: none;
@@ -34,7 +34,7 @@
   --vorm-radius: var(--space-s);
 }
 [data-kaartvorm='recht'] {
-  --vorm-radius: var(--space-4xs);
+  --vorm-radius: var(--space-xs);
 }
 [data-kaartvorm='schuin'] {
   --vorm-radius: 0;

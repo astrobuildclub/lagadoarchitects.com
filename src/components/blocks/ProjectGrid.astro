@@ -2,11 +2,47 @@
 import ProjectList from '../ProjectList.astro';
 import { selectProjects } from '../../lib/content';
 import { has, type BlockProps } from './scope';
+import type { Project } from '../../lib/schema';
 
 type Props = BlockProps<'projectGrid'>;
 const { block } = Astro.props;
-const projects = await selectProjects(block);
+/**
+ * Vaste indeling uit Figma (447:2103), per 8 kaarten = 4 rijen van 3: hoog, halve, hoog bovenaan
+ * (de halve in het midden), dan hoog, hoog, halve en twee halve onderaan. `grid-auto-flow: dense`
+ * legt ze zo neer; `homepageGrootte` uit de content geldt hier dus niet.
+ */
+const PATROON: Project['homepageGrootte'][] = ['hoog', 'klein', 'hoog', 'hoog', 'hoog', 'klein', 'klein', 'klein'];
+
+const gekozen = await selectProjects(block);
+// Vast aantal (`meer: false`): alleen `limit` kaarten in de vaste indeling, sluitend.
+const projects = block.meer ? gekozen : sluitend(indeling(gekozen.slice(0, block.limit ?? gekozen.length)));
 const stap = block.limit ?? projects.length;
+
+function indeling(list: Project[]): Project[] {
+  return list.map((p, i) => ({ ...p, homepageGrootte: PATROON[i % PATROON.length] }));
+}
+
+/**
+ * Homeraster: 3 kolommen (2 op tablet), kaarten 1 of 2 rijen hoog. Het raster is dicht als het
+ * aantal cellen deelbaar is door 6 (2 én 3 kolommen). Zo niet, dan worden kaarten van achteren af
+ * 1 rij hoger of lager tot het dichtstbijzijnde veelvoud. `grid-auto-flow: dense` vult de gaten verder op.
+ */
+function sluitend(list: Project[]): Project[] {
+  const hoog = (p: Project) => ['hoog', 'toren', 'groot'].includes(p.homepageGrootte);
+  const uit = list.map((p) => ({ ...p }));
+  let cellen = uit.reduce((n, p) => n + (hoog(p) ? 2 : 1), 0);
+  // Doel: het veelvoud van 6 tussen n en 2n cellen dat het dichtst bij de huidige verdeling ligt.
+  const doelen = Array.from({ length: uit.length + 1 }, (_, i) => uit.length + i).filter((c) => c % 6 === 0);
+  const doel = doelen.sort((a, b) => Math.abs(a - cellen) - Math.abs(b - cellen))[0] ?? cellen;
+  while (cellen !== doel) {
+    const groei = cellen < doel;
+    const kaart = groei ? uit.findLast((p) => !hoog(p)) : uit.findLast(hoog);
+    if (!kaart) break;
+    kaart.homepageGrootte = groei ? 'hoog' : 'klein';
+    cellen += groei ? 1 : -1;
+  }
+  return uit;
+}
 const id = 'projecten-uitgelicht';
 const links = [...(block.linkNaarOverzicht ? [block.linkNaarOverzicht] : []), ...block.links];
 ---
@@ -57,12 +93,11 @@ const links = [...(block.linkNaarOverzicht ? [block.linkNaarOverzicht] : []), ..
 <style>
   /* Breakout: over de volle paginabreedte, alleen de gutter eraf (gelijk met header en footer). */
   .project-grid {
+    display: grid;
+    gap: var(--space-xl);
     padding-inline: var(--gutter);
   }
-  .project-grid > * + * {
-    margin-block-start: var(--space-l);
-  }
-  /* Knoppen onder het raster (Figma): grijze pillen naast elkaar, even breed, zonder gap. */
+  /* Knoppen onder het raster (Figma 447:2103): grijze pillen naast elkaar, even breed, zonder gap. */
   .project-grid__acties {
     display: grid;
     grid-auto-flow: column;
@@ -75,7 +110,7 @@ const links = [...(block.linkNaarOverzicht ? [block.linkNaarOverzicht] : []), ..
     border-radius: var(--space-3xl);
     background: var(--color-surface);
     color: var(--color-fg);
-    font-size: var(--step--1);
+    font-size: var(--step-1);
     font-weight: 500;
     letter-spacing: -0.02em;
     line-height: 1.125;

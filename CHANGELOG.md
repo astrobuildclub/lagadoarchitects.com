@@ -7,6 +7,26 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 
 ## [Unreleased]
 
+### Opgelost
+- /projecten: de kaartvorm volgt altijd de `vorm` uit de content, zodat de kaart klopt met het vormfilter (Easehouse, schuin, verscheen rond door `kaartvorm: afgerond`). `kaartvorm` geldt alleen op de home.
+
+### Gewijzigd
+- Projectpagina: tekstselectie in de projectkleur (zwart of wit erop, op contrast) en de focusring in de tint van het project, in licht thema hooguit L 50% en in donker minstens L 75% zodat hij 3:1 haalt (WCAG 1.4.11). `--accent` komt nu uit `kaartkleur()` (accentkleur, anders het hero-beeld); BaseLayout krijgt `accentTekst` en zet `data-accent` op `<html>`.
+- Projectpagina, vraag: woorden staan eerst in de projectkleur en kleuren bij scrollen in naar de tekstkleur (was: accentkleur, gedimd). Projectkop zonder extra binnenmarge: de tekst staat gelijk met het logo.
+- Reveal on scroll op de projectpagina (`scripts/reveal.ts`, `[data-reveal]`): elk blok schuift subtiel omhoog en vervaagt in zodra het in beeld komt, een keer per blok. Kop, vraag en "Volgend project" houden hun eigen animatie; niets bij reduced motion of zonder JS.
+- Projectkop komt subtiel binnen (`scripts/kop-in.ts`, GSAP): titel, intro en elk feit schuiven kort na elkaar omhoog en vervagen in, de foto vervaagt in en krimpt van 104% naar 100%; de tagline blijft woord voor woord. Wacht op het einde van de paginatransitie; niets bij reduced motion of zonder JS.
+- Paginatransitie naar een project in de projectkleur: links van projectkaarten en "Volgend project" dragen `data-transitie-kleur`; `scripts/transitie-kleur.ts` zet bij `interlude:leave` `--interlude-color` op de Interlude-laag en haalt hem bij `interlude:idle` weg. Engine en transities ongewijzigd.
+- Scrubstreepjes uit de projectkaarten verwijderd (op /projecten kies je het beeld nog wel met de muispositie).
+- Ruimte onder het menu overal `--page-top` (space-4xl): ook de intro op de home en de projectkop.
+- Projectpagina volgens Figma (463:9724): kop zonder kleurvlak (de projectkleur zit in de transitie). Tekst over twee kolommen met de titel klein (step-1), de tagline groot (step-5), intro tot 500px en de factsheet; de hero-foto in de vorm van het project in de derde kolom, mobiel bovenaan. Factsheet als één raster (4 kolommen, mobiel 3) met gedempte labels, kleuren als bolletjes met een klikvlak van 24px. Het kruimelpad is niet meer zichtbaar (staat nog in de JSON-LD).
+- Menu als gewone tekst (step-0) in drie kolommen met de themaknop ernaast (Figma 462:9082). Mobiel: "menu" opent een overlay over het hele scherm met de links onder elkaar en onderin adres en bedrijfsgegevens (Figma 462:9522); de knop heet dan "sluit", de pagina erachter is inert en Escape sluit.
+- Homepage volgens Figma (Home, 447:2103). Intro als twee brede kolommen in step-3 (wisselwoord vet); adres en de Gulliver-tekst staan in de footer. Projectraster met een vast aantal kaarten (`projectGrid.meer: false`, `limit: 8`): 3 kolommen (2 op tablet, 1 op mobiel), gap `--tile-gap` (space-m), kaarten 1 of 2 rijen hoog (`homepageGrootte`); de site maakt het raster sluitend. Kaart: de foto vult de kaart (radius xs), daarop de kaartvorm in de projectkleur met type • jaar en titel. Hover/focus (touch: in beeld) keert het om: de kaart krijgt de kleur, de foto krimpt via `clip-path` tot de vorm. Knoppen onder het raster in step-1, afsluiter als inktpil met de vraag in step-3.
+- /projecten, rasterweergave (Figma 462:8670): staande kaarten met de foto (3:4) in de kaartvorm en de tekst eronder (titel step-2), padding l, gap l, radius xs. Standaard zonder vlak in de tekstkleur van de pagina; hover/focus (touch: in beeld) geeft de projectkleur met zwart of wit op contrast. 1 kolom, oplopend tot 5 vanaf 140rem.
+- Header (Figma 447:2104): in de paginakleuren, woordmerk met "architects", menu en thema als even brede grijze pill-knoppen over de rechterhelft; huidige pagina en hover omgekeerd.
+- Compacte footer (Figma 449:6819): dunne lijn, klein woordmerk met payoff, vijf kolommen (herkomst van de naam over twee, adres, bedrijfsgegevens, links). Tekst in `site.md` → `footer.tekst`.
+- Kaartvorm `recht` heeft nu een ronding van 12px (space-xs), zoals in Figma.
+- Home: vaste indeling uit Figma (per 8 kaarten, de halve kaart midden boven) in plaats van `homepageGrootte`; kaarttekst een stap groter (meta step-0, titel step-2). Hover toont geen scrubbalk meer maar elke seconde het volgende beeld, hard en vanaf het eerste (niet bij reduced motion). De themaknop in het menu rekt niet mee.
+
 ### Toegevoegd
 - 301-redirects voor de 213 URL's van de oude WordPress-site (uit `wp-sitemap.xml`): projecten naar hun nieuwe pagina, nieuwsberichten naar het bijbehorende project of anders `/over`, categorieën naar `/projecten`. Tritents, Orange Core House en Cheer Up City staan niet op de nieuwe site en gaan naar `/projecten`.
 - Homepage volgens Figma (Home 01A, desktop en mobiel). Intro als vier kleine kolommen (kop en subkop met wisselwoorden, adres, herkomst van de naam; hero-velden `adres` en `tekst`). Projectraster zonder gap over de volle breedte, rijhoogte 128px (360) tot 256px (1512), 4 kolommen en vanaf 60rem 6. Knoppen "alle projecten" en "over" als grijze pillen, afsluiter met een kleine link.

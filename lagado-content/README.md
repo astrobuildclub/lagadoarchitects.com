@@ -86,7 +86,7 @@ Elk projectbestand heeft dezelfde volgorde als `projecten/_template.md`. Houd di
 | `programma` | `woning`, `winkel`, `horeca`, `kantoor`, `publiek`, `openbare-ruimte`, `meubel` (alleen op de projectkaart, geen filter) |
 | `opdrachtgeverType` | `particulier`, `zakelijk`, `publiek` |
 | `prijsklasse` | `laag`, `midden`, `hoog` (optioneel, nooit tonen zonder akkoord) |
-| `homepageGrootte` | `mini` (1×1), `klein` (2×1), `hoog` (2×2), `toren` (2×3), `breed` (3×1), `groot` (3×2), `lang` (4×1) — kolommen × rijen in het homeraster (6 kolommen; op mobiel 4 kolommen en alles 2 breed, behalve `lang`) |
+| `homepageGrootte` | Hoogte in het homeraster (3 kolommen, alle kaarten even breed): `hoog`, `toren`, `groot` = 2 rijen; `mini`, `klein`, `breed`, `lang` = 1 rij. Met `meer: false` (home) geldt een vaste indeling uit Figma (per 8 kaarten: de halve kaart midden boven) en telt dit veld niet. |
 | `kaartvorm` | Optioneel, alleen op de home: `ovaal`, `afgerond`, `zacht`, `recht`, `schuin`. Leeg = uit de eerste `vorm` (`rond` → ovaal, `recht` → zacht, `schuin` → schuin) |
 
 ## Filters op /projecten
@@ -105,7 +105,7 @@ Volgens teksten_v4, onder "Ontdek ons werk op vorm, kleur of laat je verrassen."
 | `video` | YouTube/Vimeo achter klik | `url`, `titel`, `poster?`, `caption?` |
 | `colors` | Kleurpalet van het project | `kleuren[]` (`label`, `hex`) |
 | `beforeAfter` | Voor/na | `voor{src,alt}`, `na{src,alt}`, `caption?` |
-| `projectGrid` | Selectie projecten | `featured?`, `slugs[]` of `filter`, `limit?` (eerst zichtbaar; de rest per `limit` via "Meer projecten"), `linkNaarOverzicht?`, `links[]?` |
+| `projectGrid` | Selectie projecten | `featured?`, `slugs[]` of `filter`, `limit?` (eerst zichtbaar; de rest per `limit` via "Meer projecten"), `meer?` (`false` = vast aantal: alleen `limit` kaarten in de vaste indeling uit Figma, geen knop), `linkNaarOverzicht?`, `links[]?` |
 | `statement` | Mantra: één grote, vette zin | `tekst` |
 | `team` | Personen | `personen[]` |
 | `list` | Pers, awards, prijzenkast | `soort` (`pers`/`awards`), `items[]`, `zichtbaar?` (rest achter "Toon alles") |

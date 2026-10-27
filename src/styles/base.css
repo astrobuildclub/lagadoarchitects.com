@@ -30,7 +30,22 @@ a:hover { text-decoration-thickness: 2px; }
   outline-offset: 3px;
 }
 
-::selection { background: var(--accent); color: var(--color-on-accent); }
+::selection { background: var(--accent); color: var(--accent-tekst, var(--color-on-accent)); }
+
+/* Pagina met een eigen accent (projecten): de focusring in die kleur, maar zo licht of donker
+   dat hij minstens 3:1 haalt tegen de achtergrond (WCAG 1.4.11): licht thema hooguit L 50%,
+   donker thema minstens L 75%. Tint en verzadiging blijven die van het project. */
+:root[data-accent] {
+  --color-focus: oklch(from var(--accent) min(l, 0.5) c h);
+}
+:root[data-accent][data-theme='dark'] {
+  --color-focus: oklch(from var(--accent) max(l, 0.75) c h);
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-accent]:not([data-theme='light']) {
+    --color-focus: oklch(from var(--accent) max(l, 0.75) c h);
+  }
+}
 
 figcaption { font-size: var(--step--1); color: var(--color-muted); margin-block-start: var(--space-2xs); }
 

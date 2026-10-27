@@ -11,7 +11,12 @@ navigatie:                             # verplicht, max 5 items
   - { label: Contact,   href: /contact }
 
 footer:
-  tekst: ""                            # optioneel, korte regel
+  tekst: >-                           # optioneel; Figma (449:6819): herkomst van de naam (bron: teksten_v4)
+    LAGADO is een verwijzing naar The Grand Academy of Lagado uit Gulliver’s Travels. Daar
+    werkte een architect die probeerde om huizen te bouwen, beginnend bij de nok en eindigend
+    met de fundering. Onze naam is een ode aan deze onbevangen, creatieve en optimistische
+    houding. Net als hij zoeken we naar onverwachte ruimtelijke oplossingen en denken we
+    altijd in mogelijkheden.
   links:                               # social/extern; contactgegevens komen uit contact.md
     - { label: Instagram, href: https://www.instagram.com/lagadoarchitects }   # TODO: controleren
     - { label: LinkedIn,  href: "" }                                           # TODO: url van Victor
