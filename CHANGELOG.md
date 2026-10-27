@@ -8,6 +8,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 ## [Unreleased]
 
 ### Toegevoegd
+- 301-redirects voor de 213 URL's van de oude WordPress-site (uit `wp-sitemap.xml`): projecten naar hun nieuwe pagina, nieuwsberichten naar het bijbehorende project of anders `/over`, categorieën naar `/projecten`. Tritents, Orange Core House en Cheer Up City staan niet op de nieuwe site en gaan naar `/projecten`.
 - Homepage volgens Figma (Home 01A, desktop en mobiel). Intro als vier kleine kolommen (kop en subkop met wisselwoorden, adres, herkomst van de naam; hero-velden `adres` en `tekst`). Projectraster zonder gap over de volle breedte, rijhoogte 128px (360) tot 256px (1512), 4 kolommen en vanaf 60rem 6. Knoppen "alle projecten" en "over" als grijze pillen, afsluiter met een kleine link.
 - Breed scherm (vanaf 110rem, ±1760px): homeraster 12 kolommen met dezelfde spans (tegels half zo breed; helften en derden blijven mogelijk), /projecten 4 kaarten per rij.
 - /projecten, rasterweergave: zelfde vlakken als de home (kaartvorm, typografie, geen gap), alle kaarten even groot (2 per rij, vanaf 60rem 3). De pagina loopt van gutter tot gutter. De lijstweergave blijft zoals hij was.
