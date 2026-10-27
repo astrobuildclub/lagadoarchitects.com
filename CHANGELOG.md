@@ -11,6 +11,8 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - /projecten: de kaartvorm volgt altijd de `vorm` uit de content, zodat de kaart klopt met het vormfilter (Easehouse, schuin, verscheen rond door `kaartvorm: afgerond`). `kaartvorm` geldt alleen op de home.
 
 ### Gewijzigd
+- Projectkaarten: type • jaar een stap kleiner, op de home (step--1, kaarten van 1 rij step--2) en op /projecten (step--2).
+- Home: de wisselwoorden in de intro blijven 4 seconden staan (was 2).
 - Home op touch: de kaarten veranderen niet meer bij scrollen (in beeld); een tik geeft de hoverstand, die blijft staan tijdens de paginatransitie. /projecten houdt het in-beeldgedrag.
 - Galerijblok: mobiel twee kolommen (was één); vanaf 48rem blijft `kolommen` uit de content gelden.
 - Projectpagina: tekstselectie in de projectkleur (zwart of wit erop, op contrast) en de focusring in de tint van het project, in licht thema hooguit L 50% en in donker minstens L 75% zodat hij 3:1 haalt (WCAG 1.4.11). `--accent` komt nu uit `kaartkleur()` (accentkleur, anders het hero-beeld); BaseLayout krijgt `accentTekst` en zet `data-accent` op `<html>`.

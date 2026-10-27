@@ -40,7 +40,7 @@ const woorden = (phrase: string) => phrase.split(' ').map((w, i, all) => (i < al
           kopWissel.length > 0 ? (
             <>
               <span class="visually-hidden">{plat(block.kop)} {zin(kopWissel)}</span>
-              <span aria-hidden="true" data-rotate data-hold="2" data-uit="0.125" data-leeg="0.5" data-in="0.25" data-fade="0.1" data-delay="0.2">
+              <span aria-hidden="true" data-rotate data-hold="4" data-uit="0.125" data-leeg="0.5" data-in="0.25" data-fade="0.1" data-delay="0.2">
                 {regels(block.kop).map((r, i) => (
                   <>
                     {i > 0 && <br />}
@@ -74,7 +74,7 @@ const woorden = (phrase: string) => phrase.split(' ').map((w, i, all) => (i < al
             {subkopWissel.length > 0 ? (
               <>
                 <span class="visually-hidden">{block.subkop} {zin(subkopWissel)}</span>
-                <span aria-hidden="true" data-rotate data-hold="2" data-uit="0.125" data-leeg="0.5" data-in="0.25" data-fade="0.1" data-delay="0.3">
+                <span aria-hidden="true" data-rotate data-hold="4" data-uit="0.125" data-leeg="0.5" data-in="0.25" data-fade="0.1" data-delay="0.3">
                   {block.subkop}{' '}
                   <span class="hero__wissel" data-words={JSON.stringify(subkopWissel)}>
                     {woorden(subkopWissel[0]).map((w) => (
