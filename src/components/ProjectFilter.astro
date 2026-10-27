@@ -375,11 +375,20 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
     outline-offset: 2px;
   }
 
-  /* "Verfijn" dicht: Vorm, Kleur en Verras me verdeeld over de volle breedte. */
+  /* "Verfijn" dicht: Vorm, Kleur en Verras me verdeeld over de volle breedte.
+     Vanaf 64rem passen alle zeven groepen naast elkaar: dan ook open uitgevuld,
+     elke groep even breed, de laatste tegen de rechterkant. */
   .project-filter__body:not(:has(.project-filter__extra.is-open)) {
     grid-template-columns: none;
     grid-auto-flow: column;
     grid-auto-columns: 1fr;
+  }
+  @media (min-width: 64rem) {
+    .project-filter__body {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr;
+    }
   }
 
   /* Kleuren compact: alleen de swatch, naam en aantal voor screenreaders (visually-hidden)
@@ -433,6 +442,12 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
     text-decoration-thickness: 2px;
     text-underline-offset: 0.3em;
     transition: text-decoration-color var(--duration) var(--ease);
+  }
+  /* Tekstopties als lopende tekst: een lang label ("Papieren werkelijkheid") breekt om
+     en het aantal loopt er direct achter, in plaats van als losse kolom ernaast. */
+  .option:not(.option--kleur) {
+    display: block;
+    padding-block: 0.2em;
   }
   .option input {
     position: absolute;

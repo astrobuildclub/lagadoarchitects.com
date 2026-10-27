@@ -57,6 +57,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Netlify secrets scanning: `FONTS_URL` uitgezonderd (`SECRETS_SCAN_OMIT_KEYS`), de build faalde omdat de URL in de README staat.
 
 ### Gewijzigd
+- /projecten, filters: vanaf 64rem ook met "Verfijn" open uitgevuld over de volle breedte, alle groepen even breed. Het aantal loopt direct achter een lang label ("Papieren werkelijkheid 12") in plaats van als losse kolom.
 - Header en footer omgekeerd t.o.v. het thema: licht thema = donker vlak, donker thema = licht vlak (`--color-ink`, `--color-on-ink`, DRKM-as volgt mee). Logo (20px hoog) en menu (step-0) kleiner, balk lager.
 - "Een serieus bureau voor speelse architectuur" (was "buro") in kop, payoff, paginatitel en footer, volgens teksten_v4.
 - Zijruimte (`--gutter`) is nu `--space-s-3xl`: 16px op mobiel, ±64px op 1512, 108px op 2560; geldt voor header, raster en footer. Nieuwe spacestap `--space-5xl`, kleur `--color-ink`.
