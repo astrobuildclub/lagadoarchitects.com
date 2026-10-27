@@ -31,17 +31,17 @@ const kaartvorm = vlak ? (p.kaartvorm ?? kaartvormVanVorm[vorm]) : undefined;
 const jaar = p.jaarOplevering || p.jaarOpdracht || undefined;
 const kleur = await kaartkleur(p);
 const [, ...meer] = projectBeelden(p);
-// Homeraster: 4 kolommen, vanaf 60rem 6 (ProjectList.astro).
+// Homeraster: 4 kolommen, vanaf 60rem 6, vanaf 110rem 8 (ProjectList.astro).
 const homeSizes: Record<Project['homepageGrootte'], string> = {
-  mini: '(min-width: 60rem) 17vw, 50vw',
-  klein: '(min-width: 60rem) 33vw, 50vw',
-  hoog: '(min-width: 60rem) 33vw, 50vw',
-  toren: '(min-width: 60rem) 33vw, 50vw',
-  breed: '(min-width: 60rem) 50vw, 50vw',
-  groot: '(min-width: 60rem) 50vw, 50vw',
-  lang: '(min-width: 60rem) 67vw, 100vw',
+  mini: '(min-width: 110rem) 13vw, (min-width: 60rem) 17vw, 50vw',
+  klein: '(min-width: 110rem) 25vw, (min-width: 60rem) 33vw, 50vw',
+  hoog: '(min-width: 110rem) 25vw, (min-width: 60rem) 33vw, 50vw',
+  toren: '(min-width: 110rem) 25vw, (min-width: 60rem) 33vw, 50vw',
+  breed: '(min-width: 110rem) 38vw, (min-width: 60rem) 50vw, 50vw',
+  groot: '(min-width: 110rem) 38vw, (min-width: 60rem) 50vw, 50vw',
+  lang: '(min-width: 110rem) 50vw, (min-width: 60rem) 67vw, 100vw',
 };
-const sizes = grootte ? homeSizes[grootte] : vlak ? '(min-width: 60rem) 33vw, 50vw' : '(min-width: 60rem) 33vw, (min-width: 36rem) 50vw, 100vw';
+const sizes = grootte ? homeSizes[grootte] : vlak ? '(min-width: 110rem) 25vw, (min-width: 60rem) 33vw, 50vw' : '(min-width: 60rem) 33vw, (min-width: 36rem) 50vw, 100vw';
 const filters = {
   type: p.type,
   vorm: p.vorm.join(' '),

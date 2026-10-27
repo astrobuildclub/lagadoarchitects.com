@@ -128,7 +128,7 @@ const { projects, headingLevel, id, sized = false, weergave = false, zichtbaar }
   }
 
   /* Homeraster (Figma): geen gap, vaste rijhoogte die meeschaalt van 128px (360) tot 256px (1512).
-     4 kolommen, vanaf 60rem 6. Kaarten spannen kolommen × rijen volgens homepageGrootte;
+     4 kolommen, vanaf 60rem 6, vanaf 110rem 8 (zelfde spans, dus kleinere tegels en meer per rij). Kaarten spannen kolommen × rijen volgens homepageGrootte;
      `dense` vult gaten op, de tabvolgorde blijft die van de content. */
   .project-list--sized {
     --kolommen: 4;
@@ -146,6 +146,11 @@ const { projects, headingLevel, id, sized = false, weergave = false, zichtbaar }
   @media (min-width: 60rem) {
     .project-list--vlak[data-view='raster'] {
       grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (min-width: 110rem) {
+    .project-list--vlak[data-view='raster'] {
+      grid-template-columns: repeat(4, 1fr);
     }
   }
 
@@ -175,6 +180,12 @@ const { projects, headingLevel, id, sized = false, weergave = false, zichtbaar }
     }
     .project-list--sized :global(:is(.project-card--breed, .project-card--groot)) {
       --k: 3;
+    }
+  }
+
+  @media (min-width: 110rem) {
+    .project-list--sized {
+      --kolommen: 8;
     }
   }
 </style>
