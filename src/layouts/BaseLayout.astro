@@ -19,18 +19,21 @@ interface Props {
   type?: 'website' | 'article';
   noindex?: boolean;
   jsonLd?: object[];
-  /** oklch()-waarde; overschrijft --accent op deze pagina. */
+  /** oklch()-waarde; overschrijft --accent op deze pagina (selectie, focusring: base.css). */
   accent?: string;
+  /** Tekst op --accent (zwart of wit op contrast), voor de tekstselectie. */
+  accentTekst?: string;
 }
 
-const { accent, jsonLd = [], ...meta } = Astro.props;
+const { accent, accentTekst, jsonLd = [], ...meta } = Astro.props;
+const accentStijl = [accent && `--accent: ${accent}`, accentTekst && `--accent-tekst: ${accentTekst}`].filter(Boolean).join('; ');
 const settings = await getSettings();
 const contact = await getContact();
 const isHome = cleanPath(Astro.url.pathname) === '/';
 ---
 
 <!doctype html>
-<html lang={settings.taal} style={accent ? `--accent: ${accent}` : undefined} transition:animate="none">
+<html lang={settings.taal} style={accentStijl || undefined} data-accent={accent ? '' : undefined} transition:animate="none">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

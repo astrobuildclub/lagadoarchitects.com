@@ -7,7 +7,6 @@ import NextProject from '../../components/NextProject.astro';
 import ProjectCredits from '../../components/ProjectCredits.astro';
 import ProjectFacts from '../../components/ProjectFacts.astro';
 import { getNextProject, getProjects, getSettings } from '../../lib/content';
-import { hexToOklch } from '../../lib/color';
 import { projectImage } from '../../lib/images';
 import { kaartkleur } from '../../lib/projectkleur';
 import { md } from '../../lib/markdown';
@@ -24,8 +23,8 @@ const { project } = Astro.props as { project: Project };
 const settings = await getSettings();
 const next = await getNextProject(project);
 const hero = projectImage(project.slug, project.hero.src);
-// De foto in de kop heeft de vorm van het project (styles/vorm.css). De projectkleur zit in de
-// transitie en in de vraag (nog niet ingekleurde woorden).
+// De foto in de kop heeft de vorm van het project (styles/vorm.css). De projectkleur (accentkleur,
+// anders uit het hero-beeld) zit in de transitie, de vraag, de tekstselectie en de focusring.
 const kleur = await kaartkleur(project);
 const vorm = project.vorm[0] ?? 'recht';
 const kaartvorm = ({ rond: 'ovaal', recht: 'zacht', schuin: 'schuin' } as const)[vorm];
@@ -61,7 +60,8 @@ const jsonLd = [
   image={hero}
   imageAlt={project.hero.alt}
   type="article"
-  accent={hexToOklch(project.accentkleur)}
+  accent={kleur.vlak}
+  accentTekst={kleur.tekst}
   jsonLd={jsonLd}
 >
   <article class="layout flow" data-reveal>
