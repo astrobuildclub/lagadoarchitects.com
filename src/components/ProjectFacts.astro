@@ -1,7 +1,8 @@
 ---
-// Factsheet bovenaan een project, in twee helften: de filtereigenschappen (zelfde
-// volgorde en namen als op /projecten, elke waarde linkt naar dat filter) en de projectgegevens.
-// Lege velden worden weggelaten; prijsklasse nooit.
+// Factsheet in de projectkop (Figma 447:2404): label klein boven de waarde, in een raster van
+// 4 kolommen (mobiel 3). Eerst de filtereigenschappen (zelfde namen als op /projecten, elke waarde
+// linkt naar dat filter; kleur als bolletjes), dan de projectgegevens. Locatie beslaat twee kolommen.
+// Lege velden worden weggelaten; prijsklasse nooit. Labels gedempt (Figma 463:9724).
 import { KLEUR_SWATCH, label } from '../lib/labels';
 import type { Project } from '../lib/schema';
 
@@ -9,20 +10,6 @@ interface Props {
   project: Project;
 }
 const { project: p } = Astro.props;
-
-interface Filter {
-  term: string;
-  key: string;
-  values: string[];
-}
-const filters: Filter[] = [
-  { term: 'Vorm', key: 'vorm', values: p.vorm },
-  { term: 'Kleur', key: 'kleuren', values: p.kleuren },
-  { term: 'Bestemming', key: 'type', values: [p.type] },
-  { term: 'Schaal', key: 'schaal', values: p.schaal ? [p.schaal] : [] },
-  { term: 'Gebouwd', key: 'status', values: [p.status] },
-  { term: 'Opgave', key: 'opgave', values: p.opgave },
-].filter((f) => f.values.length);
 
 const namen = (lijst: { naam: string }[]) =>
   lijst
@@ -36,88 +23,117 @@ const jaar =
     ? `${p.jaarOpdracht}–${p.jaarOplevering}`
     : String(p.jaarOplevering || p.jaarOpdracht || '');
 
-const gegevens = [
-  // Materiaal is geen filter meer: gewone tekst, geen link.
-  ['Materiaal', p.materialen.map(label).join(', ')],
-  ['Locatie', [p.locatie.wijk, p.locatie.plaats].filter(Boolean).join(', ')],
-  ['Omvang', p.omvang ? `${p.omvang} m²` : ''],
-  ['Opdrachtgever', p.opdrachtgever || (p.opdrachtgeverType ? label(p.opdrachtgeverType) : '')],
-  ['Bouwteam', namen(p.bouwteam)],
-  [fotografen.length > 1 ? 'Fotografen' : 'Fotograaf', namen(fotografen)],
-  ['Jaar', jaar],
-].filter((f): f is [string, string] => !!f[1]);
+interface Feit {
+  term: string;
+  /** Filtersleutel op /projecten: waarden worden links. */
+  key?: string;
+  values: string[];
+  breed?: boolean;
+}
+const feiten: Feit[] = [
+  { term: 'Vorm', key: 'vorm', values: p.vorm },
+  { term: 'Kleur', key: 'kleuren', values: p.kleuren },
+  { term: 'Bestemming', key: 'type', values: [p.type] },
+  { term: 'Schaal', key: 'schaal', values: p.schaal ? [p.schaal] : [] },
+  { term: 'Gebouwd', key: 'status', values: [p.status] },
+  { term: 'Opgave', key: 'opgave', values: p.opgave },
+  { term: 'Locatie', values: [[p.locatie.wijk, p.locatie.plaats].filter(Boolean).join(', ')], breed: true },
+  { term: 'Opdrachtgever', values: [p.opdrachtgever || (p.opdrachtgeverType ? label(p.opdrachtgeverType) : '')] },
+  { term: 'Bouwteam', values: [namen(p.bouwteam)] },
+  { term: fotografen.length > 1 ? 'Fotografen' : 'Fotograaf', values: [namen(fotografen)] },
+  { term: 'Jaar', values: [jaar] },
+  // Niet in Figma, wel in de content: achteraan als ze zijn ingevuld.
+  { term: 'Materiaal', values: [p.materialen.map(label).join(', ')] },
+  { term: 'Omvang', values: [p.omvang ? `${p.omvang} m²` : ''] },
+].map((f) => ({ ...f, values: f.values.filter(Boolean) })).filter((f) => f.values.length);
 
 const filterUrl = (key: string, value: string) => `/projecten?${new URLSearchParams({ [key]: value })}`;
 ---
 
-<section class="facts" aria-label="Factsheet">
-  <dl>
-    {
-      filters.map((f) => (
-        <div>
-          <dt>{f.term}</dt>
-          <dd>
-            {f.values.map((v, i) => (
+<dl class="facts">
+  {
+    feiten.map((f) => (
+      <div class:list={[f.breed && 'facts__breed']}>
+        <dt>{f.term}</dt>
+        <dd class:list={[f.key === 'kleuren' && 'facts__kleuren']}>
+          {f.values.map((v, i) =>
+            f.key === 'kleuren' ? (
+              <a href={filterUrl(f.key, v)} class="swatch" style={`--swatch: ${KLEUR_SWATCH[v]}`}>
+                <span class="visually-hidden">{label(v)}</span>
+              </a>
+            ) : f.key ? (
               <>
                 {i > 0 && ', '}
-                <a href={filterUrl(f.key, v)}>
-                  {f.key === 'kleuren' && <span class="swatch" style={`--swatch: ${KLEUR_SWATCH[v]}`} aria-hidden="true" />}
-                  {label(v)}
-                </a>
+                <a href={filterUrl(f.key, v)}>{label(v)}</a>
               </>
-            ))}
-          </dd>
-        </div>
-      ))
-    }
-  </dl>
-  <dl>
-    {
-      gegevens.map(([term, value]) => (
-        <div>
-          <dt>{term}</dt>
-          <dd>{value}</dd>
-        </div>
-      ))
-    }
-  </dl>
-</section>
+            ) : (
+              v
+            ),
+          )}
+        </dd>
+      </div>
+    ))
+  }
+</dl>
 
 <style>
   .facts {
     display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--space-s);
-    padding-block: var(--space-s);
-    border-block: var(--border-width) solid var(--color-line);
-    font-family: var(--font-mono);
+    margin: 0;
     font-size: var(--step--1);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.125;
   }
-  dl {
+  @media (min-width: 48rem) {
+    .facts {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-s) var(--space-m);
+    }
+  }
+  .facts > div {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
-    gap: var(--space-s);
+    align-content: start;
+    gap: var(--space-3xs);
   }
-  dl + dl {
-    padding-block-start: var(--space-s);
-    border-block-start: var(--border-width) solid var(--color-line);
+  .facts__breed {
+    grid-column: span 2;
   }
   dt {
     color: var(--color-muted);
+    font-size: var(--step--2);
   }
   dd {
     margin: 0;
   }
   a {
-    white-space: nowrap;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  /* Bolletjes van 15px (Figma) in een klikvlak van 24px (WCAG 2.5.8); het vlak schuift een halve
+     marge naar links zodat het eerste bolletje gelijk staat met de tekst. */
+  .facts__kleuren {
+    display: flex;
+    margin-block: -0.28rem;
+    margin-inline-start: -0.28rem;
   }
   .swatch {
-    display: inline-block;
-    inline-size: 0.9em;
-    block-size: 0.9em;
-    margin-inline-end: 0.35em;
+    display: grid;
+    place-items: center;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+  }
+  /* Rand in de tekstkleur: zichtbaar op elk vlak. */
+  .swatch::before {
+    content: '';
+    inline-size: 0.9375rem;
+    block-size: 0.9375rem;
+    border: var(--border-width) solid currentColor;
     border-radius: 50%;
     background: var(--swatch);
-    box-shadow: 0 0 0 1px var(--color-line);
-    vertical-align: -0.1em;
   }
 </style>

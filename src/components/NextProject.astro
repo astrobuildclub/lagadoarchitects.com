@@ -2,6 +2,7 @@
 // Doorkijk naar het volgende (of gerelateerde) project, zoals op de huidige site.
 import Img from './Img.astro';
 import { projectImage } from '../lib/images';
+import { kaartkleur } from '../lib/projectkleur';
 import type { Project } from '../lib/schema';
 
 interface Props {
@@ -9,10 +10,12 @@ interface Props {
 }
 const { project: p } = Astro.props;
 const woorden = p.title.split(' ');
+// Projectkleur voor de paginatransitie (scripts/transitie-kleur.ts).
+const kleur = await kaartkleur(p);
 ---
 
 <aside class="next-project full" aria-label="Volgend project">
-  <a href={`/projecten/${p.slug}`}>
+  <a href={`/projecten/${p.slug}`} data-transitie-kleur={kleur.vlak}>
     <Img src={projectImage(p.slug, p.hero.src)} alt="" sizes="100vw" />
     <span class="next-project__text wrapper" data-words-in>
       <span class="next-project__label"><span class="w"><span class="w__i">Volgend project</span></span></span>

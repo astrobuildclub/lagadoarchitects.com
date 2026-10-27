@@ -66,7 +66,7 @@ const { projects, headingLevel, id, sized = false, weergave = false, zichtbaar }
     display: none;
   }
   /* Vlak, beelden en jaar weg; de titel blijft als gewone tekst in de rij staan. */
-  .project-list[data-view='lijst'] :global(:is(.project-card__beelden, .project-card__scrub, .project-card__boven)) {
+  .project-list[data-view='lijst'] :global(:is(.project-card__beelden, .project-card__boven)) {
     display: none;
   }
   .project-list[data-view='lijst'] :global(:is(.project-card__vorm, .project-card__tekst, .project-card__voet)) {

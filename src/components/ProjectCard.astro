@@ -64,7 +64,7 @@ const filters = {
   style={`--kaart-vlak: ${kleur.vlak}; --kaart-tekst: ${kleur.tekst}`}
   {...Object.fromEntries(Object.entries(filters).map(([k, v]) => [`data-${k}`, v]))}
 >
-  <a href={`/projecten/${p.slug}`}>
+  <a href={`/projecten/${p.slug}`} data-transitie-kleur={kleur.vlak}>
     <div class="project-card__vorm">
       <div class="project-card__beelden">
         <Img src={projectImage(p.slug, p.hero.src)} alt={p.hero.alt} sizes={sizes} priority={priority} class="project-card__beeld is-actief" />
@@ -78,13 +78,6 @@ const filters = {
           )
         }
       </div>
-      {
-        meer.length > 0 && (
-          <span class="project-card__scrub" aria-hidden="true">
-            {[p.hero.src, ...meer].map((_, i) => <span class:list={[i === 0 && 'is-actief']} />)}
-          </span>
-        )
-      }
       <div class="project-card__tekst">
         <div class="project-card__voet">
           <p class="project-card__label">{label(p.type)}{jaar && ` • ${jaar}`}</p>
@@ -161,30 +154,6 @@ const filters = {
     line-height: 1;
   }
 
-  .project-card__scrub {
-    position: absolute;
-    inset-block-end: var(--space-xs);
-    inset-inline: 0;
-    display: flex;
-    justify-content: center;
-    gap: var(--space-3xs);
-    opacity: 0;
-    transition: opacity var(--duration) var(--ease);
-  }
-  .project-card__scrub span {
-    inline-size: var(--space-s);
-    block-size: 2px;
-    background: oklch(99% 0 0 / 0.5);
-  }
-  .project-card__scrub span.is-actief {
-    background: oklch(99% 0 0);
-  }
-  @media (hover: hover) {
-    :global([data-view='raster']) .project-card:not(.project-card--vlak):hover .project-card__scrub {
-      opacity: 1;
-    }
-  }
-
   /* ── Home (Figma 447:2103) ─────────────────────────────────────────────
      De foto vult de kaart (radius xs); daarop, op --kaart-pad afstand, de vorm in de projectkleur
      met de tekst gecentreerd. Omgekeerd bij hover/focus (muis) of in beeld (touch): de kaart wordt
@@ -247,10 +216,6 @@ const filters = {
   :global([data-view='raster']) .project-card--vlak:not(.project-card--hoog, .project-card--toren, .project-card--groot) .project-card__label {
     font-size: var(--step--1);
   }
-  /* Home: geen scrubbalk; het beeld wisselt vanzelf (project-card.ts). */
-  .project-card--vlak .project-card__scrub {
-    display: none;
-  }
   @media (hover: hover) {
     .project-card--vlak:is(:hover, :focus-within) .project-card__beelden {
       clip-path: var(--foto-vorm);
@@ -295,9 +260,6 @@ const filters = {
       color: var(--kaart-tekst);
     }
   }
-  :global([data-view='raster']) .project-card--kaart :is(.project-card__beelden, .project-card__scrub) {
-    grid-area: 1 / 1;
-  }
   :global([data-view='raster']) .project-card--kaart .project-card__beelden {
     position: relative;
     aspect-ratio: 3 / 4;
@@ -305,11 +267,6 @@ const filters = {
     overflow: hidden;
     border-radius: var(--vorm-radius);
     clip-path: var(--vorm-clip);
-  }
-  :global([data-view='raster']) .project-card--kaart .project-card__scrub {
-    position: static;
-    align-self: end;
-    margin-block-end: var(--space-xs);
   }
   :global([data-view='raster']) .project-card--kaart .project-card__voet {
     gap: var(--space-2xs);

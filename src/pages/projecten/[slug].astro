@@ -9,6 +9,7 @@ import ProjectFacts from '../../components/ProjectFacts.astro';
 import { getNextProject, getProjects, getSettings } from '../../lib/content';
 import { hexToOklch } from '../../lib/color';
 import { projectImage } from '../../lib/images';
+import { kaartkleur } from '../../lib/projectkleur';
 import { md } from '../../lib/markdown';
 import { pageDescription, pageTitle } from '../../lib/seo';
 import type { Project } from '../../lib/schema';
@@ -23,6 +24,11 @@ const { project } = Astro.props as { project: Project };
 const settings = await getSettings();
 const next = await getNextProject(project);
 const hero = projectImage(project.slug, project.hero.src);
+// De foto in de kop heeft de vorm van het project (styles/vorm.css). De projectkleur zit in de
+// transitie en in de vraag (nog niet ingekleurde woorden).
+const kleur = await kaartkleur(project);
+const vorm = project.vorm[0] ?? 'recht';
+const kaartvorm = ({ rond: 'ovaal', recht: 'zacht', schuin: 'schuin' } as const)[vorm];
 const url = new URL(cleanPath(Astro.url.pathname), settings.url).href;
 
 const jsonLd = [
@@ -58,19 +64,14 @@ const jsonLd = [
   accent={hexToOklch(project.accentkleur)}
   jsonLd={jsonLd}
 >
-  <article class="layout flow">
-    <header class="project-hero full">
-      <div class="wrapper">
-        <nav class="project-hero__crumb" aria-label="Kruimelpad">
-          <ol>
-            <li><a href="/">Home</a></li>
-            <li><a href="/projecten">Projecten</a></li>
-          </ol>
-        </nav>
-        <div data-words-in>
-          <h1>
+  <article class="layout flow" data-reveal>
+    <header class="project-kop full" data-vorm={vorm} data-kaartvorm={kaartvorm} data-kop-in>
+      <div class="project-kop__tekst">
+        <div class="project-kop__intro" data-words-in>
+          <h1>{project.title}</h1>
+          <p class="project-kop__tagline">
             {
-              project.title.split(' ').map((woord, i) => (
+              project.tagline.split(' ').map((woord, i) => (
                 <>
                   {i > 0 && ' '}
                   <span class="w">
@@ -79,20 +80,17 @@ const jsonLd = [
                 </>
               ))
             }
-          </h1>
-          <p class="project-hero__tagline">
-            <span class="w">
-              <span class="w__i">{project.tagline}</span>
-            </span>
           </p>
+          <div class="project-kop__verhaal" set:html={md(project.intro)} />
         </div>
+        <ProjectFacts project={project} />
       </div>
-      <Img src={hero} alt={project.hero.alt} priority sizes="100vw" class="project-hero__image" />
+      <Img src={hero} alt={project.hero.alt} priority sizes="(min-width: 48rem) 30vw, 100vw" class="project-kop__beeld" />
     </header>
 
     {
       project.vraag && (
-        <p class="project-vraag popout" data-ink>
+        <p class="project-vraag popout" data-ink style={`--vraag-kleur: ${kleur.vlak}`}>
           <span class="project-vraag__label">Vraag</span>
           {project.vraag.split(' ').map((woord, i) => (
             <>
@@ -103,8 +101,6 @@ const jsonLd = [
         </p>
       )
     }
-    <div class="project-intro prose" set:html={md(project.intro)} />
-    <div class="feature"><ProjectFacts project={project} /></div>
 
     <BlockRenderer blocks={project.blocks} scope={{ project: project.slug, kleurpalet: project.kleurpalet }} />
 
@@ -115,38 +111,78 @@ const jsonLd = [
 
 <script>
   import '../../scripts/words-in';
+  import '../../scripts/kop-in';
   import '../../scripts/ink-in';
+  import '../../scripts/reveal';
 </script>
 
 <style>
-  .project-hero h1 {
-    font-size: var(--step-6);
+  /* Projectkop (Figma 463:9724): tekst over twee kolommen, de foto in de vorm van het project in de
+     derde. Titel klein, de tagline groot (step-5), intro in step-0 tot 500px, daaronder de factsheet.
+     Mobiel de foto boven. Geen kleurvlak: de projectkleur zit in de paginatransitie. */
+  .project-kop {
+    display: grid;
+    gap: var(--space-l);
+    padding: var(--page-top) var(--gutter) 0;
   }
-  .project-hero__crumb {
-    font-size: var(--step--1);
-    padding-block-start: var(--page-top);
-    margin-block-end: var(--space-s);
-  }
-  .project-hero__crumb ol {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 0;
-    margin: 0;
-    list-style: none;
-  }
-  .project-hero__crumb li + li::before {
-    content: '›';
-    margin-inline: 0.5em;
-    color: var(--color-muted);
-  }
-  .project-hero__tagline {
-    font-size: var(--step-1);
-    margin-block: var(--space-2xs) var(--space-l);
-  }
-  .project-hero :global(.project-hero__image) {
+  .project-kop :global(.project-kop__beeld) {
+    order: -1;
     inline-size: 100%;
-    max-block-size: 85svh;
+    block-size: auto;
+    aspect-ratio: 9 / 10;
     object-fit: cover;
+    border-radius: var(--vorm-radius);
+    clip-path: var(--vorm-clip);
+  }
+  .project-kop__tekst {
+    display: grid;
+    align-content: center;
+    gap: var(--space-xl);
+  }
+  .project-kop__intro {
+    display: grid;
+    gap: var(--space-xs);
+  }
+  .project-kop h1 {
+    margin: 0;
+    font-size: var(--step-1);
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    line-height: 1.125;
+  }
+  .project-kop__tagline {
+    margin: calc(var(--space-s) - var(--space-xs)) 0 0;
+    font-size: var(--step-5);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.125;
+    text-wrap: balance;
+  }
+  .project-kop__verhaal {
+    max-inline-size: 500px;
+    font-size: var(--step-0);
+    letter-spacing: -0.02em;
+    line-height: 1.5;
+  }
+  .project-kop__verhaal :global(p) {
+    margin: 0;
+  }
+  .project-kop__verhaal :global(p + p) {
+    margin-block-start: 0.75em;
+  }
+  @media (min-width: 48rem) {
+    .project-kop {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-l);
+    }
+    .project-kop__tekst {
+      grid-column: span 2;
+    }
+    .project-kop :global(.project-kop__beeld) {
+      order: 0;
+      align-self: start;
+      aspect-ratio: 437 / 540;
+    }
   }
   .project-vraag {
     font-size: var(--step-4);
@@ -154,15 +190,16 @@ const jsonLd = [
     line-height: var(--leading-tight);
     letter-spacing: -0.02em;
     text-wrap: balance;
-    color: var(--accent);
+    color: var(--color-fg);
   }
-  /* Inkleuren bij scrollen (ink-in.ts): gedimd tot het woord aan de beurt is. */
+  /* Inkleuren bij scrollen (ink-in.ts): in de projectkleur tot het woord aan de beurt is, dan de
+     tekstkleur. Zonder JS of met reduced motion staat alles in de tekstkleur (WCAG-contrast). */
   .project-vraag[data-ink-on] .ink {
-    color: color-mix(in oklch, var(--accent) 22%, var(--color-bg));
+    color: var(--vraag-kleur);
     transition: color 0.35s var(--ease);
   }
   .project-vraag[data-ink-on] .ink.is-in {
-    color: var(--accent);
+    color: var(--color-fg);
   }
   .project-vraag__label {
     display: block;
@@ -172,8 +209,5 @@ const jsonLd = [
     font-weight: 400;
     letter-spacing: 0;
     color: var(--color-muted);
-  }
-  .project-intro {
-    font-size: var(--step-1);
   }
 </style>

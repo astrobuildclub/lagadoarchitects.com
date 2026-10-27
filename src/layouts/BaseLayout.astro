@@ -64,12 +64,15 @@ const isHome = cleanPath(Astro.url.pathname) === '/';
     <!-- Paginatransities (Interlude, zie TRANSITIONS.md §7): direct kind van <body>. -->
     <Interlude />
     <a class="skip-link" href="#inhoud">Naar de inhoud</a>
-    <Header settings={settings} />
+    <Header settings={settings} contact={contact} />
     <main id="inhoud" tabindex="-1">
       <slot />
     </main>
     <Footer settings={settings} contact={contact} />
     <CookieConsent />
+    <script>
+      import '../scripts/transitie-kleur';
+    </script>
   </body>
 </html>
 

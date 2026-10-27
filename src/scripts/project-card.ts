@@ -20,7 +20,6 @@ function initMuis(card: HTMLElement, signal: AbortSignal) {
   const beelden = card.querySelector<HTMLElement>('.project-card__beelden');
   const template = card.querySelector<HTMLTemplateElement>('template[data-meer-beelden]');
   if (!vlak || !beelden || !template) return;
-  const streepjes = [...card.querySelectorAll('.project-card__scrub > span')];
   let imgs: HTMLImageElement[] = [];
   let actief = 0;
 
@@ -28,7 +27,6 @@ function initMuis(card: HTMLElement, signal: AbortSignal) {
     if (i === actief) return;
     actief = i;
     imgs.forEach((img, j) => img.classList.toggle('is-actief', j === i));
-    streepjes.forEach((s, j) => s.classList.toggle('is-actief', j === i));
   };
 
   card.addEventListener(

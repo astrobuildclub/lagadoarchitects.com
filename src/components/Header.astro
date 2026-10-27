@@ -1,13 +1,19 @@
 ---
-import type { Settings } from '../lib/schema';
+// Kopbalk (Figma 462:9082): woordmerk met "architects" links; rechts de menulinks als tekst in even
+// brede kolommen en de themaknop ernaast. Mobiel (Figma 462:9091, 462:9522): "menu" en de themaknop;
+// "menu" opent een overlay over het hele scherm met de links onder elkaar en onderin adres en
+// bedrijfsgegevens, en wordt dan "sluit". Zonder JS staan de links gewoon in de balk.
+import type { Contact, Settings } from '../lib/schema';
 import Logo from './Logo.astro';
 import ThemeToggle from './ThemeToggle.astro';
 import { cleanPath } from '../lib/url';
 
 interface Props {
   settings: Settings;
+  contact: Contact;
 }
-const { settings } = Astro.props;
+const { settings, contact } = Astro.props;
+const { adres, bedrijf } = contact;
 const path = cleanPath(Astro.url.pathname);
 const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`);
 ---
@@ -19,79 +25,130 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
       <span class="site-header__toevoeging" aria-hidden="true">architects</span>
       <span class="visually-hidden">{settings.siteNaam}</span>
     </a>
-    <button type="button" class="site-header__menu" aria-expanded="false" aria-controls="hoofdmenu" data-menu-toggle hidden>
-      menu
-    </button>
-    <nav aria-label="Hoofdmenu" id="hoofdmenu">
-      <ul role="list">
-        {
-          settings.navigatie.map((item) => (
-            <li>
-              <a href={item.href} aria-current={path === item.href ? 'page' : isCurrent(item.href) ? 'true' : undefined}>
-                {item.label}
-              </a>
-            </li>
-          ))
-        }
-        <li class="site-header__thema"><ThemeToggle /></li>
-      </ul>
-    </nav>
+    <div class="site-header__rechts">
+      <nav aria-label="Hoofdmenu" id="hoofdmenu">
+        <ul role="list">
+          {
+            settings.navigatie.map((item) => (
+              <li>
+                <a href={item.href} aria-current={path === item.href ? 'page' : isCurrent(item.href) ? 'true' : undefined}>
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <div class="site-header__gegevens">
+          <address>
+            {adres.naam && <>{adres.naam}<br /></>}
+            {adres.straat}<br />
+            {adres.postcode} {adres.plaats}
+            {contact.telefoon && <><br />{contact.telefoon}</>}
+          </address>
+          <p>
+            {bedrijf.kvk && <>KVK: {bedrijf.kvk}<br /></>}
+            {bedrijf.btw && <>BTW: {bedrijf.btw}<br /></>}
+            {bedrijf.architectenregister && <>Architectenregister: {bedrijf.architectenregister}</>}
+          </p>
+        </div>
+      </nav>
+      <button type="button" class="site-header__menu" aria-expanded="false" aria-controls="hoofdmenu" data-menu-toggle hidden>
+        menu
+      </button>
+      <ThemeToggle />
+    </div>
   </div>
 </header>
 
 <script>
-  // Mobiel: het menu klapt uit onder de balk (Figma: "menu"). Zonder JS staan de links er gewoon.
+  // Mobiel: "menu" opent de overlay en heet dan "sluit". De rest van de pagina is dan inert
+  // (niet bereikbaar met toetsenbord of schermlezer) en scrollt niet; Escape sluit en zet de focus terug.
+  let teardown: (() => void) | undefined;
+
   function initMenu() {
+    teardown?.();
     const knop = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
     if (!knop) return;
     const header = knop.closest<HTMLElement>('.site-header')!;
-    header.dataset.menu = 'dicht';
-    knop.hidden = false;
-    knop.addEventListener('click', () => {
-      const open = knop.getAttribute('aria-expanded') !== 'true';
+    const ac = new AbortController();
+    const anderen = () => [...document.body.children].filter((el) => !el.contains(header)) as HTMLElement[];
+
+    const zet = (open: boolean) => {
       knop.setAttribute('aria-expanded', String(open));
+      knop.textContent = open ? 'sluit' : 'menu';
       header.dataset.menu = open ? 'open' : 'dicht';
-    });
-    header.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && knop.getAttribute('aria-expanded') === 'true') {
-        knop.click();
-        knop.focus();
-      }
-    });
+      anderen().forEach((el) => (el.inert = open));
+    };
+
+    zet(false);
+    knop.hidden = false;
+    knop.addEventListener('click', () => zet(knop.getAttribute('aria-expanded') !== 'true'), { signal: ac.signal });
+    header.addEventListener(
+      'keydown',
+      (e) => {
+        if (e.key === 'Escape' && knop.getAttribute('aria-expanded') === 'true') {
+          zet(false);
+          knop.focus();
+        }
+      },
+      { signal: ac.signal },
+    );
+    // Breder dan mobiel: overlay dicht, anders blijft de pagina inert.
+    matchMedia('(min-width: 48rem)').addEventListener('change', (e) => e.matches && zet(false), { signal: ac.signal });
+
+    teardown = () => {
+      zet(false);
+      ac.abort();
+      teardown = undefined;
+    };
   }
   document.addEventListener('astro:page-load', initMenu);
+  document.addEventListener('astro:before-swap', () => teardown?.());
 </script>
 
 <style>
-  /* Balk (Figma 447:2104): logo links, rechts de helft van de breedte met even brede pill-knoppen
-     (menu en thema), grijs vlak; de huidige pagina en hover in de tekstkleur, omgekeerd. */
+  /* Balk in de paginakleuren; links en knoppen op step-0, medium. */
   .site-header {
+    /* Hoogte van de balk op mobiel: padding s + regel; de overlay begint eronder. */
+    --header-hoogte: calc(2 * var(--space-s) + 1.25rem);
     padding-block: var(--space-m);
     background: var(--color-bg);
     color: var(--color-fg);
+    font-size: var(--step-0);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.125;
   }
   .site-header__inner {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-xs) var(--space-m);
+    gap: var(--space-m);
   }
   .site-header__logo {
     display: inline-flex;
+    flex: 1 1 0;
     align-items: baseline;
     gap: 0.25rem;
-    margin-inline-end: auto;
+    font-weight: 400;
     text-decoration: none;
   }
   .site-header__logo :global(.site-header__wordmark) {
     /* Hoogte bepaalt de maat; breedte volgt de viewBox (140 × 28). */
-    block-size: 1rem;
+    block-size: 0.875rem;
     inline-size: auto;
   }
   .site-header__toevoeging {
     font-size: var(--step--1);
-    letter-spacing: -0.02em;
-    line-height: 1.125;
+  }
+  .site-header__rechts {
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-s);
+  }
+  nav {
+    flex: 1 1 auto;
   }
   ul {
     display: flex;
@@ -99,70 +156,89 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
   li {
     flex: 1 1 0;
   }
-  /* Themaknop: alleen het icoon, niet mee-rekken. */
-  li.site-header__thema {
-    flex: 0 0 auto;
-  }
-  nav a,
-  li :global(.theme-toggle),
-  .site-header__menu {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    inline-size: 100%;
-    block-size: auto;
-    min-block-size: 2.75rem;
-    padding: var(--space-xs) var(--space-m);
-    border: 0;
-    border-radius: 999px;
-    background: var(--color-surface);
-    color: var(--color-fg);
-    font-family: inherit;
-    font-size: var(--step--1);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1.125;
+  nav a {
     text-decoration: none;
-    cursor: pointer;
-    transition:
-      background-color var(--duration) var(--ease),
-      color var(--duration) var(--ease);
   }
   nav a:hover,
-  nav a[aria-current],
-  li :global(.theme-toggle:hover),
-  .site-header__menu:hover,
-  .site-header__menu[aria-expanded='true'] {
-    background: var(--color-fg);
-    color: var(--color-bg);
+  nav a[aria-current] {
+    text-decoration: underline;
+    text-decoration-thickness: 0.07em;
+    text-underline-offset: 0.15em;
+  }
+  .site-header__gegevens {
+    display: none;
+  }
+  .site-header :global(.theme-toggle) {
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    color: inherit;
   }
   .site-header__menu {
-    inline-size: auto;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    cursor: pointer;
   }
   .site-header__menu[hidden] {
     display: none;
   }
-  /* Mobiel met JS: pills pas zichtbaar na "menu", onder de balk over de volle breedte, onder elkaar. */
+
+  /* Mobiel met JS: links alleen in de overlay. */
   @media (max-width: 47.99rem) {
-    .site-header[data-menu] nav {
-      order: 1;
-      flex-basis: 100%;
+    .site-header {
+      padding-block: var(--space-s);
     }
-    .site-header[data-menu='dicht'] nav {
+    .site-header[data-menu] nav {
       display: none;
     }
-    .site-header[data-menu] ul {
+    /* Overlay (Figma 462:9522): de balk zet zich vast bovenaan, de nav vult de rest van het scherm.
+       Links onder elkaar met een lijn ertussen; adres en bedrijfsgegevens onderaan. */
+    .site-header[data-menu='open'] {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 50;
+    }
+    .site-header[data-menu='open'] nav {
+      position: fixed;
+      inset: var(--header-hoogte) 0 0;
+      display: flex;
       flex-direction: column;
-      gap: var(--space-3xs);
-      padding-block: var(--space-xs) 0;
+      overflow-y: auto;
+      background: var(--color-bg);
+    }
+    .site-header[data-menu='open'] ul {
+      flex-direction: column;
+    }
+    .site-header[data-menu='open'] nav a {
+      display: block;
+      padding: var(--space-2xs) var(--gutter);
+      border-block-start: var(--border-width) solid var(--color-surface);
+    }
+    .site-header[data-menu='open'] .site-header__gegevens {
+      display: grid;
+      flex: 1;
+      align-content: end;
+      gap: var(--space-2xs);
+      padding: var(--gutter);
+      border-block-start: var(--border-width) solid var(--color-surface);
+      font-size: var(--step--1);
     }
   }
   @media (min-width: 48rem) {
     .site-header__menu {
       display: none;
     }
-    nav {
-      flex: 0 1 50%;
-    }
+  }
+  address {
+    font-style: normal;
+  }
+  .site-header__gegevens p {
+    margin: 0;
+  }
+  :global(html:has(.site-header[data-menu='open'])) {
+    overflow: hidden;
   }
 </style>
