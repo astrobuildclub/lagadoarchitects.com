@@ -1,12 +1,12 @@
-// Woorden schuiven van onder in zodra een blok in beeld komt (NextProject, `[data-words-in]`).
+// Woorden verschijnen kort na elkaar zodra een blok in beeld komt (`[data-words-in]`).
 //
 // Hoe het werkt:
 // - De woorden staan al in de HTML, elk in een masker (`.w`, clip-path) met daarin het
 //   bewegende deel (`.w__i`). Zonder JS staat de tekst er gewoon.
-// - Bij astro:page-load zet GSAP de woorden onder het masker (y 1.3em, onzichtbaar, licht
-//   gedraaid). Een IntersectionObserver start de animatie als 40% van het blok in beeld is:
-//   per woord omhoog met een kleine veer (back.out), dezelfde beweging als de wisseltekst
-//   in de hero. Eén keer per pagina.
+// - Bij astro:page-load maakt GSAP de woorden onzichtbaar. Een IntersectionObserver
+//   start de animatie als 40% van het blok in beeld is: elk woord verschijnt met een
+//   korte fade, zonder verplaatsing of veer, in het tempo van de wisseltekst op de home
+//   (Hero.astro: data-in 0.25, data-fade 0.1). Eén keer per pagina.
 // - Loopt er een paginatransitie (Interlude, `[data-interlude]` niet `idle`), dan wachten
 //   we op `interlude:idle`: anders is de animatie al klaar voordat de pagina in beeld is.
 // - Met reduced motion gebeurt er niets.
@@ -22,7 +22,7 @@ function init() {
   if (!blocks.length || reduce.matches) return;
 
   const words = (block: Element) => block.querySelectorAll('.w__i');
-  blocks.forEach((block) => gsap.set(words(block), { y: '1.3em', opacity: 0, rotation: 2 }));
+  blocks.forEach((block) => gsap.set(words(block), { opacity: 0 }));
 
   const observer = new IntersectionObserver(
     (entries) => {
@@ -30,12 +30,10 @@ function init() {
         if (!entry.isIntersecting) return;
         observer.unobserve(entry.target);
         gsap.to(words(entry.target), {
-          y: 0,
           opacity: 1,
-          rotation: 0,
-          duration: 0.62,
-          stagger: 0.055,
-          ease: 'back.out(1.2)',
+          duration: 0.1,
+          stagger: 0.25,
+          ease: 'none',
         });
       });
     },

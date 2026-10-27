@@ -11,6 +11,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - /projecten: de kaartvorm volgt altijd de `vorm` uit de content, zodat de kaart klopt met het vormfilter (Easehouse, schuin, verscheen rond door `kaartvorm: afgerond`). `kaartvorm` geldt alleen op de home.
 
 ### Gewijzigd
+- Projecttagline en volgend-projecttitel: snelle word-type-animatie met een korte fade per woord, zonder schuiven of bounce, in het tempo van de wisseltekst op de home (0,25 s per woord, fade 0,1 s). Beide grote titels hebben dezelfde letterafstand (-0.03em) als de andere grote koppen.
 - Projectkaarten: type • jaar een stap kleiner, op de home (step--1, op elke kaart even groot) en op /projecten (step--2).
 - Home: de wisselwoorden in de intro blijven 4 seconden staan (was 2).
 - Home op touch: de kaarten veranderen niet meer bij scrollen (in beeld); een tik geeft de hoverstand, die blijft staan tijdens de paginatransitie. /projecten houdt het in-beeldgedrag.
