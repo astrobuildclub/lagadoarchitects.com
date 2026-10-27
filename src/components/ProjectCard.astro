@@ -208,13 +208,10 @@ const filters = {
   :global([data-view='raster']) .project-card--vlak .project-card__label {
     font-size: var(--step--1);
   }
-  /* Titel een stap groter dan in Figma (step-2), meta step--1. Kaarten van 1 rij: meta een stap
-     kleiner, meer lucht tussen meta en titel. */
+  /* Titel een stap groter dan in Figma (step-2), meta step--1 op elke kaart. Kaarten van 1 rij:
+     meer lucht tussen meta en titel. */
   .project-card--vlak:not(.project-card--hoog, .project-card--toren, .project-card--groot) .project-card__voet {
     gap: var(--space-xs);
-  }
-  :global([data-view='raster']) .project-card--vlak:not(.project-card--hoog, .project-card--toren, .project-card--groot) .project-card__label {
-    font-size: var(--step--2);
   }
   @media (hover: hover) {
     .project-card--vlak:is(:hover, :focus-within) .project-card__beelden {
