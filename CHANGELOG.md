@@ -7,9 +7,12 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 
 ## [Unreleased]
 
+### Opgelost
+- /projecten: de kaartvorm volgt altijd de `vorm` uit de content, zodat de kaart klopt met het vormfilter (Easehouse, schuin, verscheen rond door `kaartvorm: afgerond`). `kaartvorm` geldt alleen op de home.
+
 ### Gewijzigd
 - Homepage volgens Figma (Home, 447:2103). Intro als twee brede kolommen in step-3 (wisselwoord vet); adres en de Gulliver-tekst staan in de footer. Projectraster met een vast aantal kaarten (`projectGrid.meer: false`, `limit: 8`): 3 kolommen (2 op tablet, 1 op mobiel), gap `--tile-gap` (space-m), kaarten 1 of 2 rijen hoog (`homepageGrootte`); de site maakt het raster sluitend. Kaart: de foto vult de kaart (radius xs), daarop de kaartvorm in de projectkleur met type • jaar en titel. Hover/focus (touch: in beeld) keert het om: de kaart krijgt de kleur, de foto krimpt via `clip-path` tot de vorm. Knoppen onder het raster in step-1, afsluiter als inktpil met de vraag in step-3.
-- /projecten, rasterweergave (Figma 462:8670): staande kaarten met de foto (3:4) in de kaartvorm en de tekst eronder (titel step-3), padding l, gap l, radius xs. Standaard zonder vlak in de tekstkleur van de pagina; hover/focus (touch: in beeld) geeft de projectkleur met zwart of wit op contrast. 1 kolom, oplopend tot 5 vanaf 140rem.
+- /projecten, rasterweergave (Figma 462:8670): staande kaarten met de foto (3:4) in de kaartvorm en de tekst eronder (titel step-2), padding l, gap l, radius xs. Standaard zonder vlak in de tekstkleur van de pagina; hover/focus (touch: in beeld) geeft de projectkleur met zwart of wit op contrast. 1 kolom, oplopend tot 5 vanaf 140rem.
 - Header (Figma 447:2104): in de paginakleuren, woordmerk met "architects", menu en thema als even brede grijze pill-knoppen over de rechterhelft; huidige pagina en hover omgekeerd.
 - Compacte footer (Figma 449:6819): dunne lijn, klein woordmerk met payoff, vijf kolommen (herkomst van de naam over twee, adres, bedrijfsgegevens, links). Tekst in `site.md` → `footer.tekst`.
 - Kaartvorm `recht` heeft nu een ronding van 12px (space-xs), zoals in Figma.

@@ -29,9 +29,10 @@ const grootte = sized ? p.homepageGrootte : undefined;
 const kaart = vlak && !sized;
 // Eerste vorm uit het filter; zonder vorm een rechthoek.
 const vorm = p.vorm[0] ?? 'recht';
-// Homeraster: eigen kaartvorm, anders afgeleid van de vorm (styles/vorm.css).
+// Kaartvorm (styles/vorm.css): op de home de eigen `kaartvorm`, anders afgeleid van de vorm.
+// Op /projecten altijd uit de vorm, zodat de kaart klopt met het vormfilter.
 const kaartvormVanVorm = { rond: 'ovaal', recht: 'zacht', schuin: 'schuin' } as const;
-const kaartvorm = vlak ? (p.kaartvorm ?? kaartvormVanVorm[vorm]) : undefined;
+const kaartvorm = sized ? (p.kaartvorm ?? kaartvormVanVorm[vorm]) : vlak ? kaartvormVanVorm[vorm] : undefined;
 // 0 is een invulplek in de content, geen jaar.
 const jaar = p.jaarOplevering || p.jaarOpdracht || undefined;
 const kleur = await kaartkleur(p);
@@ -314,7 +315,7 @@ const filters = {
     gap: var(--space-2xs);
   }
   :global([data-view='raster']) .project-card--kaart .project-card__title {
-    font-size: var(--step-3);
+    font-size: var(--step-2);
   }
 
   .project-card__tagline,
