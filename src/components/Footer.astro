@@ -60,6 +60,8 @@ const tel = contact.telefoon?.replace(/[^\d+]/g, '').replace('(0)', '');
 <style>
   .site-footer {
     --color-focus: var(--color-on-ink);
+    --font-darkmode: var(--ink-darkmode);
+    font-variation-settings: 'DRKM' var(--font-darkmode);
     margin-block-start: var(--space-3xl);
     padding-block: var(--space-2xl);
     background: var(--color-ink);

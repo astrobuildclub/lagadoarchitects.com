@@ -69,9 +69,11 @@
   --color-line: oklch(85% 0 0);
   --color-accent: oklch(46.856% 0.30296 271.609);
   --color-on-accent: oklch(99% 0 0);
-  /* Inkt: header en footer, in beide thema's donker. */
+  /* Inkt: header en footer, omgekeerd t.o.v. de pagina (licht thema = donker vlak). */
   --color-ink: oklch(12.75% 0.0148 293.14);
   --color-on-ink: oklch(99% 0 0);
+  /* DRKM-as op het inktvlak: lichte tekst op donker. */
+  --ink-darkmode: 1;
   --color-focus: var(--color-accent);
   /* Projectpagina's overschrijven --accent met de accentkleur van het project. */
   --accent: var(--color-accent);
@@ -88,6 +90,9 @@
     --color-line: oklch(35% 0 0);
     --color-accent: oklch(70.544% 0.19659 44.231);
     --color-on-accent: oklch(17% 0 0);
+    --color-ink: oklch(95% 0 0);
+    --color-on-ink: oklch(12.75% 0.0148 293.14);
+    --ink-darkmode: 0;
     --font-darkmode: 1;
   }
 }
@@ -100,6 +105,9 @@
   --color-line: oklch(35% 0 0);
   --color-accent: oklch(70.544% 0.19659 44.231);
   --color-on-accent: oklch(17% 0 0);
+  --color-ink: oklch(95% 0 0);
+  --color-on-ink: oklch(12.75% 0.0148 293.14);
+  --ink-darkmode: 0;
   --font-darkmode: 1;
 }
 
