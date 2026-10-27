@@ -99,7 +99,7 @@ Volgens teksten_v4, onder "Ontdek ons werk op vorm, kleur of laat je verrassen."
 |---|---|---|
 | `text` | Kop + lopende tekst | `kop?`, `niveau?` (2/3), `tekst` |
 | `image` | Eén beeld | `src`, `alt`, `caption?`, `breedte` (`content`/`popout`/`feature`/`full`) |
-| `gallery` | Raster van beelden met lightbox | `images[]` (`src`, `alt`, `caption?`), `kolommen` (2/3) |
+| `gallery` | Raster van beelden met lightbox | `images[]` (`src`, `alt`, `caption?`), `kolommen` (2/3; mobiel altijd 2) |
 | `columns` | Beeld naast tekst, per ruimte | `kop?`, `tekst`, `image{src,alt,caption?}`, `beeldPositie` (`links`/`rechts`) |
 | `quote` | Citaat of testimonial | `tekst`, `naam`, `rol?` |
 | `video` | YouTube/Vimeo achter klik | `url`, `titel`, `poster?`, `caption?` |
