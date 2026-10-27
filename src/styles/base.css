@@ -69,9 +69,8 @@ hr { border: 0; border-block-start: var(--border-width) solid var(--color-line);
 }
 .button:hover { background: var(--color-fg); color: var(--color-bg); }
 
-/* Woorden die van onder inschuiven (src/scripts/words-in.ts). Masker per woord:
-   clip-path knipt op de border-box; padding + negatieve marge geeft ruimte aan staarten
-   en de veer zonder dat de regel hoger wordt. */
+/* Woordmaskers (src/scripts/words-in.ts): padding + negatieve marge geeft ruimte
+   aan staarten zonder dat de regel hoger wordt. */
 [data-words-in] .w {
   display: inline-block;
   padding-block: 0.2em;
