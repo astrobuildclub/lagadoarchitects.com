@@ -5,17 +5,34 @@ type Props = BlockProps<'cta'>;
 const { block } = Astro.props;
 ---
 
-<section class="cta">
-  <p class="cta__tekst">{block.tekst}</p>
-  <a class="cta__link" href={block.href}>{block.label}</a>
+<section class="cta full">
+  <div class="cta__vlak">
+    <p class="cta__tekst">{block.tekst}</p>
+    <a class="cta__link" href={block.href}>{block.label}</a>
+  </div>
 </section>
 
 <style>
-  /* Figma: grote vraag met een kleine link eronder. */
+  /* Figma (453:7035): pil in inkt over de volle breedte (min de gutter), vraag groot en de link vet eronder, gecentreerd. */
   .cta {
     display: grid;
+    padding-inline: var(--gutter);
+  }
+  .cta__vlak {
+    --color-focus: var(--color-on-ink);
+    display: grid;
     gap: var(--space-2xs);
-    justify-items: start;
+    justify-items: center;
+    padding: var(--space-l);
+    border-radius: var(--space-5xl);
+    background: var(--color-ink);
+    color: var(--color-on-ink);
+    text-align: center;
+  }
+  @media (min-width: 48rem) {
+    .cta__vlak {
+      padding-inline: var(--space-2xl);
+    }
   }
   .cta__tekst {
     margin: 0;
@@ -24,9 +41,10 @@ const { block } = Astro.props;
     line-height: 1.125;
   }
   .cta__link {
-    font-size: var(--step--1);
-    font-weight: 500;
+    font-size: var(--step-1);
+    font-weight: 700;
     letter-spacing: -0.02em;
-    text-underline-offset: 0.2em;
+    line-height: 1.125;
+    text-underline-offset: 0.15em;
   }
 </style>

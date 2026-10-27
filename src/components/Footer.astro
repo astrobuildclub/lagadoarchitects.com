@@ -1,6 +1,6 @@
 ---
-// Footer (Figma): donker vlak met het woordmerk over de volle breedte en daaronder vier kolommen:
-// naam en payoff, adres, bedrijfsgegevens, en privacy/cookies/credits.
+// Compacte footer (Figma 449:6819): boven het woordmerk met payoff, daaronder vijf kolommen:
+// herkomst van de naam (twee breed), adres, bedrijfsgegevens, en privacy/cookies/credits.
 import Logo from './Logo.astro';
 import { downloadUrl } from '../lib/images';
 import type { Contact, Settings } from '../lib/schema';
@@ -19,14 +19,17 @@ const tel = contact.telefoon?.replace(/[^\d+]/g, '').replace('(0)', '');
 
 <footer class="site-footer">
   <div class="wrapper wrapper--full site-footer__inner">
-    <Logo class="site-footer__wordmark" />
+    <div class="site-footer__merk">
+      <p class="site-footer__logo">
+        <Logo class="site-footer__wordmark" />
+        <span aria-hidden="true">architects</span>
+        <span class="visually-hidden">{settings.siteNaam}</span>
+      </p>
+      <p>{settings.payoff}</p>
+    </div>
 
     <div class="site-footer__grid">
-      <div>
-        <p>{settings.siteNaam}</p>
-        <p>{settings.payoff}</p>
-        {settings.footer.tekst && <p>{settings.footer.tekst}</p>}
-      </div>
+      {settings.footer.tekst && <p class="site-footer__tekst">{settings.footer.tekst}</p>}
 
       <address>
         {adres.naam && <>{adres.naam}<br /></>}
@@ -58,31 +61,33 @@ const tel = contact.telefoon?.replace(/[^\d+]/g, '').replace('(0)', '');
 </footer>
 
 <style>
+  /* Pagina-kleuren met een dunne lijn erboven; alles op step--1. */
   .site-footer {
-    --color-focus: var(--color-on-ink);
-    --font-darkmode: var(--ink-darkmode);
-    font-variation-settings: 'DRKM' var(--font-darkmode);
     margin-block-start: var(--space-3xl);
     padding-block: var(--space-2xl);
-    background: var(--color-ink);
-    color: var(--color-on-ink);
+    border-block-start: var(--border-width) solid var(--color-surface);
     font-size: var(--step--1);
     font-weight: 500;
     letter-spacing: -0.02em;
     line-height: 1.125;
   }
-  /* Woordmerk boven, kolommen onder; het vlak is minstens zo hoog als in Figma (720px). */
   .site-footer__inner {
+    display: grid;
+    gap: var(--space-m);
+  }
+  .site-footer__merk {
+    display: grid;
+    gap: 2px;
+  }
+  .site-footer__logo {
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: var(--space-3xl);
-    min-block-size: min(45rem, 90svh);
+    align-items: baseline;
+    gap: 0.25rem;
+    font-weight: 400;
   }
   .site-footer :global(.site-footer__wordmark) {
-    display: block;
-    inline-size: 100%;
-    block-size: auto;
+    block-size: 1rem;
+    inline-size: auto;
   }
   .site-footer__grid {
     display: grid;
@@ -90,9 +95,20 @@ const tel = contact.telefoon?.replace(/[^\d+]/g, '').replace('(0)', '');
   }
   @media (min-width: 48rem) {
     .site-footer__grid {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: var(--space-m);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+  }
+  /* Vijf kolommen; de tekst over twee. */
+  @media (min-width: 64rem) {
+    .site-footer__grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+    .site-footer__tekst {
+      grid-column: span 2;
+    }
+  }
+  .site-footer__tekst {
+    max-inline-size: 60ch;
   }
   address {
     font-style: normal;

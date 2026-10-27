@@ -16,6 +16,7 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
   <div class="wrapper wrapper--full site-header__inner">
     <a class="site-header__logo" href="/">
       <Logo class="site-header__wordmark" />
+      <span class="site-header__toevoeging" aria-hidden="true">architects</span>
       <span class="visually-hidden">{settings.siteNaam}</span>
     </a>
     <button type="button" class="site-header__menu" aria-expanded="false" aria-controls="hoofdmenu" data-menu-toggle hidden>
@@ -32,9 +33,9 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
             </li>
           ))
         }
+        <li class="site-header__thema"><ThemeToggle /></li>
       </ul>
     </nav>
-    <ThemeToggle />
   </div>
 </header>
 
@@ -62,17 +63,12 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
 </script>
 
 <style>
-  /* Balk in inkt (Figma): logo links, menu rechts. Omgekeerd t.o.v. de pagina: donker bij licht thema, licht bij donker. */
+  /* Balk (Figma 447:2104): logo links, rechts de helft van de breedte met even brede pill-knoppen
+     (menu en thema), grijs vlak; de huidige pagina en hover in de tekstkleur, omgekeerd. */
   .site-header {
-    --color-focus: var(--color-on-ink);
-    --font-darkmode: var(--ink-darkmode);
-    font-variation-settings: 'DRKM' var(--font-darkmode);
-    display: flex;
-    align-items: center;
-    min-block-size: 3.5rem;
-    padding-block: var(--space-s);
-    background: var(--color-ink);
-    color: var(--color-on-ink);
+    padding-block: var(--space-m);
+    background: var(--color-bg);
+    color: var(--color-fg);
   }
   .site-header__inner {
     display: flex;
@@ -82,42 +78,71 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
   }
   .site-header__logo {
     display: inline-flex;
+    align-items: baseline;
+    gap: 0.25rem;
     margin-inline-end: auto;
+    text-decoration: none;
   }
   .site-header__logo :global(.site-header__wordmark) {
     /* Hoogte bepaalt de maat; breedte volgt de viewBox (140 × 28). */
-    block-size: 1.25rem;
+    block-size: 1rem;
     inline-size: auto;
+  }
+  .site-header__toevoeging {
+    font-size: var(--step--1);
+    letter-spacing: -0.02em;
+    line-height: 1.125;
   }
   ul {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-s);
   }
-  nav a {
-    font-family: var(--font-mono);
-    font-size: var(--step-0);
-    font-weight: 500;
-    letter-spacing: -0.05em;
+  li {
+    flex: 1 1 0;
+  }
+  /* Themaknop: alleen het icoon, niet mee-rekken. */
+  li.site-header__thema {
+    flex: 0 0 auto;
+  }
+  nav a,
+  li :global(.theme-toggle),
+  .site-header__menu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    inline-size: 100%;
+    block-size: auto;
+    min-block-size: 2.75rem;
+    padding: var(--space-xs) var(--space-m);
+    border: 0;
+    border-radius: 999px;
+    background: var(--color-surface);
+    color: var(--color-fg);
+    font-family: inherit;
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: -0.02em;
     line-height: 1.125;
     text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color var(--duration) var(--ease),
+      color var(--duration) var(--ease);
+  }
+  nav a:hover,
+  nav a[aria-current],
+  li :global(.theme-toggle:hover),
+  .site-header__menu:hover,
+  .site-header__menu[aria-expanded='true'] {
+    background: var(--color-fg);
+    color: var(--color-bg);
   }
   .site-header__menu {
-    padding: 0;
-    border: 0;
-    background: none;
-    color: inherit;
-    font-family: var(--font-mono);
-    font-size: var(--step-0);
-    font-weight: 500;
-    letter-spacing: -0.05em;
-    line-height: 1.125;
-    cursor: pointer;
+    inline-size: auto;
   }
   .site-header__menu[hidden] {
     display: none;
   }
-  /* Mobiel met JS: links pas zichtbaar na "menu", onder de balk over de volle breedte. */
+  /* Mobiel met JS: pills pas zichtbaar na "menu", onder de balk over de volle breedte, onder elkaar. */
   @media (max-width: 47.99rem) {
     .site-header[data-menu] nav {
       order: 1;
@@ -128,19 +153,16 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
     }
     .site-header[data-menu] ul {
       flex-direction: column;
-      gap: var(--space-2xs);
-      padding-block: var(--space-s) var(--space-2xs);
+      gap: var(--space-3xs);
+      padding-block: var(--space-xs) 0;
     }
   }
   @media (min-width: 48rem) {
     .site-header__menu {
       display: none;
     }
-  }
-  nav a:hover,
-  nav a[aria-current] {
-    text-decoration: underline;
-    text-decoration-thickness: 0.07em;
-    text-underline-offset: 0.15em;
+    nav {
+      flex: 0 1 50%;
+    }
   }
 </style>

@@ -1,6 +1,9 @@
 ---
-// Kaart in een projectraster: een vlak in de projectkleur, in de vorm van het project, met bestemming · jaar en titel.
-// Hover (muis) of in beeld (touch) toont de foto; met de muis horizontaal scrubben door de beelden (project-card.ts).
+// Kaart in een projectraster, met type • jaar en titel. Twee varianten (Figma):
+// - Home (`sized`, 447:2103): de foto vult de kaart, daarop een vorm in de projectkleur met de tekst.
+//   Hover (muis) of in beeld (touch) keert dat om: de kaart krijgt de kleur, de foto krimpt tot de vorm.
+// - /projecten (`vlak`, 462:8670): de foto in de kaartvorm met de tekst eronder; hover kleurt de kaart.
+// Met de muis horizontaal scrubben door de beelden (project-card.ts).
 // De data-*-attributen voeden de filters op /projecten.
 import Img from './Img.astro';
 import { projectBeelden, projectImage } from '../lib/images';
@@ -12,9 +15,9 @@ interface Props {
   project: Project;
   headingLevel?: 2 | 3;
   priority?: boolean;
-  /** Homepage-raster: spanning volgens homepageGrootte. */
+  /** Homepage-raster: 1 of 2 rijen hoog volgens homepageGrootte. */
   sized?: boolean;
-  /** Vlak zoals op de home (kaartvorm, typografie), maar zonder eigen maat: /projecten. */
+  /** /projecten-raster: kaart in de projectkleur met de foto in de kaartvorm en de tekst eronder. */
   vlak?: boolean;
   /** Pas zichtbaar na "Meer projecten". */
   later?: boolean;
@@ -22,6 +25,8 @@ interface Props {
 const { project: p, headingLevel = 3, priority = false, sized = false, vlak = sized, later = false } = Astro.props;
 const Heading = `h${headingLevel}` as 'h2' | 'h3';
 const grootte = sized ? p.homepageGrootte : undefined;
+// /projecten: geen vlak in de vorm, maar een kaart waarin de foto de vorm heeft.
+const kaart = vlak && !sized;
 // Eerste vorm uit het filter; zonder vorm een rechthoek.
 const vorm = p.vorm[0] ?? 'recht';
 // Homeraster: eigen kaartvorm, anders afgeleid van de vorm (styles/vorm.css).
@@ -31,17 +36,12 @@ const kaartvorm = vlak ? (p.kaartvorm ?? kaartvormVanVorm[vorm]) : undefined;
 const jaar = p.jaarOplevering || p.jaarOpdracht || undefined;
 const kleur = await kaartkleur(p);
 const [, ...meer] = projectBeelden(p);
-// Homeraster: 4 kolommen, vanaf 60rem 6, vanaf 110rem 12 (ProjectList.astro).
-const homeSizes: Record<Project['homepageGrootte'], string> = {
-  mini: '(min-width: 110rem) 8vw, (min-width: 60rem) 17vw, 50vw',
-  klein: '(min-width: 110rem) 17vw, (min-width: 60rem) 33vw, 50vw',
-  hoog: '(min-width: 110rem) 17vw, (min-width: 60rem) 33vw, 50vw',
-  toren: '(min-width: 110rem) 17vw, (min-width: 60rem) 33vw, 50vw',
-  breed: '(min-width: 110rem) 25vw, (min-width: 60rem) 50vw, 50vw',
-  groot: '(min-width: 110rem) 25vw, (min-width: 60rem) 50vw, 50vw',
-  lang: '(min-width: 110rem) 33vw, (min-width: 60rem) 67vw, 100vw',
-};
-const sizes = grootte ? homeSizes[grootte] : vlak ? '(min-width: 110rem) 25vw, (min-width: 60rem) 33vw, 50vw' : '(min-width: 60rem) 33vw, (min-width: 36rem) 50vw, 100vw';
+// Home: 1 kolom, vanaf 36rem 2, vanaf 60rem 3. /projecten: 1 kolom, vanaf 36rem 2, 60rem 3, 105rem 4, 140rem 5 (ProjectList.astro).
+const sizes = sized
+  ? '(min-width: 60rem) 30vw, (min-width: 36rem) 45vw, 90vw'
+  : kaart
+    ? '(min-width: 140rem) 17vw, (min-width: 105rem) 21vw, (min-width: 60rem) 28vw, (min-width: 36rem) 42vw, 85vw'
+    : '(min-width: 60rem) 33vw, (min-width: 36rem) 50vw, 100vw';
 const filters = {
   type: p.type,
   vorm: p.vorm.join(' '),
@@ -55,7 +55,7 @@ const filters = {
 ---
 
 <li
-  class:list={['project-card', vlak && 'project-card--vlak', grootte && `project-card--${grootte}`]}
+  class:list={['project-card', sized && 'project-card--vlak', kaart && 'project-card--kaart', grootte && `project-card--${grootte}`]}
   data-vorm={vorm}
   data-kaartvorm={kaartvorm}
   data-later={later || undefined}
@@ -85,9 +85,8 @@ const filters = {
         )
       }
       <div class="project-card__tekst">
-        <p class="project-card__boven" aria-hidden="true">{label(p.type)}{jaar && ` · ${jaar}`}</p>
         <div class="project-card__voet">
-          <p class="project-card__label">{label(p.type)}{jaar && ` · ${jaar}`}</p>
+          <p class="project-card__label">{label(p.type)}{jaar && ` • ${jaar}`}</p>
           <Heading class="project-card__title">{p.title}</Heading>
         </div>
       </div>
@@ -99,30 +98,20 @@ const filters = {
   </p>
 </li>
 
+
 <style>
   .project-card a {
     display: block;
     block-size: 100%;
     text-decoration: none;
-    border-radius: var(--vorm-radius);
+    border-radius: var(--space-xs);
   }
 
   .project-card__vorm {
     position: relative;
     overflow: hidden;
     block-size: 100%;
-    aspect-ratio: 4 / 3;
-    background: var(--kaart-vlak);
     color: var(--kaart-tekst);
-    border-radius: var(--vorm-radius);
-  }
-  /* Alleen in het raster: in de lijstweergave is het vlak een gewone tekstrij. */
-  :global([data-view='raster']) .project-card .project-card__vorm {
-    clip-path: var(--vorm-clip);
-  }
-  /* In het vlakkenraster (home, /projecten) bepaalt het grid de maat. */
-  .project-card--vlak .project-card__vorm {
-    aspect-ratio: auto;
   }
 
   .project-card__beelden,
@@ -133,96 +122,24 @@ const filters = {
     block-size: 100%;
     object-fit: cover;
   }
-  /* De foto's faden samen in; tussen de beelden (scrubben) wisselt het hard. */
-  .project-card__beelden {
-    opacity: 0;
-    transition: opacity var(--duration) var(--ease);
-  }
+  /* Tussen de beelden (scrubben) wisselt het hard. */
   .project-card__beelden :global(img:not(.is-actief)) {
     visibility: hidden;
   }
 
-  .project-card__tekst {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-m) var(--space-l);
-    text-align: center;
-    transition: opacity var(--duration) var(--ease);
-  }
-  .project-card__boven,
-  .project-card__label {
-    font-family: var(--font-mono);
-    font-size: var(--step--1);
-  }
   .project-card__voet {
     display: grid;
-    gap: var(--space-3xs);
     justify-items: center;
+    text-align: center;
   }
   .project-card__title {
     margin: 0;
-    font-size: var(--step-1);
-    line-height: var(--leading-tight);
-  }
-  /* Vlakkenraster (Figma, home en /projecten), alleen in de rasterweergave: meta klein in mono kapitalen, titel groot. Mobiel staat alles onderin,
-     vanaf 60rem de meta boven en de titel onder. */
-  :global([data-view='raster']) .project-card--vlak .project-card__tekst {
-    justify-content: flex-end;
-    padding: var(--space-m) var(--space-l);
-  }
-  :global([data-view='raster']) .project-card--vlak .project-card__boven {
-    display: none;
-  }
-  :global([data-view='raster']) .project-card--vlak :is(.project-card__boven, .project-card__label) {
-    font-size: var(--step--3);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    line-height: 1;
-  }
-  :global([data-view='raster']) .project-card--vlak .project-card__voet {
-    gap: var(--space-2xs);
-  }
-  /* Op mobiel staat het label zichtbaar boven de titel. */
-  :global([data-view='raster']) .project-card--vlak .project-card__label {
-    position: static;
-    clip-path: none;
-    inline-size: auto;
-    block-size: auto;
-  }
-  :global([data-view='raster']) .project-card--vlak .project-card__title {
     font-size: var(--step-1);
     font-weight: 400;
     letter-spacing: -0.04em;
     line-height: 1.125;
   }
-  @media (min-width: 60rem) {
-    :global([data-view='raster']) .project-card--vlak .project-card__tekst {
-      justify-content: space-between;
-      padding: var(--space-2xl) var(--space-l);
-    }
-    :global([data-view='raster']) .project-card--vlak .project-card__boven {
-      display: block;
-      font-size: var(--step--1);
-    }
-    :global([data-view='raster']) .project-card--vlak .project-card__label {
-      clip-path: inset(50%);
-      position: absolute;
-      block-size: 1px;
-      inline-size: 1px;
-    }
-    :global([data-view='raster']) .project-card--vlak .project-card__title {
-      font-size: var(--step-3);
-    }
-    :global([data-view='raster']) .project-card--vlak.project-card--mini .project-card__title {
-      font-size: var(--step-1);
-    }
-  }
-
-  /* Het label (type · jaar) is er voor schermlezers; zichtbaar alleen in de mobiele kleurbalk. */
+  /* Type • jaar: klein, mono, kapitalen (Figma). Buiten het raster alleen voor schermlezers. */
   .project-card__label {
     clip-path: inset(50%);
     position: absolute;
@@ -230,6 +147,17 @@ const filters = {
     inline-size: 1px;
     overflow: hidden;
     white-space: nowrap;
+  }
+  :global([data-view='raster']) :is(.project-card--vlak, .project-card--kaart) .project-card__label {
+    position: static;
+    clip-path: none;
+    inline-size: auto;
+    block-size: auto;
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    line-height: 1;
   }
 
   .project-card__scrub {
@@ -250,48 +178,143 @@ const filters = {
   .project-card__scrub span.is-actief {
     background: oklch(99% 0 0);
   }
-
-  /* Alleen in de rasterweergave; in de lijst op /projecten hangt het beeld aan de muis (hover-follow.ts). */
-  /* Muis en toetsenbord: foto tonen, tekst weg. */
   @media (hover: hover) {
-    :global([data-view='raster']) .project-card:is(:hover, :focus-within) .project-card__beelden {
-      opacity: 1;
-    }
-    :global([data-view='raster']) .project-card:is(:hover, :focus-within) .project-card__tekst {
-      opacity: 0;
-    }
-    :global([data-view='raster']) .project-card:hover .project-card__scrub {
+    :global([data-view='raster']) .project-card:not(.project-card--vlak):hover .project-card__scrub {
       opacity: 1;
     }
   }
 
-  /* Touch: foto zodra de kaart in beeld is (.is-open), met een kleurbalk voor type, jaar en titel. */
-  @media (hover: none) {
-    :global([data-view='raster']) .project-card.is-open .project-card__beelden {
-      opacity: 1;
+  /* ── Home (Figma 447:2103) ─────────────────────────────────────────────
+     De foto vult de kaart (radius xs); daarop, op --kaart-pad afstand, de vorm in de projectkleur
+     met de tekst gecentreerd. Omgekeerd bij hover/focus (muis) of in beeld (touch): de kaart wordt
+     de kleur en de foto krimpt via clip-path tot precies de vorm; inset() en polygon() animeren
+     vloeiend tussen de twee standen. */
+  .project-card--vlak {
+    --kaart-pad: var(--space-s);
+    --foto-rust: inset(0 round var(--space-xs));
+    --foto-vorm: inset(var(--kaart-pad) round var(--vorm-radius));
+  }
+  /* Schuin: zelfde parallellogram als de vorm, maar binnen de marge. In rust een gewone rechthoek
+     met vier punten, zodat het overgaat in plaats van verspringt. */
+  .project-card--vlak[data-kaartvorm='schuin'] {
+    --foto-rust: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    --foto-vorm: polygon(
+      calc(var(--kaart-pad) + var(--vorm-schuin)) var(--kaart-pad),
+      calc(100% - var(--kaart-pad)) var(--kaart-pad),
+      calc(100% - var(--kaart-pad) - var(--vorm-schuin)) calc(100% - var(--kaart-pad)),
+      var(--kaart-pad) calc(100% - var(--kaart-pad))
+    );
+  }
+  @media (min-width: 60rem) {
+    .project-card--vlak {
+      --kaart-pad: var(--space-l);
     }
-    :global([data-view='raster']) .project-card.is-open .project-card__boven {
+  }
+  .project-card--vlak .project-card__vorm {
+    border-radius: var(--space-xs);
+    background: var(--kaart-vlak);
+  }
+  .project-card--vlak .project-card__beelden {
+    clip-path: var(--foto-rust);
+    transition: clip-path calc(var(--duration) * 2) var(--ease);
+  }
+  .project-card--vlak .project-card__tekst {
+    position: absolute;
+    inset: var(--kaart-pad);
+    display: grid;
+    place-items: center;
+    padding: var(--space-m) var(--space-l);
+    background: var(--kaart-vlak);
+    border-radius: var(--vorm-radius);
+    clip-path: var(--vorm-clip);
+    transition: opacity var(--duration) var(--ease);
+  }
+  .project-card--vlak .project-card__voet {
+    gap: var(--space-2xs);
+  }
+  .project-card--vlak .project-card__title {
+    font-size: var(--step-2);
+  }
+  :global([data-view='raster']) .project-card--vlak .project-card__label {
+    font-size: var(--step-0);
+  }
+  /* Tekst een stap groter dan in Figma (meta step-0, titel step-2). Kaarten van 1 rij: meta een stap
+     kleiner, meer lucht tussen meta en titel. */
+  .project-card--vlak:not(.project-card--hoog, .project-card--toren, .project-card--groot) .project-card__voet {
+    gap: var(--space-xs);
+  }
+  :global([data-view='raster']) .project-card--vlak:not(.project-card--hoog, .project-card--toren, .project-card--groot) .project-card__label {
+    font-size: var(--step--1);
+  }
+  /* Home: geen scrubbalk; het beeld wisselt vanzelf (project-card.ts). */
+  .project-card--vlak .project-card__scrub {
+    display: none;
+  }
+  @media (hover: hover) {
+    .project-card--vlak:is(:hover, :focus-within) .project-card__beelden {
+      clip-path: var(--foto-vorm);
+    }
+    .project-card--vlak:is(:hover, :focus-within) .project-card__tekst {
       opacity: 0;
     }
-    /* Balk over de volle breedte, tegen de onderkant van de vorm. */
-    :global([data-view='raster']) .project-card.is-open .project-card__tekst {
-      padding-inline: 0;
-      padding-block-end: 0;
+  }
+  @media (hover: none) {
+    .project-card--vlak.is-open .project-card__beelden {
+      clip-path: var(--foto-vorm);
     }
-    .project-card__voet {
-      transition: background-color var(--duration) var(--ease);
+    .project-card--vlak.is-open .project-card__tekst {
+      opacity: 0;
     }
-    :global([data-view='raster']) .project-card.is-open .project-card__voet {
-      align-self: stretch;
-      padding: var(--space-xs) var(--space-l) var(--space-s);
+  }
+
+  /* ── /projecten (Figma 462:8670) ───────────────────────────────────────
+     De foto staat in de kaartvorm (3:4), de tekst eronder. Standaard zonder vlak, in de tekstkleur
+     van de pagina; bij hover, focus of in beeld (touch) krijgt de kaart de projectkleur, met zwart of
+     wit op contrast (kaartkleur, WCAG 1.4.3). Alleen in de rasterweergave; de lijst staat in ProjectList. */
+  :global([data-view='raster']) .project-card--kaart .project-card__vorm {
+    display: grid;
+    gap: var(--space-m);
+    padding: var(--space-l);
+    border-radius: var(--space-xs);
+    background: transparent;
+    color: var(--color-fg);
+    transition:
+      background-color var(--duration) var(--ease),
+      color var(--duration) var(--ease);
+  }
+  @media (hover: hover) {
+    :global([data-view='raster']) .project-card--kaart:is(:hover, :focus-within) .project-card__vorm {
       background: var(--kaart-vlak);
+      color: var(--kaart-tekst);
     }
-    :global([data-view='raster']) .project-card.is-open .project-card__label {
-      position: static;
-      clip-path: none;
-      inline-size: auto;
-      block-size: auto;
+  }
+  @media (hover: none) {
+    :global([data-view='raster']) .project-card--kaart.is-open .project-card__vorm {
+      background: var(--kaart-vlak);
+      color: var(--kaart-tekst);
     }
+  }
+  :global([data-view='raster']) .project-card--kaart :is(.project-card__beelden, .project-card__scrub) {
+    grid-area: 1 / 1;
+  }
+  :global([data-view='raster']) .project-card--kaart .project-card__beelden {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    block-size: auto;
+    overflow: hidden;
+    border-radius: var(--vorm-radius);
+    clip-path: var(--vorm-clip);
+  }
+  :global([data-view='raster']) .project-card--kaart .project-card__scrub {
+    position: static;
+    align-self: end;
+    margin-block-end: var(--space-xs);
+  }
+  :global([data-view='raster']) .project-card--kaart .project-card__voet {
+    gap: var(--space-2xs);
+  }
+  :global([data-view='raster']) .project-card--kaart .project-card__title {
+    font-size: var(--step-3);
   }
 
   .project-card__tagline,

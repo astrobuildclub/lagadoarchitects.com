@@ -19,6 +19,8 @@ const subkopWissel = block.subkopWissel.filter(has);
 const wisselt = kopWissel.length > 1 || subkopWissel.length > 1;
 const contact = block.adres ? await getContact() : undefined;
 const tel = contact?.telefoon?.replace(/[^\d+]/g, '').replace('(0)', '');
+// Alleen kop en subkop (Figma 447:2103): twee brede kolommen in grote letters.
+const groot = !contact && !has(block.tekst);
 
 /** "a, b en c" */
 const zin = (items: string[]) => (items.length < 2 ? items.join('') : `${items.slice(0, -1).join(', ')} en ${items.at(-1)}`);
@@ -30,7 +32,7 @@ const plat = (tekst: string) => regels(tekst).join(' ');
 const woorden = (phrase: string) => phrase.split(' ').map((w, i, all) => (i < all.length - 1 ? `${w} ` : w));
 ---
 
-<section class="hero full" data-hero>
+<section class:list={['hero full', groot && 'hero--groot']} data-hero>
   <div class="wrapper wrapper--full hero__kolommen">
     <div class="hero__kolom">
       <h1 class="hero__kop" data-rotate-block>
@@ -38,7 +40,7 @@ const woorden = (phrase: string) => phrase.split(' ').map((w, i, all) => (i < al
           kopWissel.length > 0 ? (
             <>
               <span class="visually-hidden">{plat(block.kop)} {zin(kopWissel)}</span>
-              <span aria-hidden="true" data-rotate data-hold="3" data-uit="0.5" data-leeg="2" data-in="1" data-fade="0.1" data-delay="0.2">
+              <span aria-hidden="true" data-rotate data-hold="2" data-uit="0.125" data-leeg="0.5" data-in="0.25" data-fade="0.1" data-delay="0.2">
                 {regels(block.kop).map((r, i) => (
                   <>
                     {i > 0 && <br />}
@@ -72,7 +74,7 @@ const woorden = (phrase: string) => phrase.split(' ').map((w, i, all) => (i < al
             {subkopWissel.length > 0 ? (
               <>
                 <span class="visually-hidden">{block.subkop} {zin(subkopWissel)}</span>
-                <span aria-hidden="true" data-rotate data-hold="4" data-uit="0.125" data-leeg="0.75" data-in="0.25" data-fade="0.3" data-delay="0.6">
+                <span aria-hidden="true" data-rotate data-hold="2" data-uit="0.125" data-leeg="0.5" data-in="0.25" data-fade="0.1" data-delay="0.3">
                   {block.subkop}{' '}
                   <span class="hero__wissel" data-words={JSON.stringify(subkopWissel)}>
                     {woorden(subkopWissel[0]).map((w) => (
@@ -142,6 +144,22 @@ const woorden = (phrase: string) => phrase.split(' ').map((w, i, all) => (i < al
   /* Ankerpunt voor de meetkloon in rotating-text.ts */
   .hero__kolom {
     position: relative;
+  }
+  /* Alleen kop en subkop: twee kolommen, groot (Figma: step-3, regel 1.125), het wisselwoord vet. */
+  .hero--groot {
+    font-size: var(--step-1);
+    font-weight: 400;
+  }
+  .hero--groot .hero__wissel {
+    font-weight: 700;
+  }
+  @media (min-width: 48rem) {
+    .hero--groot {
+      font-size: var(--step-3);
+    }
+    .hero--groot .hero__kolommen {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
   /* Geen balance/pretty uit reset.css: de regels moeten gewoon vollopen, anders
      verspringt de verdeling bij elke wissel. */

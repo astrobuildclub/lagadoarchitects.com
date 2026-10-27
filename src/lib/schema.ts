@@ -16,7 +16,7 @@ export const PROGRAMMA = ['woning', 'winkel', 'horeca', 'kantoor', 'publiek', 'o
 export const OPDRACHTGEVER_TYPE = ['particulier', 'zakelijk', 'publiek'] as const;
 export const PRIJSKLASSE = ['laag', 'midden', 'hoog'] as const;
 export const BREEDTE = ['content', 'popout', 'feature', 'full'] as const;
-/** Kaartgrootte op de homepage (projectGrid), in kolommen × rijen: klein 2×1, hoog 2×2, toren 2×3, breed 3×1, groot 3×2. */
+/** Kaarthoogte op de homepage (projectGrid): hoog, toren en groot beslaan 2 rijen, de rest 1 (Figma 447:2103). */
 export const HOMEPAGE_GROOTTE = ['mini', 'klein', 'hoog', 'toren', 'breed', 'groot', 'lang'] as const;
 /** Vorm van de kaart in het homeraster; leeg = afgeleid van de eerste `vorm`. */
 export const KAARTVORM = ['ovaal', 'afgerond', 'zacht', 'recht', 'schuin'] as const;
@@ -134,6 +134,8 @@ const projectGridBlock = z.object({
   featured: z.boolean().optional(),
   /** Zoveel kaarten eerst; de rest van de selectie komt per `limit` via "Meer projecten". */
   limit: z.number().optional(),
+  /** `false`: vast aantal (`limit`), geen "Meer projecten"; het raster wordt sluitend gemaakt. */
+  meer: z.boolean().default(true),
   linkNaarOverzicht: link.optional(),
   /** Extra links onder het raster, naast linkNaarOverzicht (bv. naar de diensten op /over). */
   links: z.array(link).default([]),
