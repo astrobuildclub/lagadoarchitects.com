@@ -1,10 +1,13 @@
 ---
-// Opening van een pagina: kop (h1) + 0–5 beelden. Eerste beeld is het LCP-beeld.
+// Opening van een pagina (Figma, home): kolommen met kop (h1), subkop, optioneel adres en een korte
+// tekst, klein naast elkaar; daarna 0–5 beelden. Eerste beeld is het LCP-beeld.
 // Optioneel wisselen woorden na de kop en subkop (`kopWissel`, `subkopWissel`), zie
 // src/scripts/rotating-text.ts. Screenreaders krijgen één vaste zin met alle varianten;
 // zonder JS of met reduced motion staat de eerste variant er stil.
 import Img from '../Img.astro';
 import { resolveImage } from '../../lib/images';
+import { getContact } from '../../lib/content';
+import { md } from '../../lib/markdown';
 import { has, type BlockProps } from './scope';
 
 type Props = BlockProps<'hero'>;
@@ -14,6 +17,8 @@ const images = block.beelden.map((b) => ({ ...b, image: resolveImage(scope, b.sr
 const kopWissel = block.kopWissel.filter(has);
 const subkopWissel = block.subkopWissel.filter(has);
 const wisselt = kopWissel.length > 1 || subkopWissel.length > 1;
+const contact = block.adres ? await getContact() : undefined;
+const tel = contact?.telefoon?.replace(/[^\d+]/g, '').replace('(0)', '');
 
 /** "a, b en c" */
 const zin = (items: string[]) => (items.length < 2 ? items.join('') : `${items.slice(0, -1).join(', ')} en ${items.at(-1)}`);
@@ -26,72 +31,83 @@ const woorden = (phrase: string) => phrase.split(' ').map((w, i, all) => (i < al
 ---
 
 <section class="hero full" data-hero>
-  <div class="wrapper">
-    <h1 class="hero__kop" data-rotate-block>
-      {
-        kopWissel.length > 0 ? (
-          <>
-            <span class="visually-hidden">{plat(block.kop)} {zin(kopWissel)}</span>
-            <span aria-hidden="true" data-rotate data-hold="3" data-uit="0.5" data-leeg="2" data-in="1" data-fade="0.1" data-delay="0.2">
-              {regels(block.kop).map((r, i) => (
-                <>
-                  {i > 0 && <br />}
-                  {r}
-                </>
-              ))}{' '}
-              <span class="hero__wissel" data-words={JSON.stringify(kopWissel)}>
-                {woorden(kopWissel[0]).map((w) => (
-                  <span class="w"><span class="w__i">{w}</span></span>
-                ))}
-              </span>
-            </span>
-          </>
-        ) : (
-          plat(block.kop)
-        )
-      }
-    </h1>
-    {
-      (has(block.subkop) || subkopWissel.length > 0) && (
-        <p class="hero__subkop" data-rotate-block>
-          {subkopWissel.length > 0 ? (
+  <div class="wrapper wrapper--full hero__kolommen">
+    <div class="hero__kolom">
+      <h1 class="hero__kop" data-rotate-block>
+        {
+          kopWissel.length > 0 ? (
             <>
-              <span class="visually-hidden">{block.subkop} {zin(subkopWissel)}</span>
-              <span aria-hidden="true" data-rotate data-hold="4" data-uit="0.125" data-leeg="0.75" data-in="0.25" data-fade="0.3" data-delay="0.6">
-                {block.subkop}{' '}
-                <span class="hero__wissel" data-words={JSON.stringify(subkopWissel)}>
-                  {woorden(subkopWissel[0]).map((w) => (
+              <span class="visually-hidden">{plat(block.kop)} {zin(kopWissel)}</span>
+              <span aria-hidden="true" data-rotate data-hold="3" data-uit="0.5" data-leeg="2" data-in="1" data-fade="0.1" data-delay="0.2">
+                {regels(block.kop).map((r, i) => (
+                  <>
+                    {i > 0 && <br />}
+                    {r}
+                  </>
+                ))}{' '}
+                <span class="hero__wissel" data-words={JSON.stringify(kopWissel)}>
+                  {woorden(kopWissel[0]).map((w) => (
                     <span class="w"><span class="w__i">{w}</span></span>
                   ))}
                 </span>
               </span>
             </>
           ) : (
-            block.subkop
-          )}
-        </p>
-      )
-    }
+            plat(block.kop)
+          )
+        }
+      </h1>
+      {
+        wisselt && (
+          <button type="button" class="hero__pauze" data-rotate-toggle aria-pressed="false" hidden>
+            Animatie pauzeren
+          </button>
+        )
+      }
+    </div>
     {
-      (block.link || wisselt) && (
-        <div class="hero__acties">
+      (has(block.subkop) || subkopWissel.length > 0) && (
+        <div class="hero__kolom">
+          <p class="hero__subkop" data-rotate-block>
+            {subkopWissel.length > 0 ? (
+              <>
+                <span class="visually-hidden">{block.subkop} {zin(subkopWissel)}</span>
+                <span aria-hidden="true" data-rotate data-hold="4" data-uit="0.125" data-leeg="0.75" data-in="0.25" data-fade="0.3" data-delay="0.6">
+                  {block.subkop}{' '}
+                  <span class="hero__wissel" data-words={JSON.stringify(subkopWissel)}>
+                    {woorden(subkopWissel[0]).map((w) => (
+                      <span class="w"><span class="w__i">{w}</span></span>
+                    ))}
+                  </span>
+                </span>
+              </>
+            ) : (
+              block.subkop
+            )}
+          </p>
           {block.link && (
             <a class="hero__link" href={block.link.href}>
               {block.link.label} <span aria-hidden="true">→</span>
             </a>
           )}
-          {wisselt && (
-            <button type="button" class="hero__pauze" data-rotate-toggle aria-pressed="false" hidden>
-              Animatie pauzeren
-            </button>
-          )}
         </div>
       )
     }
+    {
+      contact && (
+        <address class="hero__kolom hero__klein-mobiel">
+          {contact.adres.naam && <>{contact.adres.naam}<br /></>}
+          {contact.adres.straat}<br />
+          {contact.adres.postcode} {contact.adres.plaats}
+          {contact.telefoon && <><br /><a href={`tel:${tel}`}>{contact.telefoon}</a></>}
+        </address>
+      )
+    }
+    {has(block.tekst) && <div class="hero__kolom hero__tekst" set:html={md(block.tekst)} />}
   </div>
   {
     images.length > 0 && (
-      <div class="hero__beelden" data-count={images.length}>
+      <div class="wrapper wrapper--full hero__beelden" data-count={images.length}>
         {images.map((b, i) => (
           <Img src={b.image!} alt={b.alt} priority={i === 0} sizes={i === 0 ? '100vw' : '50vw'} />
         ))}
@@ -105,90 +121,79 @@ const woorden = (phrase: string) => phrase.split(' ').map((w, i, all) => (i < al
 </script>
 
 <style>
+  /* Kolommen klein naast elkaar: 2 op mobiel, vanaf 48rem 4 (Figma). */
   .hero {
-    padding-block-start: var(--page-top);
+    padding-block-start: var(--space-l);
+    font-size: var(--step--1);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.125;
   }
-  .hero .wrapper {
-    /* Ankerpunt voor de meetkloon in rotating-text.ts */
+  .hero__kolommen {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-m);
+  }
+  @media (min-width: 48rem) {
+    .hero__kolommen {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  /* Ankerpunt voor de meetkloon in rotating-text.ts */
+  .hero__kolom {
     position: relative;
   }
   /* Geen balance/pretty uit reset.css: de regels moeten gewoon vollopen, anders
      verspringt de verdeling bij elke wissel. */
   .hero__kop,
   .hero__subkop {
+    margin: 0;
+    font: inherit;
+    letter-spacing: inherit;
     text-wrap: wrap;
   }
-  .hero__kop {
-    /* Mobiel kleiner, vanaf 36rem (zelfde breekpunt als ProjectList) de grote maat. */
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    font-size: min(var(--step-4), 10.5cqi);
-  }
-  @media (min-width: 36rem) {
-    .hero__kop {
-      font-size: min(var(--step-6), 10.5cqi);
-    }
-  }
-  /* Altijd drie regels: "Wij zijn een serieus / buro voor speelse / architectuur".
-     De eerste breuk staat in de content (nieuwe regel in `kop`), het laatste wisselwoord
-     krijgt een eigen regel. Zo staan de twee wisselwoorden altijd op twee regels, ook bij
-     "sportieve landschappen". Regel 1 en 2 zijn ±8,6em breed: de kop krimpt mee met de
-     wrapper (cqi) zodat ze altijd passen. */
-  .hero .wrapper {
-    container-type: inline-size;
-  }
-  .hero__kop .hero__wissel :global(.w:last-child:not(:first-child)) {
+  /* Het wisselwoord staat op een eigen regel. */
+  .hero__wissel {
     display: block;
-    inline-size: fit-content;
   }
-  .hero__subkop {
-    margin-block-start: var(--space-m);
-    font-size: var(--step-2);
-    letter-spacing: -0.02em;
-    line-height: var(--leading-tight);
-  }
-  /* Wisselwoorden: geen kleur maar een dikke onderstreping, met gaten bij staarten (g, j, p). */
-  .hero__wissel :global(.w__i) {
-    text-decoration-line: underline;
-    text-decoration-thickness: 0.07em;
-    text-underline-offset: 0.12em;
-    text-decoration-skip-ink: auto;
-  }
-  .hero__subkop .hero__wissel {
-    font-weight: 600;
-  }
-
-  /* Woord-spans (rotating-text.ts verbergt ze per woord). Gewoon inline, zodat de
-     onderstreping doorloopt. :global omdat het script deze spans aanmaakt. */
+  /* Woord-spans (rotating-text.ts verbergt ze per woord). :global omdat het script ze aanmaakt. */
   .hero__wissel :global(:is(.w, .w__i)) {
     display: inline;
   }
 
-  .hero__acties {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-xs) var(--space-l);
-    margin-block-start: var(--space-l);
+  address {
+    font-style: normal;
   }
-  .hero__link {
-    font-weight: 700;
+  address a {
     text-decoration: none;
   }
-  .hero__link span {
-    display: inline-block;
-    transition: transform var(--duration) var(--ease);
+  /* Adres en tekst op mobiel een stap kleiner, de tekst ook op desktop. */
+  .hero__klein-mobiel,
+  .hero__tekst {
+    font-size: var(--step--2);
   }
-  .hero__link:hover span {
-    transform: translateX(0.2em);
+  @media (min-width: 48rem) {
+    .hero__klein-mobiel {
+      font-size: inherit;
+    }
+  }
+  .hero__tekst :global(p) {
+    margin: 0;
+  }
+
+  .hero__link {
+    display: inline-block;
+    margin-block-start: var(--space-2xs);
+    text-decoration: none;
   }
   .hero__pauze {
-    padding: var(--space-3xs) 0;
+    margin-block-start: var(--space-2xs);
+    padding: 0;
     border: 0;
     background: none;
     color: var(--color-muted);
     font: inherit;
-    font-size: var(--step--1);
+    font-size: var(--step--2);
     text-decoration: underline;
     text-underline-offset: 0.2em;
     cursor: pointer;
@@ -196,15 +201,9 @@ const woorden = (phrase: string) => phrase.split(' ').map((w, i, all) => (i < al
   .hero__pauze[hidden] {
     display: none;
   }
-  @media (prefers-reduced-motion: reduce) {
-    .hero__link span {
-      transition: none;
-    }
-  }
 
   .hero__beelden {
     display: grid;
-    gap: var(--space-2xs);
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
     margin-block-start: var(--space-l);
   }

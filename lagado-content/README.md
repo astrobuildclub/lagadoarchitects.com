@@ -54,7 +54,7 @@ Elk projectbestand heeft dezelfde volgorde als `projecten/_template.md`. Houd di
 | Filters | `vorm`, `kleuren`, `type`, `schaal`, `status`, `opgave`, `materialen`, `prijsklasse` | Factsheet, eerste helft. Elke filterwaarde linkt naar `/projecten` met dat filter aan; materiaal is gewone tekst. Prijsklasse nooit |
 | Projectgegevens | `locatie`, `omvang`, `opdrachtgeverType`, `opdrachtgever`, `bouwteam`, `fotografie`, `jaarOpdracht`, `jaarOplevering`, `programma` | Factsheet, tweede helft. `programma` alleen op de projectkaart |
 | Kleur | `accentkleur`, `kleurpalet` | Accentkleur van de pagina en kleur van de projectkaart, `colors`-blok |
-| Beeld & weergave | `hero`, `featured`, `homepageGrootte`, `volgorde`, `gerelateerd` | Hero-beeld, homepage (`featured`), sortering |
+| Beeld & weergave | `hero`, `featured`, `homepageGrootte`, `kaartvorm`, `volgorde`, `gerelateerd` | Hero-beeld, homepage (`featured`), sortering |
 | Credits, pers & awards | `credits`, `pers`, `awards`, `pressKit` | Onderaan de pagina |
 | | `seo`, `blocks` | Zoekmachines; het verhaal |
 
@@ -86,7 +86,8 @@ Elk projectbestand heeft dezelfde volgorde als `projecten/_template.md`. Houd di
 | `programma` | `woning`, `winkel`, `horeca`, `kantoor`, `publiek`, `openbare-ruimte`, `meubel` (alleen op de projectkaart, geen filter) |
 | `opdrachtgeverType` | `particulier`, `zakelijk`, `publiek` |
 | `prijsklasse` | `laag`, `midden`, `hoog` (optioneel, nooit tonen zonder akkoord) |
-| `homepageGrootte` | `klein` (2×1), `hoog` (2×2), `toren` (2×3), `breed` (3×1), `groot` (3×2) — kolommen × rijen in het homeraster (6 kolommen) |
+| `homepageGrootte` | `mini` (1×1), `klein` (2×1), `hoog` (2×2), `toren` (2×3), `breed` (3×1), `groot` (3×2), `lang` (4×1) — kolommen × rijen in het homeraster (6 kolommen; op mobiel 4 kolommen en alles 2 breed, behalve `lang`) |
+| `kaartvorm` | Optioneel, alleen op de home: `ovaal`, `afgerond`, `zacht`, `recht`, `schuin`. Leeg = uit de eerste `vorm` (`rond` → ovaal, `recht` → zacht, `schuin` → schuin) |
 
 ## Filters op /projecten
 
@@ -109,7 +110,7 @@ Volgens teksten_v4, onder "Ontdek ons werk op vorm, kleur of laat je verrassen."
 | `team` | Personen | `personen[]` |
 | `list` | Pers, awards, prijzenkast | `soort` (`pers`/`awards`), `items[]`, `zichtbaar?` (rest achter "Toon alles") |
 | `cta` | Afsluitende actie | `tekst`, `label`, `href` |
-| `hero` | Opening van een pagina | `kop`, `kopWissel?[]`, `subkop?`, `subkopWissel?[]`, `link?{label,href}`, `beelden[]` (0–5; `project?`, `src`, `alt`) |
+| `hero` | Opening van een pagina, kolommen klein naast elkaar | `kop`, `kopWissel?[]`, `subkop?`, `subkopWissel?[]`, `link?{label,href}`, `adres?` (adres uit contact.md als kolom), `tekst?` (markdown, laatste kolom), `beelden[]` (0–5; `project?`, `src`, `alt`) |
 | `services` | Diensten / principes | `kop?`, `anker?` (bv. `diensten` → `/over#diensten`), `vormen?` (tegels in de drie projectvormen), `items[]` (`titel`, `tekst`) |
 | `logos` | Klant- of perslogo's | `kop?`, `items[]` (`naam`, `logo?{src,alt}`, `href?`) |
 | `downloads` | Bestanden | `kop?`, `items[]` (`label`, `bestand`) |

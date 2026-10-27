@@ -67,7 +67,7 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
             </svg>
           </button>
         </div>
-        <div class="project-filter__body">
+        <div class="project-filter__body" style={`--groepen: ${mainGroups.length + extraGroups.length}`}>
           {[mainGroups, extraGroups].map(
             (groups, i) =>
               groups.length > 0 && (
@@ -89,28 +89,19 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
                       </div>
                     </div>
                   ))}
-                  {i === 0 && (
-                    <div class="project-filter__group project-filter__group--verras">
-                      <span class="project-filter__label" aria-hidden="true">Verrassing</span>
-                      <button type="button" class="verras-knop" data-random disabled>
-                        <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20">
-                          <rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="1.5" />
-                          <circle cx="8" cy="8" r="1.5" fill="currentColor" />
-                          <circle cx="16" cy="8" r="1.5" fill="currentColor" />
-                          <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-                          <circle cx="8" cy="16" r="1.5" fill="currentColor" />
-                          <circle cx="16" cy="16" r="1.5" fill="currentColor" />
-                        </svg>
-                        Verras me
-                      </button>
-                    </div>
-                  )}
                 </div>
               ),
           )}
         </div>
         <div class="project-filter__foot">
           <button type="button" class="button project-filter__show" data-close data-show-count>Toon projecten</button>
+          <button type="button" class="action verras-knop project-filter__verras-overlay" data-random disabled>
+            <svg class="verras-knop__icoon" aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M8.5 14a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3m7 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3M12 10.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3M8.5 7a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3m7 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3" />
+              <path fill-rule="evenodd" d="M18.75 3A2.25 2.25 0 0 1 21 5.25v13.5A2.25 2.25 0 0 1 18.75 21H5.25A2.25 2.25 0 0 1 3 18.75V5.25A2.25 2.25 0 0 1 5.25 3zM5.25 4.5a.75.75 0 0 0-.75.75v13.5c0 .414.336.75.75.75h13.5a.75.75 0 0 0 .75-.75V5.25a.75.75 0 0 0-.75-.75z" clip-rule="evenodd" />
+            </svg>
+            Verras me
+          </button>
         </div>
       </dialog>
     ) : (
@@ -139,8 +130,21 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
       )
     }
     <button type="reset" class="action" data-reset hidden>Wis filters</button>
+    {hasFilters && (
+      <button type="button" class="action verras-knop project-filter__verras" data-random disabled>
+        <svg class="verras-knop__icoon" aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+          <path d="M8.5 14a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3m7 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3M12 10.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3M8.5 7a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3m7 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3" />
+          <path fill-rule="evenodd" d="M18.75 3A2.25 2.25 0 0 1 21 5.25v13.5A2.25 2.25 0 0 1 18.75 21H5.25A2.25 2.25 0 0 1 3 18.75V5.25A2.25 2.25 0 0 1 5.25 3zM5.25 4.5a.75.75 0 0 0-.75.75v13.5c0 .414.336.75.75.75h13.5a.75.75 0 0 0 .75-.75V5.25a.75.75 0 0 0-.75-.75z" clip-rule="evenodd" />
+        </svg>
+        Verras me
+      </button>
+    )}
   </div>
 </form>
+
+<script>
+  import '../scripts/verras-dobbelsteen';
+</script>
 
 <script>
   // Document-listeners (overlay, breakpoint, transitie) per pagina opnieuw koppelen, oude opruimen.
@@ -154,7 +158,7 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
     const { signal } = controller;
     const list = document.getElementById(form.dataset.target!)!;
     const cards = [...list.querySelectorAll<HTMLElement>('.project-card')];
-    // Aantal staat boven de lijst (wat/index.astro), verras-knop in de intro (PageHeader).
+    // Aantal staat boven de lijst (projecten/index.astro); verras-knoppen in de actieregel en de overlay.
     const count = document.querySelector(`[data-count="${form.dataset.target}"]`);
     const extra = form.querySelector<HTMLElement>('[data-extra]');
     const moreButton = form.querySelector<HTMLButtonElement>('[data-more]');
@@ -351,7 +355,8 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
     flex-direction: column;
     align-items: start;
   }
-  /* Verras me: een echte knop met dobbelsteen, net als de opties kale tekst. */
+  /* Verras me: een echte knop met dobbelsteen. Rechts in de actieregel, in de overlay
+     onder "Toon projecten". Bij hover speelt de dobbelsteen een Lottie-animatie af. */
   .verras-knop {
     display: inline-flex;
     align-items: center;
@@ -364,22 +369,65 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
     cursor: pointer;
   }
   .verras-knop:enabled:hover {
-    text-decoration: underline;
+    text-decoration-color: var(--color-line);
   }
   .verras-knop:disabled {
     color: var(--color-muted);
     cursor: default;
+  }
+  .verras-knop__icoon {
+    flex: none;
+  }
+  /* Lottie-versie (scripts/verras-dobbelsteen.ts): vervangt het icoon zodra hij geladen is.
+     :global omdat het script de elementen aanmaakt; kleur volgt de tekst. */
+  .verras-knop :global(.verras-knop__lottie) {
+    display: none;
+    flex: none;
+    inline-size: 20px;
+    block-size: 20px;
+  }
+  .verras-knop[data-lottie='klaar'] :global(.verras-knop__lottie) {
+    display: block;
+  }
+  .verras-knop[data-lottie='klaar'] .verras-knop__icoon {
+    display: none;
+  }
+  .verras-knop :global(.verras-knop__lottie [fill]:not([fill='none'])) {
+    fill: currentColor;
+  }
+  .verras-knop :global(.verras-knop__lottie [stroke]:not([stroke='none'])) {
+    stroke: currentColor;
+  }
+  .project-filter__verras {
+    margin-inline-start: auto;
+  }
+  .project-filter__verras-overlay {
+    display: flex;
+    justify-content: center;
+    inline-size: 100%;
+    min-block-size: 2.75rem;
+    margin-block-start: var(--space-2xs);
   }
   .verras-knop:focus-visible {
     outline: 2px solid var(--color-focus);
     outline-offset: 2px;
   }
 
-  /* "Verfijn" dicht: Vorm, Kleur en Verras me verdeeld over de volle breedte. */
-  .project-filter__body:not(:has(.project-filter__extra.is-open)) {
-    grid-template-columns: none;
-    grid-auto-flow: column;
-    grid-auto-columns: 1fr;
+  /* "Verfijn" dicht en smal: Vorm en Kleur naast elkaar over de volle breedte.
+     Vanaf 64rem een vast raster met een kolom per groep (--groepen): open zijn alle groepen
+     even breed en loopt de laatste tegen de rechterkant; dicht staan Vorm en Kleur in de
+     eerste twee kolommen, op dezelfde plek als wanneer alles open is. */
+  @media (width < 64rem) {
+    .project-filter__body:not(:has(.project-filter__extra.is-open)) {
+      grid-template-columns: none;
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr;
+    }
+  }
+  @media (min-width: 64rem) {
+    .project-filter__body {
+      grid-template-columns: repeat(var(--groepen), minmax(0, 1fr));
+    }
   }
 
   /* Kleuren compact: alleen de swatch, naam en aantal voor screenreaders (visually-hidden)
@@ -434,6 +482,12 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
     text-underline-offset: 0.3em;
     transition: text-decoration-color var(--duration) var(--ease);
   }
+  /* Tekstopties als lopende tekst: een lang label ("Papieren werkelijkheid") breekt om
+     en het aantal loopt er direct achter, in plaats van als losse kolom ernaast. */
+  .option:not(.option--kleur) {
+    display: block;
+    padding-block: 0.2em;
+  }
   .option input {
     position: absolute;
     inset: 0;
@@ -486,6 +540,12 @@ const hasFilters = mainGroups.length + extraGroups.length > 0;
     gap: 0 var(--space-m);
     padding-block: var(--space-2xs);
     border-block-end: var(--border-width) solid var(--color-line);
+  }
+  /* Desktop: de lijn onder de actieregel alleen als "Verfijn" open is. */
+  @media (min-width: 40rem) {
+    .project-filter:not(:has(.project-filter__extra.is-open)) .project-filter__bar {
+      border-block-end-color: transparent;
+    }
   }
   .action {
     padding: 0;

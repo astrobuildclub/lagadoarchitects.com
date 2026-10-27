@@ -6,12 +6,10 @@ seo:
   beschrijving: ""
 
 blocks:
-  # 1. Hero: payoff met wisselende woorden + beeldraster. Eerste beeld laadt eager (LCP).
+  # 1. Intro (Figma): vier kolommen klein. Kop en subkop met wisselende woorden, adres, herkomst van de naam.
   - type: hero
-    kop: |-                            # verplicht; een nieuwe regel hier = nieuwe regel op de site
-      Wij zijn een serieus
-      bureau voor
-    kopWissel:                         # optioneel; de eerste staat er vast, daarna harde wissel per zin
+    kop: Wij zijn een serieus bureau voor  # verplicht; het wisselwoord staat op een eigen regel
+    kopWissel:                         # optioneel; de eerste staat er vast, daarna wissel per zin
       - speelse architectuur
       - kleurrijke interieurs
       - uitdagende landschappen
@@ -21,31 +19,33 @@ blocks:
       - ruimtes die verrassen
     subkop: We ontwerpen               # optioneel
     subkopWissel:
+      - van nok tot fundering
       - van bed tot flat
       - van deur tot dorp
       - van kelder tot kap
       - van plank tot plein
       - van tegel tot tuin
       - van stoel tot stad
-    link: { label: over ons, href: /over }
-    beelden: []                        # 0–5 beelden, verwijzing naar projectbeeld. Uitgezet: direct het projectraster.
-    #  - { project: workhome-playhome, src: 01.jpg, alt: "Woonkamer met oranje en roze wanden, de trap als sculptuur erboven en een lange eettafel" }
+    adres: true                        # adres uit contact.md als derde kolom
+    tekst: |                           # optioneel, vierde kolom (bron: teksten_v4, voorheen de uitsmijter in de footer)
+      LAGADO is een verwijzing naar The Grand Academy of Lagado uit Gulliver’s Travels. Daar
+      werkte een architect die probeerde om huizen te bouwen, beginnend bij de nok en eindigend
+      met de fundering. Onze naam is een ode aan deze onbevangen, creatieve en optimistische
+      houding. Net als hij zoeken we naar onverwachte ruimtelijke oplossingen en denken we
+      altijd in mogelijkheden.
+    beelden: []                        # 0–5 beelden; uitgezet: direct het projectraster.
 
-  # 2. Mantra: groot en vet (bron: teksten_v4).
-  - type: statement
-    tekst: Vorm, kleur, gelaagdheid. Ruimtes die verrassen.
-
-  # 3. Geselecteerd werk: projecten met `featured: true`, op `volgorde`. homepageGrootte stuurt het raster.
-  #    Eerst `limit` kaarten, daarna per `limit` meer via de knop "Meer projecten".
+  # 2. Geselecteerd werk: projecten met `featured: true`, op `volgorde`. Per project kiest
+  #    `homepageGrootte` de maat en `kaartvorm` de vorm. Eerst `limit` kaarten, daarna "Meer projecten".
   - type: projectGrid
     kop: ""                            # leeg = geen sectietitel
     featured: true
     limit: 12
-    linkNaarOverzicht: { label: Bekijk meer projecten, href: /projecten }
+    linkNaarOverzicht: { label: alle projecten, href: /projecten }
     links:
-      - { label: Of ontdek hoe we je kunnen helpen, href: /over#diensten }
+      - { label: over, href: /over }
 
-  # 4. Afsluiter
+  # 3. Afsluiter
   - type: cta
     tekst: Een project in gedachten?
     label: Neem contact op

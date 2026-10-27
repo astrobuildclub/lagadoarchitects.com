@@ -1,6 +1,6 @@
 # lagadoarchitects.com
 
-> Nieuwe website voor LAGADO architects (Rotterdam): portfolio, bureau en contact — "een serieus buro voor speelse architectuur".
+> Nieuwe website voor LAGADO architects (Rotterdam): portfolio, bureau en contact — "een serieus bureau voor speelse architectuur".
 
 | | |
 |---|---|

@@ -55,31 +55,37 @@ const links = [...(block.linkNaarOverzicht ? [block.linkNaarOverzicht] : []), ..
 </script>
 
 <style>
-  /* Breakout: over de volle paginabreedte, alleen de gutter eraf (gelijk met header en logo). */
+  /* Breakout: over de volle paginabreedte, alleen de gutter eraf (gelijk met header en footer). */
   .project-grid {
     padding-inline: var(--gutter);
   }
   .project-grid > * + * {
-    margin-block-start: var(--space-m);
+    margin-block-start: var(--space-l);
   }
-  /* Knoppen onder het raster: onder elkaar op mobiel, vanaf 48rem naast elkaar, elk de helft. */
+  /* Knoppen onder het raster (Figma): grijze pillen naast elkaar, even breed, zonder gap. */
   .project-grid__acties {
     display: grid;
-    gap: var(--space-s);
-    margin-block-start: var(--space-xl);
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
   }
   .project-grid__acties .button {
     justify-content: center;
+    padding: var(--space-l) var(--space-s);
+    border: 0;
+    border-radius: var(--space-3xl);
+    background: var(--color-surface);
+    color: var(--color-fg);
+    font-size: var(--step--1);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.125;
+  }
+  .project-grid__acties .button:hover {
+    background: var(--color-fg);
+    color: var(--color-bg);
   }
   /* .button is inline-flex en zou `hidden` anders overschrijven. */
   .project-grid__acties .button[hidden] {
     display: none;
-  }
-  @media (min-width: 48rem) {
-    .project-grid__acties {
-      /* Zichtbare knoppen naast elkaar, even breed. */
-      grid-auto-flow: column;
-      grid-auto-columns: 1fr;
-    }
   }
 </style>

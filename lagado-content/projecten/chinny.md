@@ -36,6 +36,7 @@ kleurpalet: []
 hero: { src: 01.jpg, alt: "Schets van het restaurant met een lichtblauwe trap, lange tafels en planten" }
 featured: true
 homepageGrootte: hoog
+kaartvorm: ovaal                     # Figma home
 volgorde: 11
 gerelateerd: []
 

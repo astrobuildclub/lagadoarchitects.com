@@ -65,10 +65,12 @@ const sizes = block.kolommen === 2 ? '(min-width: 48rem) 50vw, 100vw' : '(min-wi
 
       const show = (i: number) => {
         current = (i + slides.length) % slides.length;
+        // Het getoonde beeld en de buren laden, zodat vorige/volgende direct klaarstaan.
+        const buren = [current, (current + 1) % slides.length, (current - 1 + slides.length) % slides.length];
         slides.forEach((slide, n) => {
           slide.hidden = n !== current;
           const img = slide.querySelector('img')!;
-          if (n === current && !img.src) img.src = img.dataset.src!;
+          if (buren.includes(n) && !img.src) img.src = img.dataset.src!;
         });
         counter.textContent = `${current + 1} / ${slides.length}`;
       };
@@ -147,12 +149,30 @@ const sizes = block.kolommen === 2 ? '(min-width: 48rem) 50vw, 100vw' : '(min-wi
   .lightbox__stage figure {
     display: grid;
     justify-items: center;
+    gap: var(--space-2xs);
     max-block-size: 100%;
     min-block-size: 0;
   }
+  /* display: grid hierboven overschrijft anders het hidden-attribuut: dan staan alle dia's
+     tegelijk in beeld (de nog niet geladen als kapot beeld met alt-tekst). */
+  .lightbox__stage figure[hidden] {
+    display: none;
+  }
   .lightbox__stage img {
+    max-inline-size: 100%;
     max-block-size: calc(100dvh - 8rem);
+    inline-size: auto;
+    block-size: auto;
     object-fit: contain;
+  }
+  .lightbox__stage figcaption {
+    font-size: var(--step--1);
+    color: var(--color-muted);
+    text-align: center;
+  }
+  /* Pagina eronder scrolt niet mee zolang de viewer open is. */
+  :global(html:has(dialog.lightbox[open])) {
+    overflow: hidden;
   }
   .lightbox__controls {
     display: flex;
@@ -161,10 +181,30 @@ const sizes = block.kolommen === 2 ? '(min-width: 48rem) 50vw, 100vw' : '(min-wi
     align-items: center;
     gap: var(--space-s);
   }
+  .lightbox__controls {
+    font-size: var(--step--1);
+  }
+  .lightbox__controls [data-counter] {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+  /* Zelfde grijze pillen als de knoppen onder het homeraster. */
   .lightbox__controls button {
-    padding: var(--space-3xs) var(--space-s);
-    border: var(--border-width) solid currentColor;
-    background: none;
+    min-block-size: 2.75rem;
+    padding: var(--space-2xs) var(--space-m);
+    border: 0;
+    border-radius: var(--space-3xl);
+    background: var(--color-surface);
+    font-weight: 500;
     cursor: pointer;
+    transition: background var(--duration) var(--ease), color var(--duration) var(--ease);
+  }
+  .lightbox__controls button:hover {
+    background: var(--color-fg);
+    color: var(--color-bg);
+  }
+  .lightbox__controls button:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
   }
 </style>
