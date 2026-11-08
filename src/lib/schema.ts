@@ -268,6 +268,10 @@ export const settingsSchema = z.object({
     titelPatroon: z.string().default('%s'),
     beschrijving: text,
     deelAfbeelding: imageRef.pick({ src: true, alt: true }).optional(),
+    /** Bovenaan /llms.txt. */
+    llmsIntro: text,
+    /** Uit = trainingscrawlers geweerd in robots.txt. */
+    aiTraining: z.boolean().default(true),
   }),
   projecten: z
     .object({ intro: rich, toonPrijsfilter: z.boolean().default(false) })

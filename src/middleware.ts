@@ -10,7 +10,7 @@ import { PREVIEW_COOKIE, isValidPreviewCookie, runWithVisualEditing } from './li
 const CDN_CACHE = 'public, durable, s-maxage=300, stale-while-revalidate=86400';
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  // Geprerenderde routes (404, robots.txt) en de build: geen request-headers, geen preview.
+  // Geprerenderde routes (404) en de build: geen request-headers, geen preview.
   if (context.isPrerendered) return next();
 
   // De ondertekende cookie is de beveiliging; Sec-Fetch-Dest beperkt het tot de iframe van de Presentation tool.
