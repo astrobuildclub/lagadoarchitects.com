@@ -10,13 +10,14 @@
 | **SLA** | TODO (optioneel, zie voorstel) |
 | **Live** | TODO — domein bij cloud86 (alleen DNS); tijdelijk [lagadoarchitects.netlify.app](https://lagadoarchitects.netlify.app/) |
 | **Netlify** | team All This, site `lagadoarchitects` → [lagadoarchitects.netlify.app](https://lagadoarchitects.netlify.app/) |
-| **CMS** | Geen: content in `lagado-content/` (.md). Sanity volgt later. |
+| **CMS** | Overstap naar Sanity loopt (project `unque637`, Studio op `/admin`; zie `docs/sanity-plan.md`). De site leest tot fase 4 nog uit `lagado-content/` (.md). |
 | **Repo** | [github.com/astrobuildclub/lagadoarchitects.com](https://github.com/astrobuildclub/lagadoarchitects.com) |
 | **Notion** | TODO |
 
 ## Stack
 
-- Astro 7.3 · Node 22 (`.nvmrc`) · static
+- Astro 7.3 · Node 22 (`.nvmrc`) · static, met `@astrojs/netlify` voor de Studio op `/admin`
+- Sanity (`@sanity/astro`, `sanity` v6): schema's in `schema/`, Studio-config in `sanity.config.ts`
 - Styling: CSS + SCSS-tokens via `utopia-core-scss` (OKLCH, fluid type/space, cascade layers). Fonts: ABC Areal + ABC Areal Mono (variabel, self-hosted, niet in git; zie [Fonts](#fonts)). Geen Tailwind.
 - Animatie: GSAP (gebundeld, alleen core) voor de wisseltekst in de hero (`src/scripts/rotating-text.ts`) en paginatransities met Interlude (`curtain`) op `<ClientRouter />`
 - Consent: `vanilla-cookieconsent` v3 + `@orestbida/iframemanager` (gebundeld, geen CDN) · Hosting: Netlify
@@ -28,7 +29,7 @@ nvm use
 npm install
 # fonts: zet de twee woff2's in public/fonts/ (zie Fonts hieronder)
 npm run placeholders   # placeholder-beelden voor wat nog niet is aangeleverd
-cp .env.example .env   # optioneel, alleen voor statistiek
+cp .env.example .env   # alleen als je nog geen .env hebt: statistiek, fonts, Sanity
 npm run dev            # http://localhost:4321
 ```
 
@@ -65,6 +66,7 @@ De licentie (§10) verbiedt fonts in publieke repositories, en deze repo is publ
 ```
 lagado-content/      Content (.md) + beelden + downloads. Zie lagado-content/README.md
                      (input/ = brondocumenten van de klant, niet in git)
+schema/              Sanity-schema's: objects/, blocks/, documents/ (waardenlijsten uit src/lib/waarden.ts)
 scripts/             placeholders.mjs (overschrijft nooit bestaand beeld)
 src/
   content.config.ts  Content collections (glob op lagado-content/)

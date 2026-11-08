@@ -18,14 +18,30 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/netlify": "^8.2.12",
+    "@astrojs/react": "^7.1.4",
     "@astrojs/sitemap": "^3.7.4",
     "@orestbida/iframemanager": "^1.3.0",
+    "@sanity/astro": "^3.6.0",
+    "@sanity/client": "^8.15.0",
+    "@sanity/icons": "^5.3.0",
+    "@sanity/image-url": "^2.1.1",
+    "@sanity/locale-nl-nl": "^1.1.40",
+    "@sanity/preview-url-secret": "^4.1.5",
+    "@sanity/visual-editing": "^6.2.0",
     "astro": "^7.3.6",
+    "astro-portabletext": "^1.0.1",
+    "groq": "^6.22.0",
     "gsap": "^3.15.0",
     "lottie-web": "^5.12.2",
     "marked": "^18.1.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-is": "^19.3.1",
+    "sanity": "^6.22.0",
     "sass": "^1.105.1",
     "sharp": "^0.35.5",
+    "styled-components": "^6.6.0",
     "utopia-core-scss": "^1.3.1",
     "vanilla-cookieconsent": "^3.1.0"
   },
@@ -35,6 +51,9 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@portabletext/markdown": "^2.9.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "typescript": "^6.0.3"
   }
 }

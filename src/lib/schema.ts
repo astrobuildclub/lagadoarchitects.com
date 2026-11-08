@@ -2,24 +2,24 @@
 // en worden later 1-op-1 het Sanity-schema. Wijzig eerst de README, dan dit bestand.
 import { z } from 'astro/zod';
 
-// ── Waardenlijsten ─────────────────────────────────────────
-// Filters op /projecten (Victors eigen woorden, zie README).
-export const TYPE = ['thuiskomen', 'de-hort-op'] as const;
-export const VORM = ['recht', 'rond', 'schuin'] as const;
-export const KLEUR = ['rood', 'oranje', 'geel', 'groen', 'blauw', 'paars', 'roze', 'wit', 'zwart', 'grijs'] as const;
-export const STATUS = ['af', 'bijna', 'opgetekend'] as const;
-export const SCHAAL = ['stoel', 'kamer', 'huis', 'plein'] as const;
-export const OPGAVE = ['interieur', 'verbouw', 'nieuwbouw', 'landschap'] as const;
-export const MATERIAAL = ['hout', 'steen', 'beton', 'glas', 'tegels', 'metaal'] as const;
-
-export const PROGRAMMA = ['woning', 'winkel', 'horeca', 'kantoor', 'publiek', 'openbare-ruimte', 'meubel'] as const;
-export const OPDRACHTGEVER_TYPE = ['particulier', 'zakelijk', 'publiek'] as const;
-export const PRIJSKLASSE = ['laag', 'midden', 'hoog'] as const;
-export const BREEDTE = ['content', 'popout', 'feature', 'full'] as const;
-/** Kaarthoogte op de homepage (projectGrid): hoog, toren en groot beslaan 2 rijen, de rest 1 (Figma 447:2103). */
-export const HOMEPAGE_GROOTTE = ['mini', 'klein', 'hoog', 'toren', 'breed', 'groot', 'lang'] as const;
-/** Vorm van de kaart in het homeraster; leeg = afgeleid van de eerste `vorm`. */
-export const KAARTVORM = ['ovaal', 'afgerond', 'zacht', 'recht', 'schuin'] as const;
+// ── Waardenlijsten (src/lib/waarden.ts, gedeeld met de Studio) ──
+import {
+  BREEDTE,
+  HOMEPAGE_GROOTTE,
+  KAARTVORM,
+  KLEUR,
+  MATERIAAL,
+  OPDRACHTGEVER_TYPE,
+  OPGAVE,
+  PRIJSKLASSE,
+  PROGRAMMA,
+  RESULTAAT,
+  SCHAAL,
+  STATUS,
+  TYPE,
+  VORM,
+} from './waarden';
+export * from './waarden';
 
 // ── Bouwstenen voor velden ─────────────────────────────────
 const text = z.string().optional();
@@ -47,7 +47,7 @@ const persItem = z.object({
 const awardItem = z.object({
   jaar: z.number().optional(),
   naam: text,
-  resultaat: z.enum(['winnaar', 'genomineerd', 'finalist']).optional(),
+  resultaat: z.enum(RESULTAAT).optional(),
   project: text,
 });
 

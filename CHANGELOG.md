@@ -77,6 +77,8 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - `docs/sanity-plan.md`: plan voor de overstap van markdown naar Sanity (server-output, Visual Editing, Portable Text, migratiescript, terugvoeren naar `_standards`).
 - Sanity-variabelen in `.env.example` en de README-tabel.
 - `docs/sanity-plan.md` bijgewerkt naar het contentmodel op `staging` (filters, kaartkleur, hero-wisseltekst, `/over`) en project-id `unque637`.
+- Sanity fase 1: `@sanity/astro`, `sanity` v6, React, `@astrojs/netlify`; Studio op `/admin` (project `unque637`, NL-taal). Site blijft statisch tot de datalaag omgaat.
+- Sanity fase 2: Studio-schema's in `schema/` (project, pagina's, contact, site-instellingen, navigatie, 17 bouwstenen, beeld met verplichte alt of "decoratief", Portable Text). Waardenlijsten verhuisd naar `src/lib/waarden.ts`, gedeeld door Zod en Studio.
 
 ### Opgelost
 - Beeldviewer (gallery-lightbox): alle beelden stonden tegelijk in beeld, de nog niet geladen als kapot beeld met alt-tekst (`display: grid` overschreef `hidden`). Nu één beeld tegelijk, het vorige en volgende worden vooraf geladen, de pagina scrolt niet mee en de knoppen zijn grijze pillen.
