@@ -4,14 +4,16 @@ import type { APIRoute } from 'astro';
 import { loadQuery } from '../lib/sanity/load-query';
 import { SITEMAP_QUERY } from '../lib/sanity/queries';
 
-// Vaste routes; pagina's (Over, Privacy, …) en projecten komen uit Sanity.
-const VAST = ['/', '/projecten', '/contact'];
+// Vaste routes met hun Sanity-document; pagina's (Over, Privacy, …) en projecten komen uit Sanity.
+const VAST: Record<string, string> = { '/': 'page-home', '/projecten': 'projecten', '/contact': 'contact' };
 
 export const GET: APIRoute = async ({ site }) => {
   type Item = { slug: string; _updatedAt: string };
-  const { data } = await loadQuery<{ projecten: Item[]; paginas: Item[] }>({ query: SITEMAP_QUERY });
+  const { data } = await loadQuery<{ vastVerborgen: string[]; projecten: Item[]; paginas: Item[] }>({ query: SITEMAP_QUERY });
   const urls = [
-    ...VAST.map((pad) => ({ loc: new URL(pad, site).href })),
+    ...Object.entries(VAST)
+      .filter(([, id]) => !data.vastVerborgen.includes(id))
+      .map(([pad]) => ({ loc: new URL(pad, site).href })),
     ...data.paginas.map((p) => ({ loc: new URL(`/${p.slug}`, site).href, lastmod: p._updatedAt.slice(0, 10) })),
     ...data.projecten.map((p) => ({ loc: new URL(`/projecten/${p.slug}`, site).href, lastmod: p._updatedAt.slice(0, 10) })),
   ];

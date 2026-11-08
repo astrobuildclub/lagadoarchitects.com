@@ -74,16 +74,23 @@ export const PROJECTS_QUERY = groq`*[_type == "project" && defined(slug.current)
 
 /** Voor de sitemap: alleen wat nodig is. */
 export const SITEMAP_QUERY = groq`{
+  "vastVerborgen": *[_id in ["page-home", "projecten", "contact"] && seo.noindex == true]._id,
   "projecten": *[_type == "project" && defined(slug.current) && seo.noindex != true] { "slug": slug.current, _updatedAt },
   "paginas": *[_type == "page" && defined(slug.current) && seo.noindex != true] { "slug": slug.current, _updatedAt }
 }`;
 
 /** Voor /llms.txt: titel en één regel uitleg per pagina en project. */
 export const LLMS_QUERY = groq`{
+  "vastVerborgen": *[_id in ["page-home", "projecten", "contact"] && seo.noindex == true]._id,
   "paginas": *[_type == "page" && defined(slug.current) && slug.current != "home" && seo.noindex != true] | order(title asc) {
     title, "slug": slug.current, "beschrijving": seo.beschrijving
   },
   "projecten": *[_type == "project" && defined(slug.current) && seo.noindex != true] | order(title asc) {
     title, "slug": slug.current, "beschrijving": coalesce(seo.beschrijving, tagline)
   }
+}`;
+
+/** Voor robots.txt: documenten met "Verbergen voor zoekmachines" aan. Pad wordt in robots.txt.ts opgebouwd. */
+export const VERBORGEN_QUERY = groq`*[seo.noindex == true && _type in ["page", "project", "projectenPagina", "contact"]] {
+  _id, _type, "slug": slug.current
 }`;

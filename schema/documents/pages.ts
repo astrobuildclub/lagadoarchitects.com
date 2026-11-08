@@ -361,6 +361,14 @@ export const siteSettings = defineType({
           type: 'boolean',
           initialValue: true,
         }),
+        defineField({
+          name: 'aiZoeken',
+          title: 'Vindbaar in AI-zoekmachines',
+          description:
+            'ChatGPT, Claude, Perplexity en andere AI-assistenten mogen de site lezen om vragen te beantwoorden, met een link naar de bron. Uit = ze worden allemaal geweerd en de site verschijnt niet meer in hun antwoorden (ook training staat dan uit). Google zelf blijft werken.',
+          type: 'boolean',
+          initialValue: true,
+        }),
       ],
     }),
   ],

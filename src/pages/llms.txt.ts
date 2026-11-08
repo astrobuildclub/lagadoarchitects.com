@@ -9,6 +9,7 @@ import { LLMS_QUERY } from '../lib/sanity/queries';
 
 type Item = { title: string; slug: string; beschrijving?: string | null };
 
+// slug = ID van het Sanity-document (voor "Verbergen voor zoekmachines").
 const VAST: Item[] = [
   { title: 'Projecten', slug: 'projecten', beschrijving: 'Overzicht van alle projecten, te filteren.' },
   { title: 'Contact', slug: 'contact', beschrijving: 'Adres, e-mail en telefoon.' },
@@ -20,7 +21,7 @@ export const GET: APIRoute = async ({ site }) => {
   const [settings, contact, { data }] = await Promise.all([
     getSettings(),
     getContact(),
-    loadQuery<{ paginas: Item[]; projecten: Item[] }>({ query: LLMS_QUERY }),
+    loadQuery<{ vastVerborgen: string[]; paginas: Item[]; projecten: Item[] }>({ query: LLMS_QUERY }),
   ]);
 
   const link = (pad: string, i: Item) => {
@@ -45,7 +46,7 @@ export const GET: APIRoute = async ({ site }) => {
     '',
     "## Pagina's",
     '',
-    ...VAST.map((i) => link(`/${i.slug}`, i)),
+    ...VAST.filter((i) => !data.vastVerborgen.includes(i.slug)).map((i) => link(`/${i.slug}`, i)),
     ...data.paginas.map((i) => link(`/${i.slug}`, i)),
     ...(data.projecten.length ? ['', '## Projecten', '', ...data.projecten.map((i) => link(`/projecten/${i.slug}`, i))] : []),
     '',
