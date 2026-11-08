@@ -18,7 +18,7 @@ const social = c.social.filter((s) => s.href);
 const downloads = c.downloads.map((d) => ({ ...d, url: d.bestand })).filter((d) => d.url);
 ---
 
-<BaseLayout title={pageTitle(settings, c)} description={pageDescription(settings, { ...c, fallbackDescription: platteTekst(c.intro) })}>
+<BaseLayout title={pageTitle(settings, c)} description={pageDescription(settings, { ...c, fallbackDescription: platteTekst(c.intro) })} noindex={c.seo?.noindex}>
   <div class="layout flow">
     <PageHeader title={c.title} intro={c.intro} />
 

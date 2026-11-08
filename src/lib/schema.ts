@@ -53,8 +53,9 @@ export const imageRef = z.object({
 });
 
 const link = z.object({ label: z.string(), href: invulplek });
+/** SEO per document. `noindex`: geen Google, sitemap, llms.txt of AI-crawlers. */
 const seo = z
-  .object({ titel: text, beschrijving: text })
+  .object({ titel: text, beschrijving: text, noindex: z.boolean().optional() })
   .optional();
 
 const persItem = z.object({
@@ -274,6 +275,8 @@ export const settingsSchema = z.object({
     llmsIntro: text,
     /** Uit = trainingscrawlers geweerd in robots.txt. */
     aiTraining: z.boolean().default(true),
+    /** Uit = ook AI-zoekmachines (ChatGPT, Claude, Perplexity) geweerd: de site verschijnt niet meer in hun antwoorden. */
+    aiZoeken: z.boolean().default(true),
   }),
   /** Statistiek: cookieloos (Umami, Plausible) zonder banner, Google Analytics pas na toestemming. */
   analytics: z
@@ -295,7 +298,7 @@ export const pageSchema = z.object({
   /** `blokken`: bouwstenen. `tekst`: één lopende tekst met koppen (`inhoud`), zoals Privacy. */
   template: z.enum(['blokken', 'tekst']).default('blokken'),
   intro: rich,
-  seo: z.object({ titel: text, beschrijving: text, noindex: z.boolean().optional() }).optional(),
+  seo,
   blocks: z.array(block).default([]),
   inhoud: richText.default([]),
   /** Tekstpagina: knop "Cookie-instellingen aanpassen" onderaan (Privacy). */
@@ -307,7 +310,7 @@ export const projectenPaginaSchema = z.object({
   title: z.string().default('Projecten'),
   intro: rich,
   toonPrijsfilter: z.boolean().default(false),
-  seo: z.object({ titel: text, beschrijving: text, noindex: z.boolean().optional() }).optional(),
+  seo,
 });
 
 export const contactSchema = z.object({

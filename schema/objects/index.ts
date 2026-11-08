@@ -247,7 +247,7 @@ export const seo = defineType({
     defineField({
       name: 'noindex',
       title: 'Verbergen voor zoekmachines',
-      description: 'Ook uit de sitemap.',
+      description: 'Niet in Google en de sitemap, niet in /llms.txt, en AI-crawlers (ChatGPT, Claude, Perplexity …) mogen de pagina niet lezen.',
       type: 'boolean',
       initialValue: false,
     }),

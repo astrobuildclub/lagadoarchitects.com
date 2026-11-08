@@ -77,7 +77,7 @@ export const project = defineType({
     defineField({
       name: 'prijsklasse',
       title: 'Prijsklasse',
-      description: 'Nooit getoond zonder akkoord van Victor (Site-instellingen → Projecten).',
+      description: "Nooit getoond zonder akkoord van Victor (Pagina's → Projecten → Prijsklasse tonen).",
       type: 'string',
       group: 'filters',
       options: { list: opties(PRIJSKLASSE), layout: 'radio', direction: 'horizontal' },

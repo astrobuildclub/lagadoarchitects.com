@@ -95,7 +95,7 @@ TODO.md              Openstaande projecttaken
 - Statistiek: Site-instellingen → Statistiek. Umami of Plausible (cookieloos, geen toestemming nodig), of Google Analytics (pas na toestemming, dan wel een banner). Noem de dienst in de privacyverklaring.
 - Cookie-instellingen in footer en op `/privacy`.
 - Doel: WCAG 2.2 AA (semantiek, focus, `prefers-reduced-motion`).
-- SEO: titel + beschrijving, canonical, Open Graph/Twitter, JSON-LD (`ArchitectureFirm` en `WebSite` op elke pagina, `CreativeWork` + breadcrumbs per project), sitemap, `robots.txt` (AI-trainingscrawlers uit te zetten in Site-instellingen → SEO), `llms.txt` (intro in Site-instellingen → SEO).
+- SEO: titel + beschrijving, canonical, Open Graph/Twitter, JSON-LD (`ArchitectureFirm` en `WebSite` op elke pagina, `CreativeWork` + breadcrumbs per project), sitemap, `robots.txt` (AI-training en AI-zoekmachines uit te zetten in Site-instellingen → SEO; pagina's met *Verbergen voor zoekmachines* dicht voor AI-crawlers), `llms.txt` (intro in Site-instellingen → SEO).
 
 ## Deploy
 
