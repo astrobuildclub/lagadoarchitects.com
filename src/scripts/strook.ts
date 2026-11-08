@@ -3,8 +3,8 @@
 // Hoe het werkt:
 // - Desktop (≥ 48rem, zonder reduced motion): de rij schuift mee met het scrollen van de pagina, zonder
 //   de pagina vast te zetten (geen pin, dus geen scroll-jacking). ScrollTrigger koppelt de scrollpositie
-//   aan `x` van de rij (`scrub`): komt de sectie onderin beeld, dan staat de rij aan het begin; verlaat
-//   hij bovenin het beeld, dan staat de laatste kaart rechts in het raster. `scrub: 0.6` laat de rij
+//   aan `x` van de rij (`scrub`) tussen START en EIND: daarvoor staat de rij aan het begin, daarna staat
+//   de laatste kaart rechts in het raster. `scrub: 0.6` laat de rij
 //   0,6 s naijlen, zodat hij zacht meebeweegt in plaats van schokkerig met elke scrolltik.
 // - Mobiel en met reduced motion: een gewone swipe-carousel (CSS scroll-snap); hier niets te animeren.
 // - In beide gevallen: een kaart die (deels) buiten het raster staat, krijgt 20% opacity en wordt
@@ -21,6 +21,10 @@ gsap.registerPlugin(ScrollTrigger);
 const SCRUB = '(min-width: 48rem) and (prefers-reduced-motion: no-preference)';
 const SWIPE = '(max-width: 47.99rem), (prefers-reduced-motion: reduce)';
 const MIN = 0.2;
+// Bereik van de beweging: begint als de bovenkant van de sectie op 60% van het scherm staat (ruim in beeld)
+// en is klaar als de onderkant daar staat, zodat je de laatste kaart nog helemaal ziet staan.
+const START = 'top 60%';
+const EIND = 'bottom 60%';
 
 let teardown: (() => void) | undefined;
 
@@ -58,8 +62,8 @@ function strook(sectie: HTMLElement, mm: gsap.MatchMedia) {
       onUpdate: update,
       scrollTrigger: {
         trigger: sectie,
-        start: 'top 85%',
-        end: 'bottom 15%',
+        start: START,
+        end: EIND,
         scrub: 0.6,
         invalidateOnRefresh: true,
         onRefresh: update,
