@@ -176,6 +176,39 @@ export const contact = defineType({
   preview: { prepare: () => ({ title: 'Contact' }) },
 });
 
+/** Projectoverzicht op /projecten: intro, filterinstellingen en SEO. Vaste ID, de projecten zelf staan onder Projecten. */
+export const PROJECTEN_ID = 'projecten';
+
+export const projectenPagina = defineType({
+  name: 'projectenPagina',
+  title: 'Projectenpagina',
+  type: 'document',
+  groups: seoGroups,
+  fields: [
+    defineField({ name: 'title', title: 'Titel', type: 'string', group: 'content', initialValue: 'Projecten', validation: (r) => r.required() }),
+    defineField({
+      name: 'intro',
+      title: 'Intro',
+      description: 'Een link naar #verras wordt de knop "Verras me".',
+      type: 'richText',
+      group: 'content',
+    }),
+    defineField({
+      name: 'toonPrijsfilter',
+      title: 'Prijsklasse tonen',
+      description: 'Alleen met akkoord van Victor.',
+      type: 'boolean',
+      group: 'content',
+      initialValue: false,
+    }),
+    defineField({ name: 'seo', title: 'SEO', type: 'seo', group: 'seo' }),
+  ],
+  preview: {
+    select: { title: 'title' },
+    prepare: ({ title }) => ({ title: title || 'Projecten', subtitle: '/projecten' }),
+  },
+});
+
 /** Site-instellingen (standards/SANITY.md §1, met de Nederlandse veldnamen van dit project). */
 export const siteSettings = defineType({
   name: 'siteSettings',
@@ -185,7 +218,6 @@ export const siteSettings = defineType({
     { name: 'algemeen', title: 'Algemeen', default: true },
     { name: 'menu', title: 'Menu' },
     { name: 'footer', title: 'Footer' },
-    { name: 'projecten', title: 'Projecten' },
     { name: 'statistiek', title: 'Statistiek' },
     { name: 'seo', title: 'SEO' },
   ],
@@ -295,27 +327,6 @@ export const siteSettings = defineType({
               if ((ctx.parent as { dienst?: string })?.dienst !== 'google') return true;
               return /^G-[A-Z0-9]+$/.test(v ?? '') ? true : 'Een meet-ID begint met G-';
             }),
-        }),
-      ],
-    }),
-    defineField({
-      name: 'projecten',
-      title: 'Projectoverzicht',
-      type: 'object',
-      group: 'projecten',
-      fields: [
-        defineField({
-          name: 'intro',
-          title: 'Intro op /projecten',
-          description: 'Een link naar #verras wordt de knop "Verras me".',
-          type: 'richText',
-        }),
-        defineField({
-          name: 'toonPrijsfilter',
-          title: 'Prijsklasse tonen',
-          description: 'Alleen met akkoord van Victor.',
-          type: 'boolean',
-          initialValue: false,
         }),
       ],
     }),

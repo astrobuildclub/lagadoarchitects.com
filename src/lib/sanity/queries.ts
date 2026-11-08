@@ -51,6 +51,8 @@ export const HOME_QUERY = groq`*[_id == "page-home"][0] ${PAGE}`;
 
 export const PAGE_QUERY = groq`*[_type == "page" && slug.current == $slug][0] ${PAGE}`;
 
+export const PROJECTEN_PAGINA_QUERY = groq`*[_id == "projecten"][0] { title, intro, toonPrijsfilter, seo }`;
+
 export const CONTACT_QUERY = groq`*[_id == "contact"][0] {
   ...,
   "sfeerbeeld": sfeerbeeld { ${IMG} },

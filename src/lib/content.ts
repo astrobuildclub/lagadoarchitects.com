@@ -4,9 +4,10 @@
 import { stegaClean } from '@sanity/client/stega';
 import { loadQuery } from './sanity/load-query';
 import { parse } from './sanity/normalize';
-import { CONTACT_QUERY, HOME_QUERY, PAGE_QUERY, PROJECTS_QUERY, SETTINGS_QUERY } from './sanity/queries';
+import { CONTACT_QUERY, HOME_QUERY, PAGE_QUERY, PROJECTEN_PAGINA_QUERY, PROJECTS_QUERY, SETTINGS_QUERY } from './sanity/queries';
 import {
   contactSchema,
+  projectenPaginaSchema,
   pageSchema,
   projectSchema,
   settingsSchema,
@@ -15,6 +16,7 @@ import {
   type ListItem,
   type Page,
   type Project,
+  type ProjectenPagina,
   type Settings,
 } from './schema';
 
@@ -33,6 +35,11 @@ export async function getHome(): Promise<Page> {
 export async function getPage(slug: string): Promise<Page | undefined> {
   const { data } = await loadQuery({ query: PAGE_QUERY, params: { slug } });
   return data ? parse(pageSchema, data, `Pagina /${slug}`) : undefined;
+}
+
+export async function getProjectenPagina(): Promise<ProjectenPagina> {
+  const { data } = await loadQuery({ query: PROJECTEN_PAGINA_QUERY });
+  return parse(projectenPaginaSchema, data, 'Projectenpagina');
 }
 
 export async function getContact(): Promise<Contact> {

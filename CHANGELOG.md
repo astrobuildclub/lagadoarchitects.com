@@ -13,6 +13,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Schakelaar *AI-modellen mogen de content gebruiken voor training* (Site-instellingen → SEO). Uit = trainingscrawlers geweerd in `robots.txt`; AI-zoekcrawlers blijven welkom.
 
 ### Gewijzigd
+- Projectenoverzicht is een eigen pagina onder *Pagina's* (document `projecten`, type *Projectenpagina*) met titel, intro, prijsfilter en SEO. De tab Projecten in de site-instellingen is weg. Omzetten: `scripts/sanity/2026-11-08-projectenpagina.ts`.
 - `robots.txt` wordt per request opgebouwd (instelling uit Sanity) en sluit `/admin` en `/api/` uit.
 - Studio: alle pagina's onder *Pagina's* (Home, Contact, Over, Privacy) en zelf nieuwe pagina's aanmaken, met URL en template *Bouwstenen* of *Tekst*. Privacy is een tekstpagina (koppen in de tekst, knop Cookie-instellingen aan te zetten). Nieuwe route `src/pages/[slug].astro`; `over.astro` en `privacy.astro` weg.
 - Menu en footer in de site-instellingen; het document *Navigatie en footer* is weg. Footer = vier invulbare kolommen (`#cookies` wordt de knop Cookie-instellingen).
