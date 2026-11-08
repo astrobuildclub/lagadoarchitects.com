@@ -2,6 +2,11 @@
 // Laadt cookie-consent + iframemanager (zie src/lib/consent.ts). Draait opnieuw na elke
 // page swap van de ClientRouter, zodat nieuwe video-embeds de juiste status krijgen.
 // De keuze voor statistiek komt uit de site-instellingen (Statistiek).
+// CSS in de frontmatter: Astro zet hem als <link>/<style> in de <head> van elke pagina.
+// Vanuit het <script> geïmporteerd voegt Vite hem in dev pas via JavaScript toe; faalt dat script
+// (bv. 504 Outdated Optimize Dep), dan staat de video-melding onopgemaakt in de pagina.
+import 'vanilla-cookieconsent/dist/cookieconsent.css';
+import '@orestbida/iframemanager/dist/iframemanager.css';
 import type { ConsentConfig } from '../lib/consent';
 import type { Settings } from '../lib/schema';
 
@@ -18,8 +23,6 @@ const config: ConsentConfig = {
 <script type="application/json" id="consent-config" set:html={JSON.stringify(config)} />
 
 <script>
-  import 'vanilla-cookieconsent/dist/cookieconsent.css';
-  import '@orestbida/iframemanager/dist/iframemanager.css';
   import { initConsent, type ConsentConfig } from '../lib/consent';
 
   const config = (): ConsentConfig => JSON.parse(document.getElementById('consent-config')?.textContent || '{}');

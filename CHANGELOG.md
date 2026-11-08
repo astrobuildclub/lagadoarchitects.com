@@ -8,6 +8,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 ## [Unreleased]
 
 ### Toegevoegd
+- Video's tonen vóór toestemming de thumbnail van YouTube/Vimeo als placeholder (iframemanager `thumbnailUrl`), opgehaald via `/api/video-thumbnail/<dienst>/<id>`: de browser van de bezoeker praat niet met YouTube of Vimeo tot er toestemming is. Eigen posterbeeld gaat voor.
 - `/llms.txt`: wie LAGADO is plus een index van pagina's en projecten voor AI-assistenten. Intro in de Studio (Site-instellingen → SEO → *Intro voor AI-assistenten*).
 - JSON-LD `WebSite` op elke pagina; `ArchitectureFirm` staat nu ook op elke pagina (niet alleen de home), zodat de verwijzingen vanuit projecten kloppen.
 - Schakelaar *AI-modellen mogen de content gebruiken voor training* (Site-instellingen → SEO). Uit = trainingscrawlers geweerd in `robots.txt`; AI-zoekcrawlers blijven welkom.
@@ -21,6 +22,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Consent slimmer: geen banner vooraf; video's vragen toestemming op de video zelf. Statistiek kies je in de Studio (Site-instellingen → Statistiek): Umami of Plausible cookieloos zonder banner, Google Analytics alleen na toestemming (dan wel een banner, intrekken wist de cookies). `PUBLIC_ANALYTICS_*` vervallen.
 
 ### Opgelost
+- Video-melding stond in dev soms onopgemaakt: de CSS van cookieconsent en iframemanager werd via het script geladen. Nu in de frontmatter, dus altijd in de `<head>`.
 - "Cookie-instellingen" (footer, privacypagina) werkte niet na navigeren binnen de site: cookieconsent koppelt knoppen maar één keer. Nu één listener op het document.
 - Cookie-voorkeuren in donkere modus: titel van een categorie viel weg bij hover (licht vlak, witte tekst).
 - Bestaande content omgezet met `scripts/sanity/2026-11-08-paginas-en-footer.ts`; `npm run migrate` weigert nu zonder `--overschrijf-sanity`.

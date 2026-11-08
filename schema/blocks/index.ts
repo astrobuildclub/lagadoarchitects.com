@@ -112,7 +112,7 @@ export const video = defineType({
   fields: [
     defineField({ name: 'url', title: 'YouTube- of Vimeo-URL', type: 'url', validation: (r) => r.required() }),
     defineField({ name: 'titel', title: 'Titel', type: 'string', validation: (r) => r.required() }),
-    defineField({ name: 'poster', title: 'Posterbeeld', description: 'Eigen beeld; we laden geen thumbnails van YouTube of Vimeo.', type: 'beeld' }),
+    defineField({ name: 'poster', title: 'Posterbeeld', description: 'Leeg = de thumbnail van YouTube of Vimeo, opgehaald via onze eigen server (bezoekers praten vóór toestemming niet met YouTube of Vimeo).', type: 'beeld' }),
     defineField({ name: 'caption', title: 'Onderschrift', type: 'string' }),
   ],
   preview: { select: { title: 'titel', media: 'poster' }, prepare: ({ title, media }) => ({ title, subtitle: 'Video', media }) },

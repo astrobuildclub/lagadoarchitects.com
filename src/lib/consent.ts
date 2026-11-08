@@ -1,5 +1,5 @@
 // Cookie-consent (vanilla-cookieconsent v3) + AVG-vriendelijke embeds (iframemanager).
-// Gebundeld via npm (geen CDN), Nederlands, geen thumbnails van YouTube/Vimeo vóór toestemming.
+// Gebundeld via npm (geen CDN), Nederlands. Thumbnails van YouTube/Vimeo via onze eigen server, nooit rechtstreeks.
 //
 // Slim: toestemming vragen we pas als er iets is dat het nodig heeft.
 // - Video's: de vraag staat op de video zelf ("Video laden" / "Altijd toestaan"). Geen banner vooraf.
@@ -61,12 +61,16 @@ const iframeConfig = (privacyHref: string) => ({
   services: {
     youtube: {
       embedUrl: 'https://www.youtube-nocookie.com/embed/{data-id}',
+      // Placeholder via onze eigen server (src/pages/api/video-thumbnail): geen contact met YouTube vóór toestemming.
+      // Een eigen posterbeeld (data-thumbnail) gaat voor.
+      thumbnailUrl: '/api/video-thumbnail/youtube/{data-id}',
       iframe: { allow: 'accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen;' },
       cookie: { name: 'cc_youtube' },
       languages: notice('YouTube', privacyHref),
     },
     vimeo: {
       embedUrl: 'https://player.vimeo.com/video/{data-id}?dnt=1',
+      thumbnailUrl: '/api/video-thumbnail/vimeo/{data-id}',
       iframe: { allow: 'fullscreen; picture-in-picture;' },
       cookie: { name: 'cc_vimeo' },
       languages: notice('Vimeo', privacyHref),

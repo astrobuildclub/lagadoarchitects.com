@@ -1,6 +1,6 @@
 ---
 // YouTube/Vimeo via iframemanager: er wordt niets van de dienst geladen tot de bezoeker
-// toestemming geeft (klik of cookie-instellingen). Poster = eigen beeld, geen externe thumbnail.
+// toestemming geeft (klik of cookie-instellingen). Poster = eigen beeld, anders de thumbnail van de dienst via /api/video-thumbnail (thumbnailUrl in consent.ts).
 import { imageUrl } from '../../lib/sanity/image';
 import { has, type BlockProps } from './scope';
 
@@ -17,6 +17,7 @@ function parse(url: string): { service: 'youtube' | 'vimeo'; id: string } | unde
 
 const video = parse(block.url);
 if (!video && block.url) console.warn(`[video] Onbekende video-url: ${block.url}`);
+// Eigen posterbeeld; leeg = iframemanager gebruikt thumbnailUrl uit consent.ts (via onze eigen server).
 const poster = block.poster ? imageUrl(block.poster, 1600) : undefined;
 ---
 
