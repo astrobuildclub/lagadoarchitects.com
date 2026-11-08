@@ -1,7 +1,11 @@
 ---
 // Pers of awards. `toonUit: bureau` haalt de items uit de list-blokken van bureau.md.
 // Placeholder-items uit het sjabloon (jaar 0000, lege velden) worden niet getoond.
-// `zichtbaar`: de eerste n items staan er direct, de rest zit in een <details> "Toon alles".
+// `zichtbaar`: de eerste n items staan er direct, de rest komt erbij met "Toon alles".
+//
+// Layout (Figma "persblok"): vanaf 48rem twee gelijke kolommen. Kop en tekst staan rechts; het jaar staat
+// links, rechts uitgelijnd en op de basislijn van de eerste regel. Lijn boven elk item, alleen rechts.
+// Smaller: één kolom, jaar klein boven de tekst.
 import ListItem from '../ListItem.astro';
 import { cleanItems, getProjects, itemsFromPage } from '../../lib/content';
 import { has, type BlockProps } from './scope';
@@ -17,47 +21,167 @@ const items = (block.limit ? source.slice(0, block.limit) : source).map((item) =
   resultaat: block.soort === 'awards' ? item.resultaat : undefined,
   project: projects.find((p) => p.slug === item.project),
 }));
-const eerst = block.zichtbaar ? items.slice(0, block.zichtbaar) : items;
-const rest = block.zichtbaar ? items.slice(block.zichtbaar) : [];
+const zichtbaar = block.zichtbaar && block.zichtbaar < items.length ? block.zichtbaar : items.length;
+const meer = items.length > zichtbaar;
+const id = `lijst-${Math.random().toString(36).slice(2, 8)}`;
 ---
 
 {
   items.length > 0 && (
-    <section class="list">
-      {has(block.kop) && <h2>{block.kop}</h2>}
-      <ul role="list">
-        {eerst.map((item) => <ListItem {...item} />)}
-      </ul>
-      {rest.length > 0 && (
-        <details class="list__meer">
-          <summary>Toon alles ({items.length})</summary>
-          <ul role="list">
-            {rest.map((item) => <ListItem {...item} />)}
-          </ul>
-        </details>
+    <section class="list feature">
+      <div class="list__grid">
+        {has(block.kop) && <h2 class="list__kop">{block.kop}</h2>}
+        <ul role="list" id={id}>
+          {items.map((item, i) => <ListItem {...item} meer={i >= zichtbaar} />)}
+        </ul>
+        {meer && (
+          <div class="list__meer">
+            <button type="button" class="list__toon" aria-controls={id} aria-expanded="false" data-toon-alles>
+              Toon alles ({items.length})
+            </button>
+          </div>
+        )}
+      </div>
+      {meer && (
+        <noscript>
+          <style>{`.list-item[data-meer] { display: grid !important; } .list__meer { display: none; }`}</style>
+        </noscript>
       )}
     </section>
   )
 }
 
+<script>
+  // "Toon alles": de verborgen items erbij, focus naar het eerste nieuwe item. Na elke page swap opnieuw.
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll<HTMLButtonElement>('[data-toon-alles]').forEach((knop) => {
+      knop.addEventListener('click', () => {
+        const lijst = document.getElementById(knop.getAttribute('aria-controls') ?? '');
+        const verborgen = lijst?.querySelectorAll<HTMLElement>('[data-meer]');
+        if (!verborgen?.length) return;
+        verborgen.forEach((li) => (li.hidden = false));
+        knop.closest('.list__meer')?.remove();
+        const eerste = verborgen[0].querySelector<HTMLElement>('a') ?? verborgen[0];
+        if (eerste === verborgen[0]) eerste.tabIndex = -1;
+        eerste.focus();
+      });
+    });
+  });
+</script>
+
 <style>
+  .list {
+    container-type: inline-size;
+  }
+  .list__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    column-gap: var(--space-m);
+  }
+  .list__kop {
+    margin-block-end: var(--space-m);
+    font-size: var(--step-1);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0;
+  }
   ul {
-    margin-block-start: var(--space-s);
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
   }
-  .list__meer ul {
-    margin-block-start: 0;
+
+  /* Item: smal = jaar boven de tekst, lijn boven het hele item. */
+  .list :global(.list-item) {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+    gap: var(--space-3xs);
+    padding-block: var(--space-m);
+    border-block-start: var(--border-width) solid var(--color-line);
   }
-  .list__meer summary {
-    padding-block: var(--space-2xs);
+  .list :global(.list-item[hidden]) {
+    display: none;
+  }
+  .list :global(.list-item__jaar) {
     font-family: var(--font-mono);
     font-size: var(--step--1);
-    cursor: pointer;
+    line-height: 1.2;
+    color: var(--color-muted);
+    font-variant-numeric: tabular-nums;
   }
-  .list__meer summary:focus-visible {
+  .list :global(.list-item__jaar:empty) {
+    display: none;
+  }
+  .list :global(.list-item__inhoud) {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: var(--space-m);
+  }
+  .list :global(.list-item__tekst) {
+    font-size: var(--step-1);
+    line-height: 1.2;
+    text-wrap: pretty;
+  }
+  .list :global(:is(.list-item__tekst a, .list-item__project)),
+  .list__toon {
+    color: inherit;
+    text-decoration-line: underline;
+    text-decoration-thickness: from-font;
+    text-underline-position: from-font;
+  }
+  .list :global(.list-item__project),
+  .list__toon {
+    font-size: var(--step-0);
+    line-height: 1.2;
+  }
+  .list :global(:is(.list-item__tekst a, .list-item__project):hover),
+  .list__toon:hover {
+    text-decoration-thickness: 2px;
+  }
+  .list :global(:is(.list-item a, .list-item[tabindex]):focus-visible),
+  .list__toon:focus-visible {
     outline: 2px solid var(--color-focus);
     outline-offset: 2px;
   }
-  .list__meer[open] summary {
-    color: var(--color-muted);
+
+  .list__meer {
+    padding-block: var(--space-m);
+    border-block-start: var(--border-width) solid var(--color-line);
+  }
+  .list__toon {
+    min-block-size: 1.5rem; /* raakvlak ≥ 24px (WCAG 2.5.8) */
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  /* Breed: twee gelijke kolommen; kop, tekst en "Toon alles" rechts, jaar links rechts uitgelijnd. */
+  @container (min-width: 48rem) {
+    .list__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .list__kop,
+    .list__meer {
+      grid-column: 2;
+    }
+    .list :global(.list-item) {
+      align-items: baseline;
+      gap: 0 var(--space-m);
+      padding-block: 0;
+      border: 0;
+    }
+    .list :global(.list-item__jaar) {
+      display: block;
+      text-align: end;
+    }
+    .list :global(.list-item__inhoud) {
+      grid-column: 2;
+      padding-block: var(--space-m);
+      border-block-start: var(--border-width) solid var(--color-line);
+    }
   }
 </style>

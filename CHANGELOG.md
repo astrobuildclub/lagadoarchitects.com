@@ -19,6 +19,8 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Schakelaar *AI-modellen mogen de content gebruiken voor training* (Site-instellingen → SEO). Uit = trainingscrawlers geweerd in `robots.txt`; AI-zoekcrawlers blijven welkom.
 
 ### Gewijzigd
+- Blok *Pers of awards* volgt het Figma-persblok: vanaf 48rem twee gelijke kolommen, jaar (mono, step--1) links rechts uitgelijnd op de basislijn, tekst in step-1, projectlink onderstreept, lijn boven elk item. Mobiel: jaar klein boven de tekst. "Toon alles" is een knop die de rest erbij zet (zonder JavaScript staat alles er).
+- Lijnkleur (`--color-line`) in het lichte thema naar `#f4f4f4` (Figma).
 - Projectenoverzicht is een eigen pagina onder *Pagina's* (document `projecten`, type *Projectenpagina*) met titel, intro, prijsfilter en SEO. De tab Projecten in de site-instellingen is weg. Omzetten: `scripts/sanity/2026-11-08-projectenpagina.ts`.
 - `robots.txt` wordt per request opgebouwd (instelling uit Sanity) en sluit `/admin` en `/api/` uit.
 - Studio: alle pagina's onder *Pagina's* (Home, Contact, Over, Privacy) en zelf nieuwe pagina's aanmaken, met URL en template *Bouwstenen* of *Tekst*. Privacy is een tekstpagina (koppen in de tekst, knop Cookie-instellingen aan te zetten). Nieuwe route `src/pages/[slug].astro`; `over.astro` en `privacy.astro` weg.

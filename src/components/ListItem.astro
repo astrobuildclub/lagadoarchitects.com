@@ -1,5 +1,6 @@
 ---
-// Eén regel in een pers- of awardlijst (blocks/List.astro): jaar, titel (evt. link), resultaat, project.
+// Eén regel in een pers- of awardlijst (blocks/List.astro): jaar, tekst (evt. link), resultaat, project.
+// Layout (twee kolommen vanaf 48rem) staat in List.astro: de li is een subgrid van de lijst.
 import { label } from '../lib/labels';
 
 interface Props {
@@ -8,36 +9,19 @@ interface Props {
   url?: string;
   resultaat?: string;
   project?: { slug: string; title: string };
+  /** Achter "Toon alles": verborgen tot de knop is ingedrukt. */
+  meer?: boolean;
 }
-const { jaar, titel, url, resultaat, project } = Astro.props;
+const { jaar, titel, url, resultaat, project, meer = false } = Astro.props;
 ---
 
-<li class="list-item">
-  {jaar ? <span class="list-item__jaar">{jaar}</span> : null}
-  <span class="list-item__titel">
-    {url ? <a href={url} rel="noopener">{titel}</a> : titel}
-    {resultaat && <span class="muted"> ({label(resultaat)})</span>}
-  </span>
-  {project && <a class="list-item__project muted" href={`/projecten/${project.slug}`}>{project.title}</a>}
+<li class="list-item" hidden={meer} data-meer={meer || undefined}>
+  <span class="list-item__jaar">{jaar ?? ''}</span>
+  <div class="list-item__inhoud">
+    <p class="list-item__tekst">
+      {url ? <a href={url} rel="noopener">{titel}</a> : titel}
+      {resultaat && <span class="muted"> ({label(resultaat)})</span>}
+    </p>
+    {project && <a class="list-item__project" href={`/projecten/${project.slug}`}>{project.title}</a>}
+  </div>
 </li>
-
-<style>
-  .list-item {
-    display: grid;
-    grid-template-columns: 4rem 1fr;
-    gap: var(--space-2xs) var(--space-s);
-    padding-block: var(--space-2xs);
-    border-block-end: var(--border-width) solid var(--color-line);
-  }
-  .list-item__jaar {
-    color: var(--color-muted);
-    font-variant-numeric: tabular-nums;
-  }
-  .list-item__titel {
-    grid-column: 2;
-  }
-  .list-item__project {
-    grid-column: 2;
-    font-size: var(--step--1);
-  }
-</style>
