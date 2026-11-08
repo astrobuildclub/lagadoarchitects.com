@@ -84,10 +84,12 @@ export const columns = defineType({
   title: 'Beeld naast tekst',
   type: 'object',
   fields: [
+    defineField({ name: 'image', title: 'Beeld', description: 'Staand werkt het best (3:4). Op mobiel staat het beeld altijd boven de tekst.', type: 'beeld', validation: (r) => r.warning('Voeg een beeld toe, anders staat de tekst alleen.') }),
+    defineField({ name: 'beeldPositie', title: 'Beeld', type: 'string', options: { list: opties(['links', 'rechts']), layout: 'radio', direction: 'horizontal' }, initialValue: 'links' }),
     kop,
-    tekst(),
-    defineField({ name: 'image', title: 'Beeld', type: 'beeld', validation: (r) => r.required() }),
-    defineField({ name: 'beeldPositie', title: 'Beeld', type: 'string', options: { list: opties(['links', 'rechts']), layout: 'radio', direction: 'horizontal' }, initialValue: 'rechts' }),
+    defineField({ name: 'intro', title: 'Intro', description: 'Groter dan de tekst eronder. Eén alinea.', type: 'richText' }),
+    tekst('Tekst', false),
+    defineField({ name: 'kolommen', title: 'Tekst in twee kolommen', description: 'Elke alinea een eigen kolom. Op mobiel onder elkaar.', type: 'boolean', initialValue: false }),
   ],
   preview: { select: { title: 'kop', media: 'image' }, prepare: ({ title, media }) => ({ title: title || 'Beeld naast tekst', subtitle: 'Beeld naast tekst', media }) },
 });

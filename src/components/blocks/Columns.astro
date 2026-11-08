@@ -1,50 +1,110 @@
 ---
-// Beeld naast tekst (bv. verhaal per ruimte). Op smalle schermen beeld boven tekst.
+// Beeld naast tekst (Figma "Waarom samenwerken?"): twee gelijke kolommen, beeld links of rechts (staand, 3:4),
+// tekst onderaan uitgelijnd. Kop (step-4) → intro (step-1) → tekst (step-0), de tekst eventueel in twee kolommen.
+// Op mobiel staat het beeld altijd boven de tekst en de tekst onder elkaar. Zonder beeld staat de tekst alleen.
 import Img from '../Img.astro';
 import RichText from '../RichText.astro';
 import { has, type BlockProps } from './scope';
 
 type Props = BlockProps<'columns'>;
 const { block } = Astro.props;
-const image = block.image.src;
+const beeld = block.image?.src ? block.image : undefined;
 ---
 
-<section class:list={['columns', 'feature', { 'columns--links': block.beeldPositie === 'links' }]}>
-  <div class="columns__tekst">
-    {has(block.kop) && <h2 class="columns__kop">{block.kop}</h2>}
-    <div class="prose"><RichText value={block.tekst} /></div>
-  </div>
+<section class="columns feature">
+  <div class:list={['columns__grid', { 'columns--rechts': block.beeldPositie === 'rechts', 'columns--zonder-beeld': !beeld }]}>
   {
-    image && (
+    beeld && (
       <figure class="columns__beeld">
-        <Img src={image} alt={block.image.alt} sizes="(min-width: 48rem) 50vw, 100vw" />
-        {has(block.image.caption) && <figcaption>{block.image.caption}</figcaption>}
+        <Img src={beeld.src} alt={beeld.alt} sizes="(min-width: 48rem) 50vw, 100vw" />
+        {has(beeld.caption) && <figcaption>{beeld.caption}</figcaption>}
       </figure>
     )
   }
+  <div class="columns__tekst">
+    {has(block.kop) && <h2 class="columns__kop">{block.kop}</h2>}
+    {block.intro.length > 0 && <div class="columns__intro"><RichText value={block.intro} /></div>}
+    {block.tekst.length > 0 && (
+      <div class:list={['columns__body', { 'columns__body--kolommen': block.kolommen }]}>
+        <RichText value={block.tekst} />
+      </div>
+    )}
+  </div>
+  </div>
 </section>
 
 <style>
   .columns {
+    container-type: inline-size;
+  }
+  .columns__grid {
     display: grid;
-    gap: var(--space-m-xl);
-    align-items: center;
+    gap: var(--space-m);
+  }
+  .columns__beeld img {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+  }
+  .columns__beeld figcaption {
+    margin-block-start: var(--space-2xs);
+    font-size: var(--step--1);
+    color: var(--color-muted);
+  }
+  .columns__tekst {
+    display: grid;
+    gap: var(--space-s);
   }
   .columns__kop {
-    font-size: var(--step-2);
-    margin-block-end: var(--space-s);
+    font-size: var(--step-4);
+    font-weight: 400;
+    line-height: 1.125;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
   }
-  @media (min-width: 48rem) {
-    .columns {
-      grid-template-columns: 1fr 1fr;
-    }
-    .columns--links .columns__beeld {
-      order: -1;
-    }
+  .columns__intro,
+  .columns__body {
+    line-height: 1.33;
+    text-wrap: pretty;
   }
-  @media (max-width: 47.99rem) {
-    .columns__beeld {
-      order: -1;
+  .columns__intro {
+    font-size: var(--step-1);
+  }
+  .columns__intro :global(p + p) {
+    margin-block-start: var(--space-s);
+  }
+  /* Ruimte intro → tekst (space-m) bovenop de gap van de kolom (space-s). */
+  .columns__intro + .columns__body {
+    margin-block-start: calc(var(--space-m) - var(--space-s));
+  }
+  .columns__body {
+    display: grid;
+    gap: var(--space-m);
+    font-size: var(--step-0);
+    align-items: start;
+  }
+  .columns__body :global(p) {
+    margin: 0;
+  }
+
+  @container (min-width: 48rem) {
+    .columns__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: end;
+    }
+    .columns--rechts .columns__beeld {
+      order: 1;
+    }
+    .columns--zonder-beeld.columns--rechts .columns__tekst {
+      grid-column: 1;
+    }
+    .columns--zonder-beeld:not(.columns--rechts) .columns__tekst {
+      grid-column: 2;
+    }
+    .columns__body--kolommen {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 </style>

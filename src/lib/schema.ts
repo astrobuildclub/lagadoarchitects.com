@@ -113,8 +113,10 @@ const galleryBlock = z.object({
 const columnsBlock = z.object({
   type: z.literal('columns'),
   kop: text,
+  intro: richText.default([]),
   tekst: richText.default([]),
-  image: imageRef,
+  kolommen: z.boolean().default(false),
+  image: imageRef.optional(),
   beeldPositie: z.enum(['links', 'rechts']).default('rechts'),
 });
 
