@@ -9,7 +9,7 @@ const page = await getHome();
 const hasHero = page.blocks[0]?.type === 'hero';
 ---
 
-<BaseLayout title={pageTitle(settings, page, true)} description={pageDescription(settings, page)}>
+<BaseLayout title={pageTitle(settings, page, true)} description={pageDescription(settings, page)} noindex={page.seo?.noindex}>
   <div class="layout flow home">
     {!hasHero && <h1 class="visually-hidden">{settings.siteNaam}</h1>}
     <BlockRenderer blocks={page.blocks} />
