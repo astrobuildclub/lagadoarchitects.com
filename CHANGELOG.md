@@ -8,6 +8,8 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 ## [Unreleased]
 
 ### Toegevoegd
+- Videoblok: veld *Verhouding* (standaard *Automatisch*). Automatisch = Vimeo via oEmbed (dichtstbijzijnde verhouding), YouTube Shorts 9:16, anders 16:9. Staande video's worden niet hoger dan ~80% van het scherm (`src/lib/video.ts`).
+- Video's spelen direct af na een klik op "Video laden" of "Altijd toestaan", alleen de aangeklikte video. Er speelt nooit meer dan één video tegelijk: start er een, dan pauzeren de andere (YouTube en Vimeo, via postMessage, zonder extra scripts; `src/lib/video-player.ts`).
 - Video's tonen vóór toestemming de thumbnail van YouTube/Vimeo als placeholder (iframemanager `thumbnailUrl`), opgehaald via `/api/video-thumbnail/<dienst>/<id>`: de browser van de bezoeker praat niet met YouTube of Vimeo tot er toestemming is. Eigen posterbeeld gaat voor.
 - Video-placeholder in de stijl van de site: overlay in de projectkleur (`--accent`), tekst en knoppen in `--accent-tekst`, knoppen rond (`--im-*` gekoppeld aan de site-tokens in `CookieConsent.astro`), zichtbare focusring.
 - `/llms.txt`: wie LAGADO is plus een index van pagina's en projecten voor AI-assistenten. Intro in de Studio (Site-instellingen → SEO → *Intro voor AI-assistenten*).

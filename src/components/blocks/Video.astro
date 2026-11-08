@@ -1,40 +1,39 @@
 ---
 // YouTube/Vimeo via iframemanager: er wordt niets van de dienst geladen tot de bezoeker
 // toestemming geeft (klik of cookie-instellingen). Poster = eigen beeld, anders de thumbnail van de dienst via /api/video-thumbnail (thumbnailUrl in consent.ts).
+// Verhouding: keuze in de Studio, of automatisch (src/lib/video.ts). Afspelen en "één tegelijk": src/lib/video-player.ts.
+import { stegaClean } from '@sanity/client/stega';
 import { imageUrl } from '../../lib/sanity/image';
+import { isStaand, parseVideoUrl, videoRatio } from '../../lib/video';
 import { has, type BlockProps } from './scope';
 
 type Props = BlockProps<'video'>;
 const { block } = Astro.props;
 
-function parse(url: string): { service: 'youtube' | 'vimeo'; id: string } | undefined {
-  const yt = url.match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
-  if (yt) return { service: 'youtube', id: yt[1] };
-  const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-  if (vimeo) return { service: 'vimeo', id: vimeo[1] };
-  return undefined;
-}
-
-const video = parse(block.url);
-if (!video && block.url) console.warn(`[video] Onbekende video-url: ${block.url}`);
+const url = stegaClean(block.url);
+const video = parseVideoUrl(url);
+if (!video && url) console.warn(`[video] Onbekende video-url: ${url}`);
+const ratio = video ? await videoRatio(video, stegaClean(block.verhouding)) : '16:9';
+const [rb, rh] = ratio.split(':');
 // Eigen posterbeeld; leeg = iframemanager gebruikt thumbnailUrl uit consent.ts (via onze eigen server).
 const poster = block.poster ? imageUrl(block.poster, 1600) : undefined;
 ---
 
 {
   video && (
-    <figure class="video feature">
+    <figure class:list={['video feature', { 'video--staand': isStaand(ratio) }]} style={`--video-ratio: ${rb} / ${rh}`}>
       <div
         class="video__frame"
         data-service={video.service}
         data-id={video.id}
-        data-title={block.titel}
+        data-title={stegaClean(block.titel).trim()}
         data-thumbnail={poster}
+        data-ratio={ratio}
         data-autoscale
       />
       {has(block.caption) && <figcaption>{block.caption}</figcaption>}
       <noscript>
-        <a href={block.url}>{block.titel} bekijken op {video.service === 'youtube' ? 'YouTube' : 'Vimeo'}</a>
+        <a href={url}>{block.titel} bekijken op {video.service === 'youtube' ? 'YouTube' : 'Vimeo'}</a>
       </noscript>
     </figure>
   )
@@ -43,5 +42,13 @@ const poster = block.poster ? imageUrl(block.poster, 1600) : undefined;
 <style>
   .video__frame {
     background: var(--color-surface);
+  }
+  /* Staand of vierkant: nooit hoger dan ~80% van het scherm, gecentreerd. */
+  .video--staand .video__frame {
+    max-inline-size: min(100%, calc(80svh * (var(--video-ratio))));
+    margin-inline: auto;
+  }
+  .video--staand figcaption {
+    text-align: center;
   }
 </style>

@@ -60,18 +60,19 @@ const iframeConfig = (privacyHref: string) => ({
   currLang: 'nl',
   services: {
     youtube: {
-      embedUrl: 'https://www.youtube-nocookie.com/embed/{data-id}',
+      // enablejsapi: de player praat via postMessage met video-player.ts (autoplay na klik, één tegelijk).
+      embedUrl: () => `https://www.youtube-nocookie.com/embed/{data-id}?enablejsapi=1&origin=${encodeURIComponent(location.origin)}`,
       // Placeholder via onze eigen server (src/pages/api/video-thumbnail): geen contact met YouTube vóór toestemming.
       // Een eigen posterbeeld (data-thumbnail) gaat voor.
       thumbnailUrl: '/api/video-thumbnail/youtube/{data-id}',
-      iframe: { allow: 'accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen;' },
+      iframe: { allow: 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen;' },
       cookie: { name: 'cc_youtube' },
       languages: notice('YouTube', privacyHref),
     },
     vimeo: {
       embedUrl: 'https://player.vimeo.com/video/{data-id}?dnt=1',
       thumbnailUrl: '/api/video-thumbnail/vimeo/{data-id}',
-      iframe: { allow: 'fullscreen; picture-in-picture;' },
+      iframe: { allow: 'autoplay; fullscreen; picture-in-picture;' },
       cookie: { name: 'cc_vimeo' },
       languages: notice('Vimeo', privacyHref),
     },

@@ -24,9 +24,13 @@ const config: ConsentConfig = {
 
 <script>
   import { initConsent, type ConsentConfig } from '../lib/consent';
+  import { initVideoPlayer } from '../lib/video-player';
 
   const config = (): ConsentConfig => JSON.parse(document.getElementById('consent-config')?.textContent || '{}');
-  document.addEventListener('astro:page-load', () => initConsent(config()));
+  document.addEventListener('astro:page-load', () => {
+    initVideoPlayer();
+    initConsent(config());
+  });
 </script>
 
 <style is:global>
