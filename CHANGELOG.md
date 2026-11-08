@@ -75,6 +75,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Fonts: Instrument Sans (variable) en DM Mono (specs/meta), self-hosted via Fontsource.
 - `utopia-core-scss` + Sass: type- en spaceschaal in `tokens.scss` (360→2560, tweakbaar).
 - `docs/sanity-plan.md`: plan voor de overstap van markdown naar Sanity (server-output, Visual Editing, Portable Text, migratiescript, terugvoeren naar `_standards`).
+- Sanity-variabelen in `.env.example` en de README-tabel.
 
 ### Opgelost
 - Beeldviewer (gallery-lightbox): alle beelden stonden tegelijk in beeld, de nog niet geladen als kapot beeld met alt-tekst (`display: grid` overschreef `hidden`). Nu één beeld tegelijk, het vorige en volgende worden vooraf geladen, de pagina scrolt niet mee en de knoppen zijn grijze pillen.

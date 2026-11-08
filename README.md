@@ -42,6 +42,10 @@ Overige scripts: `npm run build`, `npm run preview`, `npm run check`.
 | `PUBLIC_ANALYTICS_DOMAIN` | `data-domain` voor dat script | Idem |
 | `FONTS_URL` | Map-URL waar `scripts/fonts.mjs` de woff2's ophaalt als `public/fonts/` leeg is (Netlify): `https://raw.githubusercontent.com/All-This/fonts/main/abc-areal` | Privé-repo `All-This/fonts` |
 | `FONTS_TOKEN` | Fine-grained GitHub-token, alleen `All-This/fonts`, Contents: Read-only. Geheim, nooit `PUBLIC_`. Verloopt: tijdig vernieuwen. | GitHub → Settings → Developer settings → Fine-grained tokens |
+| `PUBLIC_SANITY_PROJECT_ID` | Sanity-project | sanity.io/manage → project |
+| `PUBLIC_SANITY_DATASET` | Dataset (`production`) | Idem |
+| `SANITY_API_READ_TOKEN` | Server-only token (Viewer) voor Visual Editing | sanity.io/manage → API → Tokens |
+| `SANITY_API_WRITE_TOKEN` | Alleen lokaal (Editor), voor het migratiescript; daarna intrekken | Idem |
 
 Waarden staan nooit in git. Productiewaarden: Netlify → Site configuration → Environment variables (let op deploy contexts).
 
