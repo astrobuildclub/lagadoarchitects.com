@@ -7,7 +7,13 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 
 ## [Unreleased]
 
+### Toegevoegd
+- `/llms.txt`: wie LAGADO is plus een index van pagina's en projecten voor AI-assistenten. Intro in de Studio (Site-instellingen → SEO → *Intro voor AI-assistenten*).
+- JSON-LD `WebSite` op elke pagina; `ArchitectureFirm` staat nu ook op elke pagina (niet alleen de home), zodat de verwijzingen vanuit projecten kloppen.
+- Schakelaar *AI-modellen mogen de content gebruiken voor training* (Site-instellingen → SEO). Uit = trainingscrawlers geweerd in `robots.txt`; AI-zoekcrawlers blijven welkom.
+
 ### Gewijzigd
+- `robots.txt` wordt per request opgebouwd (instelling uit Sanity) en sluit `/admin` en `/api/` uit.
 - Studio: alle pagina's onder *Pagina's* (Home, Contact, Over, Privacy) en zelf nieuwe pagina's aanmaken, met URL en template *Bouwstenen* of *Tekst*. Privacy is een tekstpagina (koppen in de tekst, knop Cookie-instellingen aan te zetten). Nieuwe route `src/pages/[slug].astro`; `over.astro` en `privacy.astro` weg.
 - Menu en footer in de site-instellingen; het document *Navigatie en footer* is weg. Footer = vier invulbare kolommen (`#cookies` wordt de knop Cookie-instellingen).
 - Presentation tool heet weer standaard *Presentation*.

@@ -334,6 +334,22 @@ export const siteSettings = defineType({
         }),
         defineField({ name: 'beschrijving', title: 'Standaardbeschrijving', type: 'text', rows: 3, validation: (r) => r.max(160).warning('Zoekmachines tonen ongeveer 155 tekens') }),
         defineField({ name: 'deelAfbeelding', title: 'Standaard deelafbeelding', description: 'Wordt bijgesneden tot 1200×630. Leeg = /og-default.png.', type: 'beeld' }),
+        defineField({
+          name: 'llmsIntro',
+          title: 'Intro voor AI-assistenten',
+          description:
+            'Twee à drie zinnen: wie, wat, voor wie, waar. Komt bovenaan /llms.txt, de samenvatting die ChatGPT, Claude en Perplexity lezen. Leeg = standaardbeschrijving.',
+          type: 'text',
+          rows: 4,
+        }),
+        defineField({
+          name: 'aiTraining',
+          title: 'AI-modellen mogen de content gebruiken voor training',
+          description:
+            'Uit = trainingscrawlers (GPTBot, ClaudeBot, Google-Extended …) worden geweerd. AI-zoekmachines die naar de site verwijzen blijven altijd welkom.',
+          type: 'boolean',
+          initialValue: true,
+        }),
       ],
     }),
   ],

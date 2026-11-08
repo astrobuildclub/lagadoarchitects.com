@@ -48,6 +48,20 @@ export function organizationJsonLd(settings: Settings, contact: Contact) {
   };
 }
 
+/** JSON-LD voor de site zelf, gekoppeld aan het bureau als uitgever. */
+export function websiteJsonLd(settings: Settings) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${settings.url}/#website`,
+    url: settings.url,
+    name: settings.siteNaam,
+    ...(settings.payoff && { description: settings.payoff }),
+    inLanguage: settings.taal === 'nl' ? 'nl-NL' : settings.taal,
+    publisher: { '@id': `${settings.url}/#organisatie` },
+  };
+}
+
 /** Alle link-URL's in Portable Text (voor `sameAs`). */
 function linksIn(value: RichText): string[] {
   return value.flatMap((b) => ((b.markDefs as { _type?: string; href?: string }[] | undefined) ?? []).filter((d) => d._type === 'link' && d.href).map((d) => stegaClean(d.href!)));

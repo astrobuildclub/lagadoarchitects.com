@@ -75,3 +75,13 @@ export const SITEMAP_QUERY = groq`{
   "projecten": *[_type == "project" && defined(slug.current) && seo.noindex != true] { "slug": slug.current, _updatedAt },
   "paginas": *[_type == "page" && defined(slug.current) && seo.noindex != true] { "slug": slug.current, _updatedAt }
 }`;
+
+/** Voor /llms.txt: titel en één regel uitleg per pagina en project. */
+export const LLMS_QUERY = groq`{
+  "paginas": *[_type == "page" && defined(slug.current) && slug.current != "home" && seo.noindex != true] | order(title asc) {
+    title, "slug": slug.current, "beschrijving": seo.beschrijving
+  },
+  "projecten": *[_type == "project" && defined(slug.current) && seo.noindex != true] | order(title asc) {
+    title, "slug": slug.current, "beschrijving": coalesce(seo.beschrijving, tagline)
+  }
+}`;

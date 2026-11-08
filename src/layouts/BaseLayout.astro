@@ -9,8 +9,7 @@ import SiteMeta from '../components/SiteMeta.astro';
 import { getContact, getSettings } from '../lib/content';
 import VisualEditing from '../lib/sanity/VisualEditing';
 import type { SanityImage } from '../lib/schema';
-import { organizationJsonLd } from '../lib/seo';
-import { cleanPath } from '../lib/url';
+import { organizationJsonLd, websiteJsonLd } from '../lib/seo';
 
 interface Props {
   title: string;
@@ -30,7 +29,8 @@ const { accent, accentTekst, jsonLd = [], ...meta } = Astro.props;
 const accentStijl = [accent && `--accent: ${accent}`, accentTekst && `--accent-tekst: ${accentTekst}`].filter(Boolean).join('; ');
 const settings = await getSettings();
 const contact = await getContact();
-const isHome = cleanPath(Astro.url.pathname) === '/';
+// Bureau en website op elke pagina: projecten en de website verwijzen naar #organisatie.
+const structuredData = [organizationJsonLd(settings, contact), websiteJsonLd(settings), ...jsonLd];
 // Alleen in de iframe van de Presentation tool, met een geldige preview-cookie (middleware.ts).
 const visualEditing = Astro.locals.visualEditing;
 const stats = settings.analytics;
@@ -44,8 +44,9 @@ const stats = settings.analytics;
     <link rel="preload" href="/fonts/ABCArealVariable.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
     <meta name="generator" content={Astro.generator} />
-    <SiteMeta settings={settings} {...meta} jsonLd={[...(isHome ? [organizationJsonLd(settings, contact)] : []), ...jsonLd]} />
+    <SiteMeta settings={settings} {...meta} jsonLd={structuredData} />
 
     <!-- Vóór de eerste paint: data-theme alleen bij handmatige override (anders volgt CSS prefers-color-scheme), en data-js. -->
     <script is:inline>
