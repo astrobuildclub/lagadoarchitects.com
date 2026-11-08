@@ -33,6 +33,8 @@ Lees eerst `README.md` voor context en `CHANGELOG.md` voor recente wijzigingen.
 - **Rich text** is Portable Text, altijd via `<RichText>`. Platte tekst (SEO, JSON-LD): `platteTekst()`.
 - **Nieuw bloktype:** Sanity-objecttype in `schema/blocks/` (naam = `type`; `text` en `image` heten `textBlock`/`imageBlock`) → Zod in `schema.ts` (discriminated union op `type`) → projectie in `BLOCKS` (queries.ts) → `src/components/blocks/X.astro` → case in `BlockRenderer.astro` (de `assertNever` geeft een typefout als je die vergeet).
 - **Invulplekken:** lege velden komen niet uit Sanity mee; Zod vult verplichte-maar-nog-lege velden aan met `""` (`invulplek`). Componenten tonen lege waarden niet (`cleanItems`, `has()`). Lege blokken renderen niets.
+- **Pagina's:** Home (`page-home`, op `/`) en Contact zijn vast; alle andere pagina's maakt de redactie zelf aan en staan op `/<slug>` (`src/pages/[slug].astro`). Nieuwe vaste route? Zet de URL ook in `GERESERVEERD` (`schema/documents/pages.ts`). Menu en footer staan in de site-instellingen.
+- **Content omzetten** na een modelwijziging: een herhaalbaar script in `scripts/sanity/<datum>-<naam>.ts` (patches op de bestaande documenten, drafts meenemen). `npm run migrate` niet meer gebruiken: die overschrijft de Studio.
 - **Prijsklasse** nooit tonen zonder akkoord van Victor (Site-instellingen → Projectoverzicht → Prijsklasse tonen).
 - **Geen contactformulier, geen kaart-iframe** (afspraak in het voorstel).
 - **Consent:** nieuwe embed-dienst = service in `src/lib/consent.ts` (iframemanager + cookieconsent-categorie `media`). Statistiek alleen cookieloos en pas na toestemming.

@@ -76,6 +76,41 @@ export const richText = defineType({
   ],
 });
 
+/** Lopende tekst van een tekstpagina (Privacy): als `richText`, plus koppen. */
+export const richTextPagina = defineType({
+  name: 'richTextPagina',
+  title: 'Tekst met koppen',
+  type: 'array',
+  of: [
+    defineArrayMember({
+      type: 'block',
+      styles: [
+        { title: 'Alinea', value: 'normal' },
+        { title: 'Kop 2', value: 'h2' },
+        { title: 'Kop 3', value: 'h3' },
+      ],
+      lists: [
+        { title: 'Opsomming', value: 'bullet' },
+        { title: 'Genummerd', value: 'number' },
+      ],
+      marks: {
+        decorators: [
+          { title: 'Vet', value: 'strong' },
+          { title: 'Cursief', value: 'em' },
+        ],
+        annotations: [
+          defineArrayMember({
+            name: 'link',
+            title: 'Link',
+            type: 'object',
+            fields: [defineField({ name: 'href', title: 'URL', type: 'string', validation: (r) => r.required() })],
+          }),
+        ],
+      },
+    }),
+  ],
+});
+
 export const link = defineType({
   name: 'link',
   title: 'Link',
@@ -219,4 +254,4 @@ export const seo = defineType({
   ],
 });
 
-export const objects = [beeld, richText, link, kleur, persoon, persItem, awardItem, listItem, downloadItem, seo];
+export const objects = [beeld, richText, richTextPagina, link, kleur, persoon, persItem, awardItem, listItem, downloadItem, seo];

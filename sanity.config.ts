@@ -2,9 +2,7 @@
 // Presentation tool: de site met drafts en klikbare overlays (standards/SANITY.md §3).
 import { nlNLLocale } from '@sanity/locale-nl-nl';
 import { CogIcon } from '@sanity/icons/Cog';
-import { DocumentIcon } from '@sanity/icons/Document';
-import { EnvelopeIcon } from '@sanity/icons/Envelope';
-import { MenuIcon } from '@sanity/icons/Menu';
+import { DocumentsIcon } from '@sanity/icons/Documents';
 import { ProjectsIcon } from '@sanity/icons/Projects';
 import { defineConfig } from 'sanity';
 import { presentationTool } from 'sanity/presentation';
@@ -19,15 +17,9 @@ const dataset = import.meta.env.PUBLIC_SANITY_DATASET || 'production';
 const previewOrigin = typeof location !== 'undefined' ? location.origin : 'http://localhost:4321';
 
 const singletonIds = new Set(Object.keys(SINGLETONS));
-/** Types die alleen als singleton bestaan: geen "nieuw document" in de Studio. */
-const singletonTypes = new Set(['siteSettings', 'navigatie', 'page', 'contact']);
+/** Types die alleen als singleton bestaan: geen "nieuw document" in de Studio. Pagina's kun je wel aanmaken. */
+const singletonTypes = new Set(['siteSettings', 'contact']);
 const singletonActions = new Set(['publish', 'discardChanges', 'restore']);
-
-const icons: Record<string, typeof CogIcon> = {
-  siteSettings: CogIcon,
-  navigatie: MenuIcon,
-  contact: EnvelopeIcon,
-};
 
 export default defineConfig({
   name: 'lagado',
@@ -44,26 +36,30 @@ export default defineConfig({
               .title('Projecten')
               .icon(ProjectsIcon)
               .child(S.documentTypeList('project').title('Projecten').defaultOrdering([{ field: 'volgorde', direction: 'asc' }])),
+            // Alle pagina's in één lijst: Home, Contact, Over, Privacy en wat je zelf toevoegt.
+            // Home en Contact kun je niet verwijderen of dupliceren (vaste ID's, zie SINGLETONS).
+            S.listItem()
+              .title("Pagina's")
+              .id('paginas')
+              .icon(DocumentsIcon)
+              .child(
+                S.documentList()
+                  .title("Pagina's")
+                  .apiVersion('2025-01-01')
+                  .filter('_type in ["page", "contact"]')
+                  .defaultOrdering([{ field: 'title', direction: 'asc' }])
+                  .initialValueTemplates([S.initialValueTemplateItem('page')])
+                  .canHandleIntent((intent, { type }) => ['create', 'edit'].includes(intent) && ['page', 'contact'].includes(type)),
+              ),
             S.divider(),
-            ...(['page-home', 'page-bureau', 'page-privacy', 'contact'] as const).map((id) =>
-              S.listItem()
-                .title(SINGLETONS[id].title)
-                .id(id)
-                .icon(icons[id] ?? DocumentIcon)
-                .child(S.document().schemaType(SINGLETONS[id].type).documentId(id).title(SINGLETONS[id].title)),
-            ),
-            S.divider(),
-            ...(['navigatie', 'siteSettings'] as const).map((id) =>
-              S.listItem()
-                .title(SINGLETONS[id].title)
-                .id(id)
-                .icon(icons[id])
-                .child(S.document().schemaType(SINGLETONS[id].type).documentId(id).title(SINGLETONS[id].title)),
-            ),
+            S.listItem()
+              .title(SINGLETONS.siteSettings.title)
+              .id('siteSettings')
+              .icon(CogIcon)
+              .child(S.document().schemaType('siteSettings').documentId('siteSettings').title(SINGLETONS.siteSettings.title)),
           ]),
     }),
     presentationTool({
-      title: 'Voorbeeld',
       resolve,
       previewUrl: { initial: previewOrigin, previewMode: { enable: '/api/preview', disable: '/api/preview/disable' } },
     }),

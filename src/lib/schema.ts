@@ -187,6 +187,7 @@ const listBlock = z.object({
   kop: text,
   items: z.array(listItem).default([]),
   /** Haal items uit een andere pagina (bv. `bureau`) in plaats van `items`. */
+  /** Slug van de pagina waar de items vandaan komen. */
   toonUit: text,
   limit: z.number().optional(),
   /** Zoveel items direct zichtbaar; de rest achter "Toon alles" (uitklap). */
@@ -261,12 +262,8 @@ export const settingsSchema = z.object({
   taal: z.string().default('nl'),
   url: z.url(),
   navigatie: z.array(link).min(1).max(5),
-  footer: z.object({
-    tekst: text,
-    links: z.array(link).default([]),
-    privacy: z.string(),
-    /** Uitsmijter onderaan de footer (Gulliver). */
-  }),
+  /** Vier kolommen onder het logo (de eerste twee breed). Een link naar #cookies is de knop Cookie-instellingen. */
+  footer: z.object({ kolommen: z.array(z.object({ tekst: richText.default([]) })).max(4).default([]) }).default({ kolommen: [] }),
   seo: z.object({
     titelPatroon: z.string().default('%s'),
     beschrijving: text,
@@ -280,9 +277,16 @@ export const settingsSchema = z.object({
 
 export const pageSchema = z.object({
   title: z.string(),
+  /** Leeg bij de home (die staat op `/`). */
+  slug: text,
+  /** `blokken`: bouwstenen. `tekst`: één lopende tekst met koppen (`inhoud`), zoals Privacy. */
+  template: z.enum(['blokken', 'tekst']).default('blokken'),
   intro: rich,
-  seo,
+  seo: z.object({ titel: text, beschrijving: text, noindex: z.boolean().optional() }).optional(),
   blocks: z.array(block).default([]),
+  inhoud: richText.default([]),
+  /** Tekstpagina: knop "Cookie-instellingen aanpassen" onderaan (Privacy). */
+  cookieKnop: z.boolean().default(false),
 });
 
 export const contactSchema = z.object({

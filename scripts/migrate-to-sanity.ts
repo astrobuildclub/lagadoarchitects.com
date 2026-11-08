@@ -2,7 +2,7 @@
 // Herhaalbaar: vaste document-ID's (createOrReplace), beelden één keer per bestand (Sanity ontdubbelt op inhoud).
 //
 //   npm run migrate -- --dry-run     alleen valideren en tellen, niets uploaden
-//   npm run migrate                  alles naar de dataset uit .env (PUBLIC_SANITY_DATASET)
+//   npm run migrate                  geblokkeerd sinds Sanity de bron is (zie --overschrijf-sanity)
 //
 // Token: SANITY_API_WRITE_TOKEN (rol Editor), alleen lokaal. Nooit in Netlify; na de migratie intrekken.
 import { createHash } from 'node:crypto';
@@ -368,6 +368,11 @@ async function settingsDocs(): Promise<Doc[]> {
 // ── Uitvoeren ─────────────────────────────────────────────
 async function main() {
   if (!DRY && !process.env.SANITY_API_WRITE_TOKEN) throw new Error('SANITY_API_WRITE_TOKEN ontbreekt (rol Editor, alleen lokaal).');
+  // Sinds 8 nov 2026 is Sanity de bron en is de structuur veranderd (scripts/sanity/). Opnieuw draaien
+  // overschrijft alles wat in de Studio is aangepast en zet de oude structuur terug.
+  if (!DRY && !process.argv.includes('--overschrijf-sanity')) {
+    throw new Error('Gestopt: Sanity is de bron. Alleen met --overschrijf-sanity, en dan gaan wijzigingen uit de Studio verloren.');
+  }
 
   const bestanden = readdirSync(path.join(ROOT, 'projecten')).filter((f) => f.endsWith('.md') && f !== '_template.md');
   const slugs = bestanden.filter((f) => !f.startsWith('_')).map((f) => f.replace(/\.md$/, ''));

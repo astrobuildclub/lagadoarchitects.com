@@ -2,20 +2,12 @@
 // en op welke pagina's wordt een document gebruikt ("Used on … pages").
 import { defineDocuments, defineLocations, type PresentationPluginOptions } from 'sanity/presentation';
 
-const PAGINAS = {
-  'page-home': { title: 'Home', href: '/' },
-  'page-bureau': { title: 'Over', href: '/over' },
-  'page-privacy': { title: 'Privacy', href: '/privacy' },
-  contact: { title: 'Contact', href: '/contact' },
-} as const;
-
 export const resolve: PresentationPluginOptions['resolve'] = {
   mainDocuments: defineDocuments([
     { route: '/', filter: `_id == "page-home"` },
-    { route: '/over', filter: `_id == "page-bureau"` },
-    { route: '/privacy', filter: `_id == "page-privacy"` },
     { route: '/contact', filter: `_id == "contact"` },
     { route: '/projecten/:slug', filter: `_type == "project" && slug.current == $slug` },
+    { route: '/:slug', filter: `_type == "page" && slug.current == $slug` },
   ]),
   locations: {
     project: defineLocations({
@@ -29,18 +21,17 @@ export const resolve: PresentationPluginOptions['resolve'] = {
       }),
     }),
     page: defineLocations({
-      select: { id: '_id' },
+      select: { title: 'title', slug: 'slug.current', id: '_id' },
       resolve: (doc) => {
-        const pagina = PAGINAS[(doc?.id ?? '').replace(/^drafts\./, '') as keyof typeof PAGINAS];
-        return pagina ? { locations: [pagina] } : undefined;
+        if ((doc?.id ?? '').replace(/^drafts\./, '') === 'page-home') return { locations: [{ title: 'Home', href: '/' }] };
+        return doc?.slug ? { locations: [{ title: doc.title || doc.slug, href: `/${doc.slug}` }] } : undefined;
       },
     }),
     contact: defineLocations({
       select: { title: 'title' },
-      resolve: () => ({ locations: [PAGINAS.contact, { title: 'Home', href: '/' }] }),
+      resolve: () => ({ locations: [{ title: 'Contact', href: '/contact' }, { title: 'Home', href: '/' }] }),
     }),
-    // Site-brede documenten staan op elke pagina.
-    siteSettings: defineLocations({ message: 'Op elke pagina', tone: 'positive' }),
-    navigatie: defineLocations({ message: 'Header en footer, op elke pagina', tone: 'positive' }),
+    // Menu en footer staan op elke pagina.
+    siteSettings: defineLocations({ message: 'Menu, footer en SEO: op elke pagina', tone: 'positive' }),
   },
 };

@@ -1,11 +1,11 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BlockRenderer from '../components/BlockRenderer.astro';
-import { getPage, getSettings } from '../lib/content';
+import { getHome, getSettings } from '../lib/content';
 import { pageDescription, pageTitle } from '../lib/seo';
 
 const settings = await getSettings();
-const page = await getPage('home');
+const page = await getHome();
 const hasHero = page.blocks[0]?.type === 'hero';
 ---
 

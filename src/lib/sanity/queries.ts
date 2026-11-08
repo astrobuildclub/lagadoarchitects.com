@@ -32,23 +32,24 @@ const BLOCKS = groq`
   _type == "beforeAfter" => { "voor": voor { ${IMG} }, "na": na { ${IMG} } },
   _type == "projectGrid" => { "slugs": slugs[]->slug.current, "filter": filter[] { veld, waarde } },
   _type == "team" => { "personen": personen[] { ..., "foto": foto { ${IMG} } } },
-  _type == "list" => { "items": items[] { ..., "project": project->slug.current } },
+  _type == "list" => { "items": items[] { ..., "project": project->slug.current }, "toonUit": toonUit->slug.current },
   _type == "logos" => { "items": items[] { ..., "logo": logo { ${IMG} } } },
   _type == "downloads" => { "items": items[] { label, "bestand": ${DL} } }
 `;
 
-export const SETTINGS_QUERY = groq`{
-  "instellingen": *[_id == "siteSettings"][0] {
-    ...,
-    seo { ..., "deelAfbeelding": deelAfbeelding { ${IMG} } }
-  },
-  "navigatie": *[_id == "navigatie"][0] { navigatie, footer }
+export const SETTINGS_QUERY = groq`*[_id == "siteSettings"][0] {
+  ...,
+  seo { ..., "deelAfbeelding": deelAfbeelding { ${IMG} } }
 }`;
 
-export const PAGE_QUERY = groq`*[_id == $id][0] {
-  title, intro, seo,
+const PAGE = groq`{
+  title, "slug": slug.current, template, intro, seo, inhoud, cookieKnop,
   "blocks": blocks[] { ${BLOCKS} }
 }`;
+
+export const HOME_QUERY = groq`*[_id == "page-home"][0] ${PAGE}`;
+
+export const PAGE_QUERY = groq`*[_type == "page" && slug.current == $slug][0] ${PAGE}`;
 
 export const CONTACT_QUERY = groq`*[_id == "contact"][0] {
   ...,
@@ -70,4 +71,7 @@ export const PROJECTS_QUERY = groq`*[_type == "project" && defined(slug.current)
 }`;
 
 /** Voor de sitemap: alleen wat nodig is. */
-export const SITEMAP_QUERY = groq`*[_type == "project" && defined(slug.current) && seo.noindex != true] { "slug": slug.current, _updatedAt }`;
+export const SITEMAP_QUERY = groq`{
+  "projecten": *[_type == "project" && defined(slug.current) && seo.noindex != true] { "slug": slug.current, _updatedAt },
+  "paginas": *[_type == "page" && defined(slug.current) && seo.noindex != true] { "slug": slug.current, _updatedAt }
+}`;

@@ -4,7 +4,7 @@
 import { stegaClean } from '@sanity/client/stega';
 import { loadQuery } from './sanity/load-query';
 import { parse } from './sanity/normalize';
-import { CONTACT_QUERY, PAGE_QUERY, PROJECTS_QUERY, SETTINGS_QUERY } from './sanity/queries';
+import { CONTACT_QUERY, HOME_QUERY, PAGE_QUERY, PROJECTS_QUERY, SETTINGS_QUERY } from './sanity/queries';
 import {
   contactSchema,
   pageSchema,
@@ -20,15 +20,19 @@ import {
 
 // ── Documenten ─────────────────────────────────────────────
 export async function getSettings(): Promise<Settings> {
-  const { data } = await loadQuery<{ instellingen: Record<string, unknown> | null; navigatie: Record<string, unknown> | null }>({
-    query: SETTINGS_QUERY,
-  });
-  return parse(settingsSchema, data.instellingen && { ...data.instellingen, ...data.navigatie }, 'Site-instellingen');
+  const { data } = await loadQuery({ query: SETTINGS_QUERY });
+  return parse(settingsSchema, data, 'Site-instellingen');
 }
 
-export async function getPage(id: 'home' | 'bureau' | 'privacy'): Promise<Page> {
-  const { data } = await loadQuery({ query: PAGE_QUERY, params: { id: `page-${id}` } });
-  return parse(pageSchema, data, `Pagina ${id}`);
+export async function getHome(): Promise<Page> {
+  const { data } = await loadQuery({ query: HOME_QUERY });
+  return parse(pageSchema, data, 'Home');
+}
+
+/** Pagina op `/<slug>`; `undefined` als die niet bestaat (dan 404). */
+export async function getPage(slug: string): Promise<Page | undefined> {
+  const { data } = await loadQuery({ query: PAGE_QUERY, params: { slug } });
+  return data ? parse(pageSchema, data, `Pagina /${slug}`) : undefined;
 }
 
 export async function getContact(): Promise<Contact> {
@@ -93,9 +97,10 @@ export const hasContent = (item: Record<string, unknown>) =>
 
 export const cleanItems = <T extends Record<string, unknown>>(items: T[]) => items.filter(hasContent);
 
-/** Pers- of award-items uit de list-blokken van een pagina (voor `toonUit`). */
-export async function itemsFromPage(id: 'home' | 'bureau', soort: 'pers' | 'awards'): Promise<ListItem[]> {
-  const page = await getPage(id);
+/** Pers- of award-items uit de list-blokken van een pagina (voor `toonUit`, de slug van die pagina). */
+export async function itemsFromPage(slug: string, soort: 'pers' | 'awards'): Promise<ListItem[]> {
+  const page = await getPage(slug);
+  if (!page) return [];
   return page.blocks
     .filter((b): b is Extract<Block, { type: 'list' }> => b.type === 'list' && b.soort === soort)
     .flatMap((b) => cleanItems(b.items))

@@ -7,6 +7,12 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 
 ## [Unreleased]
 
+### Gewijzigd
+- Studio: alle pagina's onder *Pagina's* (Home, Contact, Over, Privacy) en zelf nieuwe pagina's aanmaken, met URL en template *Bouwstenen* of *Tekst*. Privacy is een tekstpagina (koppen in de tekst, knop Cookie-instellingen aan te zetten). Nieuwe route `src/pages/[slug].astro`; `over.astro` en `privacy.astro` weg.
+- Menu en footer in de site-instellingen; het document *Navigatie en footer* is weg. Footer = vier invulbare kolommen (`#cookies` wordt de knop Cookie-instellingen).
+- Presentation tool heet weer standaard *Presentation*.
+- Bestaande content omgezet met `scripts/sanity/2026-11-08-paginas-en-footer.ts`; `npm run migrate` weigert nu zonder `--overschrijf-sanity`.
+
 ### Opgelost
 - /projecten: de kaartvorm volgt altijd de `vorm` uit de content, zodat de kaart klopt met het vormfilter (Easehouse, schuin, verscheen rond door `kaartvorm: afgerond`). `kaartvorm` geldt alleen op de home.
 

@@ -1,7 +1,7 @@
 ---
 // Link in Portable Text. Extern: nieuw tabblad is niet nodig, wel `rel` zonder referrer-lek.
 // `#verras` wordt de knop "Verras me" van de projectfilters (ProjectFilter zoekt `[data-random]`);
-// zonder JS blijft hij uitgeschakeld.
+// zonder JS blijft hij uitgeschakeld. `#cookies` wordt de knop Cookie-instellingen (footer).
 import type { Mark } from 'astro-portabletext/types';
 
 type Props = { node: Mark<{ href?: string }> };
@@ -11,7 +11,11 @@ const extern = /^https?:\/\//.test(href);
 ---
 
 {
-  href === '#verras' ? (
+  href === '#cookies' ? (
+    <button type="button" class="link-button" data-cc="show-preferencesModal">
+      <slot />
+    </button>
+  ) : href === '#verras' ? (
     <button type="button" class="verras" data-random disabled>
       <slot />
     </button>
