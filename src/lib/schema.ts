@@ -322,7 +322,7 @@ export const contactSchema = z.object({
   title: z.string(),
   intro: rich,
   tekst: rich,
-  sfeerbeeld: imageRef.pick({ src: true, alt: true }).optional(),
+  sfeerbeeld: imageRef.optional(),
   contactpersoon: z.object({ naam: z.string(), rol: text }).optional(),
   /** Portret met quote van de oprichter. */
   bio: z.object({ kop: text, foto: imageRef.pick({ src: true, alt: true }).optional(), quote: richText.default([]) }).optional(),
