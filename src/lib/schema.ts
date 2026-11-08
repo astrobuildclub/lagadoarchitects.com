@@ -214,7 +214,10 @@ const servicesBlock = z.object({
   anker: text,
   /** Tegels in de kaartvormen (recht, rond, schuin om en om) en accentkleuren. */
   vormen: z.boolean().default(false),
-  items: z.array(z.object({ titel: z.string(), tekst: rich })).default([]),
+  /** raster: tegels (zoals voorheen). beelden: strook met beeld per dienst. vormen: donkere vormen over `achtergrond`. */
+  weergave: z.enum(['raster', 'beelden', 'vormen']).default('raster'),
+  achtergrond: imageRef.optional(),
+  items: z.array(z.object({ titel: z.string(), tekst: rich, beeld: imageRef.optional() })).default([]),
 });
 
 const logosBlock = z.object({

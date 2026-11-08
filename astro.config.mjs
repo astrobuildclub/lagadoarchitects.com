@@ -55,6 +55,7 @@ export default defineConfig({
         '@orestbida/iframemanager',
         'vanilla-cookieconsent',
         'gsap',
+        'gsap/ScrollTrigger',
         'lottie-web/build/player/lottie_light',
       ],
     },

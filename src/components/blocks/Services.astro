@@ -1,13 +1,20 @@
 ---
-// Diensten of principes als tegels. Met `vormen: true` krijgt elke tegel om en om een van de
-// drie projectvormen (styles/vorm.css) en een kleurvlak; de tekstkleur is per vlak gekozen op
-// contrast (WCAG 1.4.3). `anker` maakt de sectie bereikbaar via bv. /over#diensten.
+// Diensten of principes, in drie weergaven:
+// - raster (zoals voorheen): tegels naast elkaar. Met `vormen: true` krijgt elke tegel om en om een van de drie
+//   projectvormen (styles/vorm.css) en een kleurvlak; de tekstkleur is per vlak gekozen op contrast (WCAG 1.4.3).
+// - beelden (Figma 537:2202): een strook kaarten met staand beeld, titel en tekst.
+// - vormen (Figma 539:2357): een strook donkere vormen met titel en tekst over een groot achtergrondbeeld.
+// Een strook schuift op desktop mee met het scrollen en is op mobiel (en met reduced motion) te swipen;
+// kaarten buiten het raster staan op 20% (scripts/strook.ts). `anker` maakt de sectie bereikbaar via bv. /over#diensten.
+import Img from '../Img.astro';
 import RichText from '../RichText.astro';
 import { has, type BlockProps } from './scope';
 
 type Props = BlockProps<'services'>;
 const { block } = Astro.props;
 const VORMEN = ['recht', 'rond', 'schuin'] as const;
+// Figma 539:2357: schuin, rond, recht.
+const STROOKVORMEN = ['schuin', 'rond', 'recht'] as const;
 // Vlak en tekst per tegel, om en om (kleuren uit KLEUR_SWATCH, labels.ts).
 const VLAKKEN = [
   ['oklch(72% 0.18 52)', 'oklch(18% 0 0)'],
@@ -17,11 +24,14 @@ const VLAKKEN = [
   ['oklch(48% 0.2 300)', 'oklch(99% 0 0)'],
   ['oklch(88% 0.17 95)', 'oklch(18% 0 0)'],
 ] as const;
+const strook = block.weergave !== 'raster';
+const achtergrond = block.weergave === 'vormen' && block.achtergrond?.src ? block.achtergrond : undefined;
+const id = has(block.anker) ? block.anker : undefined;
 ---
 
 {
-  block.items.length > 0 && (
-    <section class:list={['services popout', block.vormen && 'services--vormen']} id={has(block.anker) ? block.anker : undefined}>
+  block.items.length > 0 && !strook && (
+    <section class:list={['services popout', block.vormen && 'services--vormen']} id={id}>
       {has(block.kop) && <h2>{block.kop}</h2>}
       <ul role="list">
         {block.items.map((item, i) => (
@@ -37,6 +47,38 @@ const VLAKKEN = [
     </section>
   )
 }
+
+{
+  block.items.length > 0 && strook && (
+    <section class:list={['services services--strook feature', `services--${block.weergave}`, achtergrond && 'services--met-achtergrond']} id={id} data-strook>
+      {has(block.kop) && <h2 class="services__kop">{block.kop}</h2>}
+      <div class="services__vlak">
+        {achtergrond && (
+          <Img src={achtergrond.src} alt={achtergrond.alt} sizes="100vw" class="services__achtergrond" />
+        )}
+        <div class="services__venster" role="region" aria-label={has(block.kop) ? block.kop : 'Diensten'} tabindex="0" data-strook-venster>
+          <ul role="list" class="services__rij" data-strook-rij>
+            {block.items.map((item, i) => (
+              <li class="services__item" data-vorm={block.weergave === 'vormen' ? STROOKVORMEN[i % STROOKVORMEN.length] : undefined}>
+                {block.weergave === 'beelden' && item.beeld?.src && (
+                  <Img src={item.beeld.src} alt={item.beeld.alt} sizes="(min-width: 48rem) 25vw, 75vw" class="services__beeld" />
+                )}
+                <div class="services__tekst">
+                  <h3>{item.titel}</h3>
+                  {has(item.tekst) && <RichText value={item.tekst} />}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<script>
+  import '../../scripts/strook';
+</script>
 
 <style>
   .services {
@@ -77,5 +119,151 @@ const VLAKKEN = [
   }
   .services--vormen h3 {
     font-size: var(--step-1);
+  }
+
+  /* ── Strook (beelden en vormen) ─────────────────────────────────────────────
+     Standaard (mobiel, reduced motion, zonder JS) een swipe-carousel: het venster scrolt horizontaal met
+     scroll-snap en loopt rechts door tot de rand van het scherm. Op desktop zet strook.ts `data-scrub` op
+     de sectie: het venster scrolt dan niet zelf, GSAP schuift de rij mee met het scrollen van de pagina. */
+  .services--strook {
+    container-type: inline-size;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr); /* de rij mag de kolom niet oprekken */
+    gap: var(--space-l);
+  }
+  .services__kop {
+    font-size: var(--step-4);
+    font-weight: 400;
+    line-height: 1.125;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  .services__vlak {
+    position: relative;
+  }
+  .services__venster {
+    /* Rechts doorlopen tot de schermrand; de kaarten blijven links op het raster beginnen. */
+    margin-inline-end: calc(50% - 50vw);
+    padding-inline-end: var(--gutter);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .services__venster::-webkit-scrollbar {
+    display: none;
+  }
+  .services__venster:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 4px;
+  }
+  .services--strook .services__rij {
+    --per-rij: 1.25;
+    display: flex;
+    gap: var(--gutter);
+    margin: 0;
+    inline-size: max-content;
+  }
+  .services__item {
+    flex: 0 0 auto;
+    inline-size: calc((100cqi - (var(--per-rij) - 1) * var(--gutter)) / var(--per-rij));
+    scroll-snap-align: start;
+    transition: opacity 0.3s ease-out;
+  }
+  [data-scrub] .services__item {
+    transition: none; /* GSAP stuurt de opacity al vloeiend aan */
+  }
+  [data-scrub] .services__venster {
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+  .services__item h3 {
+    margin: 0;
+    font-weight: 700;
+  }
+  .services__item :global(p) {
+    margin: 0;
+  }
+
+  /* Beelden (537:2202): staand beeld 150:200, titel vet step--1, tekst step-0. */
+  .services--beelden .services__item {
+    display: grid;
+    align-content: start;
+    gap: var(--space-xs);
+  }
+  /* <Img> is een eigen component: klassen erop vallen buiten de scope, dus :global. */
+  .services__item :global(.services__beeld) {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+    aspect-ratio: 150 / 200;
+    object-fit: cover;
+  }
+  .services--beelden .services__tekst {
+    display: grid;
+    gap: var(--space-2xs);
+    font-size: var(--step-0);
+    line-height: 1.2;
+    text-wrap: pretty;
+  }
+  .services--beelden h3 {
+    font-size: var(--step--1);
+    line-height: 1.2;
+  }
+
+  /* Vormen (539:2357): donkere vormen (≈ 342 × 369) met lichte tekst, gecentreerd, over een achtergrondbeeld.
+     Vaste kleuren, ook in het donkere thema: ze staan op een foto. #121212 / #f2f2f2 ≈ 17:1 (WCAG 1.4.3). */
+  .services--met-achtergrond .services__vlak {
+    padding-block: var(--space-5xl);
+  }
+  .services__vlak :global(.services__achtergrond) {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+  .services--vormen .services__item {
+    display: grid;
+    place-content: center;
+    aspect-ratio: 342 / 369;
+    padding: var(--space-l) var(--space-xl);
+    background: oklch(18.2% 0 0);
+    color: oklch(96% 0 0);
+    text-align: center;
+    hyphens: auto;
+    border-radius: var(--vorm-radius);
+    clip-path: var(--vorm-clip);
+  }
+  .services--vormen .services__item[data-vorm='recht'] {
+    --vorm-radius: var(--space-l);
+  }
+  .services--vormen .services__item[data-vorm='schuin'] {
+    padding-inline: calc(var(--space-l) + var(--vorm-schuin));
+  }
+  .services--vormen .services__tekst {
+    display: grid;
+    gap: var(--space-2xs);
+    font-size: var(--step-0);
+    line-height: 1.2;
+    text-wrap: pretty;
+  }
+  .services--vormen h3 {
+    font-size: var(--step-1);
+    line-height: 1.2;
+  }
+
+  @container (min-width: 32rem) {
+    .services--strook .services__rij {
+      --per-rij: 2.25;
+    }
+  }
+  @container (min-width: 48rem) {
+    .services--beelden .services__rij {
+      --per-rij: 4;
+    }
+    .services--vormen .services__rij {
+      --per-rij: 3;
+    }
   }
 </style>
