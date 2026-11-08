@@ -6,7 +6,10 @@
 //   op; met reduced motion zonder animatie. Aan het begin of eind is de betreffende pijl uitgeschakeld;
 //   past alles in het raster, dan blijven de pijlen verborgen.
 // - Een kaart die (deels) buiten het raster staat, krijgt 20% opacity en wordt naar verhouding
-//   zichtbaarder naarmate hij het raster in schuift: opacity = 0,2 + 0,8 × zichtbaar deel.
+//   zichtbaarder naarmate hij het raster in schuift: opacity = 0,2 + 0,8 × zichtbaar deel. Dat geldt links
+//   (vorige kaarten) en rechts (volgende kaarten): het venster loopt aan beide kanten door tot de schermrand.
+// - Klik op een gedimde kaart (`data-buiten`): de carousel schuift precies zo ver dat die kaart in het raster
+//   staat. Alleen voor de muis; met het toetsenbord gaan de pijlen.
 // - ClientRouter: start op astro:page-load, ruimt op bij astro:before-swap.
 const MIN = 0.2;
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -28,6 +31,7 @@ function strook(sectie: HTMLElement): () => void {
       const binnen = Math.max(0, Math.min(r.right, raster.right + 1) - Math.max(r.left, raster.left - 1));
       const deel = r.width ? Math.min(1, binnen / r.width) : 1;
       item.style.opacity = String(MIN + (1 - MIN) * deel);
+      item.toggleAttribute('data-buiten', deel < 0.98);
     }
     const max = venster.scrollWidth - venster.clientWidth;
     if (pijlen) pijlen.hidden = max <= 1;
@@ -39,6 +43,14 @@ function strook(sectie: HTMLElement): () => void {
     const gap = parseFloat(getComputedStyle(rij).columnGap) || 0;
     const breedte = (items[0]?.getBoundingClientRect().width ?? 0) + gap;
     venster.scrollBy({ left: richting * breedte, behavior: reduce.matches ? 'instant' : 'smooth' });
+  };
+  const naarKaart = (e: MouseEvent) => {
+    const item = (e.target as HTMLElement).closest<HTMLElement>('[data-buiten]');
+    if (!item || !rij.contains(item) || (e.target as HTMLElement).closest('a')) return;
+    const raster = sectie.getBoundingClientRect();
+    const r = item.getBoundingClientRect();
+    const verschil = r.left < raster.left ? r.left - raster.left : r.right - raster.right;
+    venster.scrollBy({ left: verschil, behavior: reduce.matches ? 'instant' : 'smooth' });
   };
   const naarVorige = () => stap(-1);
   const naarVolgende = () => stap(1);
@@ -52,6 +64,7 @@ function strook(sectie: HTMLElement): () => void {
   window.addEventListener('resize', opScroll);
   vorige?.addEventListener('click', naarVorige);
   volgende?.addEventListener('click', naarVolgende);
+  rij.addEventListener('click', naarKaart);
   update();
 
   return () => {
@@ -60,6 +73,7 @@ function strook(sectie: HTMLElement): () => void {
     window.removeEventListener('resize', opScroll);
     vorige?.removeEventListener('click', naarVorige);
     volgende?.removeEventListener('click', naarVolgende);
+    rij.removeEventListener('click', naarKaart);
   };
 }
 

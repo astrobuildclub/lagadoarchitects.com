@@ -190,9 +190,12 @@ const pijl = (naam: 'arrow-left' | 'arrow-right') =>
     position: relative;
   }
   .services__venster {
-    /* Rechts doorlopen tot de schermrand; de kaarten blijven links op het raster beginnen. */
-    margin-inline-end: calc(50% - 50vw);
-    padding-inline-end: var(--gutter);
+    /* Links en rechts doorlopen tot de schermrand (vorige en volgende kaarten gedimd zichtbaar). De padding en
+       scroll-padding (even breed als het stuk buiten het raster) laten de kaarten op het raster snappen. */
+    --uitloop: calc(50vw - 50cqi); /* cqi = breedte van de sectie (container); % zou bij scroll-padding het venster zelf zijn */
+    margin-inline: calc(-1 * var(--uitloop));
+    padding-inline: var(--uitloop);
+    scroll-padding-inline: var(--uitloop);
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
@@ -218,6 +221,13 @@ const pijl = (naam: 'arrow-left' | 'arrow-right') =>
     inline-size: calc((100cqi - (var(--per-rij) - 1) * var(--strook-gap)) / var(--per-rij));
     scroll-snap-align: start;
     transition: opacity 0.3s ease-out;
+  }
+  /* Gedimde kaart (buiten het raster): klikken schuift hem erin (strook.ts). */
+  .services__item[data-buiten] {
+    cursor: pointer;
+  }
+  .services__item[data-buiten]:hover {
+    opacity: 0.45 !important; /* boven de inline opacity uit strook.ts */
   }
   .services__item h3 {
     margin: 0;
