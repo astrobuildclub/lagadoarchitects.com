@@ -4,8 +4,8 @@
 //   projectvormen (styles/vorm.css) en een kleurvlak; de tekstkleur is per vlak gekozen op contrast (WCAG 1.4.3).
 // - beelden (Figma 537:2202): een strook kaarten met staand beeld, titel en tekst.
 // - vormen (Figma 539:2357): een strook donkere vormen met titel en tekst over een groot achtergrondbeeld.
-// Een strook schuift op desktop mee met het scrollen en is op mobiel (en met reduced motion) te swipen;
-// kaarten buiten het raster staan op 20% (scripts/strook.ts). `anker` maakt de sectie bereikbaar via bv. /over#diensten.
+// Een strook is een carousel: swipen of de pijlen; kaarten buiten het raster staan op 20% (scripts/strook.ts). `anker` maakt de sectie bereikbaar via bv. /over#diensten.
+import feather from 'feather-icons';
 import Img from '../Img.astro';
 import RichText from '../RichText.astro';
 import { has, type BlockProps } from './scope';
@@ -27,6 +27,9 @@ const VLAKKEN = [
 const strook = block.weergave !== 'raster';
 const achtergrond = block.weergave === 'vormen' && block.achtergrond?.src ? block.achtergrond : undefined;
 const id = has(block.anker) ? block.anker : undefined;
+const vensterId = `strook-${Math.random().toString(36).slice(2, 8)}`;
+const pijl = (naam: 'arrow-left' | 'arrow-right') =>
+  feather.icons[naam].toSvg({ width: 24, height: 24, 'stroke-width': 1.5, 'aria-hidden': 'true', focusable: 'false' });
 ---
 
 {
@@ -51,12 +54,18 @@ const id = has(block.anker) ? block.anker : undefined;
 {
   block.items.length > 0 && strook && (
     <section class:list={['services services--strook feature', `services--${block.weergave}`, achtergrond && 'services--met-achtergrond']} id={id} data-strook>
-      {has(block.kop) && <h2 class="services__kop">{block.kop}</h2>}
+      <div class="services__balk">
+        {has(block.kop) && <h2 class="services__kop">{block.kop}</h2>}
+        <div class="services__pijlen" data-strook-pijlen hidden>
+          <button type="button" class="services__pijl" aria-controls={vensterId} aria-label="Vorige" data-strook-vorige set:html={pijl('arrow-left')} />
+          <button type="button" class="services__pijl" aria-controls={vensterId} aria-label="Volgende" data-strook-volgende set:html={pijl('arrow-right')} />
+        </div>
+      </div>
       <div class="services__vlak">
         {achtergrond && (
           <Img src={achtergrond.src} alt={achtergrond.alt} sizes="100vw" class="services__achtergrond" />
         )}
-        <div class="services__venster" role="region" aria-label={has(block.kop) ? block.kop : 'Diensten'} tabindex="0" data-strook-venster>
+        <div class="services__venster" id={vensterId} role="region" aria-label={has(block.kop) ? block.kop : 'Diensten'} tabindex="0" data-strook-venster>
           <ul role="list" class="services__rij" data-strook-rij>
             {block.items.map((item, i) => (
               <li class="services__item" data-vorm={block.weergave === 'vormen' ? STROOKVORMEN[i % STROOKVORMEN.length] : undefined}>
@@ -122,14 +131,53 @@ const id = has(block.anker) ? block.anker : undefined;
   }
 
   /* ── Strook (beelden en vormen) ─────────────────────────────────────────────
-     Standaard (mobiel, reduced motion, zonder JS) een swipe-carousel: het venster scrolt horizontaal met
-     scroll-snap en loopt rechts door tot de rand van het scherm. Op desktop zet strook.ts `data-scrub` op
-     de sectie: het venster scrolt dan niet zelf, GSAP schuift de rij mee met het scrollen van de pagina. */
+     Carousel: het venster scrolt horizontaal met scroll-snap en loopt rechts door tot de rand van het scherm.
+     Pijlen rechts naast de kop (strook.ts); zonder JS blijven ze verborgen en werkt swipen gewoon. */
   .services--strook {
     container-type: inline-size;
     display: grid;
     grid-template-columns: minmax(0, 1fr); /* de rij mag de kolom niet oprekken */
     gap: var(--space-l);
+  }
+  .services__balk {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-s) var(--space-m);
+  }
+  .services__pijlen {
+    display: flex;
+    gap: var(--space-2xs);
+    margin-inline-start: auto;
+  }
+  .services__pijlen[hidden] {
+    display: none;
+  }
+  .services__pijl {
+    display: grid;
+    place-items: center;
+    inline-size: 2.75rem; /* raakvlak 44px */
+    aspect-ratio: 1;
+    padding: 0;
+    border: var(--border-width) solid currentColor;
+    border-radius: 100vmax;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, opacity 0.2s;
+  }
+  .services__pijl:hover:enabled {
+    background: var(--color-fg);
+    color: var(--color-bg);
+  }
+  .services__pijl:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  .services__pijl:disabled {
+    opacity: 0.3;
+    cursor: default;
   }
   .services__kop {
     font-size: var(--step-4);
@@ -170,13 +218,6 @@ const id = has(block.anker) ? block.anker : undefined;
     inline-size: calc((100cqi - (var(--per-rij) - 1) * var(--strook-gap)) / var(--per-rij));
     scroll-snap-align: start;
     transition: opacity 0.3s ease-out;
-  }
-  [data-scrub] .services__item {
-    transition: none; /* GSAP stuurt de opacity al vloeiend aan */
-  }
-  [data-scrub] .services__venster {
-    overflow: visible;
-    scroll-snap-type: none;
   }
   .services__item h3 {
     margin: 0;
