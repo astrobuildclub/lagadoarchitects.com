@@ -4,8 +4,9 @@
 //   projectvormen (styles/vorm.css) en een kleurvlak; de tekstkleur is per vlak gekozen op contrast (WCAG 1.4.3).
 // - beelden (Figma 537:2202): een strook kaarten met staand beeld, titel en tekst.
 // - vormen (Figma 539:2357): een strook donkere vormen met titel en tekst over een groot achtergrondbeeld.
-// Een strook is een carousel: swipen of de pijlen; kaarten buiten het raster staan op 20% (scripts/strook.ts). `anker` maakt de sectie bereikbaar via bv. /over#diensten.
-import feather from 'feather-icons';
+// Een strook is een carousel: swipen, slepen met de muis (met een volgcursor) of de pijlen; kaarten buiten het
+// raster staan op 20% (scripts/strook.ts). `anker` maakt de sectie bereikbaar via bv. /over#diensten.
+import Icon from '../Icon.astro';
 import Img from '../Img.astro';
 import RichText from '../RichText.astro';
 import { has, type BlockProps } from './scope';
@@ -28,8 +29,6 @@ const strook = block.weergave !== 'raster';
 const achtergrond = block.weergave === 'vormen' && block.achtergrond?.src ? block.achtergrond : undefined;
 const id = has(block.anker) ? block.anker : undefined;
 const vensterId = `strook-${Math.random().toString(36).slice(2, 8)}`;
-const pijl = (naam: 'arrow-left' | 'arrow-right') =>
-  feather.icons[naam].toSvg({ width: 24, height: 24, 'stroke-width': 1.5, 'aria-hidden': 'true', focusable: 'false' });
 ---
 
 {
@@ -57,8 +56,8 @@ const pijl = (naam: 'arrow-left' | 'arrow-right') =>
       <div class="services__balk">
         {has(block.kop) && <h2 class="services__kop">{block.kop}</h2>}
         <div class="services__pijlen" data-strook-pijlen hidden>
-          <button type="button" class="services__pijl" aria-controls={vensterId} aria-label="Vorige" data-strook-vorige set:html={pijl('arrow-left')} />
-          <button type="button" class="services__pijl" aria-controls={vensterId} aria-label="Volgende" data-strook-volgende set:html={pijl('arrow-right')} />
+          <button type="button" class="services__pijl" aria-controls={vensterId} aria-label="Vorige" data-strook-vorige><Icon naam="arrow-left" /></button>
+          <button type="button" class="services__pijl" aria-controls={vensterId} aria-label="Volgende" data-strook-volgende><Icon naam="arrow-right" /></button>
         </div>
       </div>
       <div class="services__vlak">
@@ -80,6 +79,12 @@ const pijl = (naam: 'arrow-left' | 'arrow-right') =>
             ))}
           </ul>
         </div>
+      </div>
+      {/* Volgcursor bij slepen (alleen muis); strook.ts hangt hem aan <body> en laat hem de muis volgen. */}
+      <div class="services__cursor" data-strook-cursor data-richting="sleep" aria-hidden="true" hidden>
+        <Icon naam="hand-move" maat={28} class="cursor-sleep" />
+        <Icon naam="arrow-left" maat={28} class="cursor-links" />
+        <Icon naam="arrow-right" maat={28} class="cursor-rechts" />
       </div>
     </section>
   )
@@ -221,6 +226,44 @@ const pijl = (naam: 'arrow-left' | 'arrow-right') =>
     inline-size: calc((100cqi - (var(--per-rij) - 1) * var(--strook-gap)) / var(--per-rij));
     scroll-snap-align: start;
     transition: opacity 0.3s ease-out;
+  }
+  /* Muis: slepen met een eigen cursor (strook.ts zet data-sleepbaar). Tijdens het slepen geen snap en
+     geen tekstselectie; de snap komt terug bij loslaten. */
+  .services__venster[data-sleepbaar],
+  .services__venster[data-sleepbaar] .services__item[data-buiten] {
+    cursor: none;
+  }
+  .services__venster[data-sleept] {
+    scroll-snap-type: none;
+    user-select: none;
+  }
+  .services__venster :global(img) {
+    -webkit-user-drag: none;
+  }
+  .services__cursor {
+    position: fixed;
+    inset: 0 auto auto 0;
+    z-index: 50;
+    display: grid;
+    place-items: center;
+    inline-size: 5.5rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--color-fg);
+    color: var(--color-bg);
+    pointer-events: none;
+  }
+  .services__cursor[hidden] {
+    display: none;
+  }
+  .services__cursor :global(svg) {
+    grid-area: 1 / 1;
+    display: none;
+  }
+  .services__cursor[data-richting='sleep'] :global(.cursor-sleep),
+  .services__cursor[data-richting='links'] :global(.cursor-links),
+  .services__cursor[data-richting='rechts'] :global(.cursor-rechts) {
+    display: block;
   }
   /* Gedimde kaart (buiten het raster): klikken schuift hem erin (strook.ts). */
   .services__item[data-buiten] {
