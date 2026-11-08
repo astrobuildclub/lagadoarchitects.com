@@ -29,4 +29,34 @@ export default defineConfig({
     }),
     react(),
   ],
+  vite: {
+    // Dev: alles wat de Studio (/admin) en de site laden vooraf laten bundelen. Anders ontdekt Vite ze pas
+    // onderweg, bundelt opnieuw en verwijzen al geladen Studio-onderdelen naar oude versies:
+    // "504 Outdated Optimize Dep", zwart scherm of "Upload mislukt". Bij hardnekkige fouten: astro dev stop,
+    // rm -rf node_modules/.vite, opnieuw starten.
+    optimizeDeps: {
+      include: [
+        'sanity',
+        'sanity/structure',
+        'sanity/presentation',
+        '@sanity/locale-nl-nl',
+        '@sanity/icons/Cog',
+        '@sanity/icons/Documents',
+        '@sanity/icons/Projects',
+        '@sanity/visual-editing/react',
+        'styled-components',
+        'react',
+        'react-dom',
+        'react-dom/client',
+        'react-is',
+        'react-compiler-runtime',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+        '@orestbida/iframemanager',
+        'vanilla-cookieconsent',
+        'gsap',
+        'lottie-web/build/player/lottie_light',
+      ],
+    },
+  },
 });

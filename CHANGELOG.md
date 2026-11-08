@@ -31,6 +31,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Consent slimmer: geen banner vooraf; video's vragen toestemming op de video zelf. Statistiek kies je in de Studio (Site-instellingen → Statistiek): Umami of Plausible cookieloos zonder banner, Google Analytics alleen na toestemming (dan wel een banner, intrekken wist de cookies). `PUBLIC_ANALYTICS_*` vervallen.
 
 ### Opgelost
+- "Upload mislukt" en zwart scherm in de lokale Studio (`504 Outdated Optimize Dep`): Vite bundelde de Studio-dependencies midden in een sessie opnieuw. Nu vooraf in `optimizeDeps.include` (astro.config.mjs).
 - Een beeldbouwsteen zonder beeld (net toegevoegd, of upload mislukt) liet de hele pagina vallen ("klopt niet met het contentmodel"). Lege beeld- en voor/na-blokken worden nu overgeslagen.
 - Video bleef staan na Cookie-instellingen → opslaan als hij met "Video laden" (eenmalig) was geladen. Na elke keuze in het cookievenster worden de video's nu gelijkgezet met de opgeslagen keuze.
 - Video-melding stond in dev soms onopgemaakt: de CSS van cookieconsent en iframemanager werd via het script geladen. Nu in de frontmatter, dus altijd in de `<head>`.
