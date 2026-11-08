@@ -117,6 +117,19 @@ export function initConsent({ googleId, cookieloos, privacyHref = '/privacy' }: 
     CookieConsent.showPreferences();
   });
 
+  // Na elke keuze in het cookievenster (opslaan, alles toestaan, alleen noodzakelijk) de video's gelijkzetten
+  // met wat daar staat. Cookieconsent roept onReject alleen aan als een dienst eerst was toegestaan; een video die
+  // met "Video laden" eenmalig is geladen, bleef anders staan. Sluiten met het kruisje (pm__close-btn) verandert niets.
+  document.addEventListener('click', (event) => {
+    if (!(event.target instanceof Element && event.target.closest('#cc-main .pm__btn, #cc-main .cm__btn'))) return;
+    setTimeout(() => {
+      for (const s of MEDIA) {
+        if (CookieConsent.acceptedService(s, 'media')) im().acceptService(s);
+        else im().rejectService(s);
+      }
+    });
+  });
+
   const mediaService = (name: (typeof MEDIA)[number], label: string) => ({
     label,
     onAccept: () => im().acceptService(name),

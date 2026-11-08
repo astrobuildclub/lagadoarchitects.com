@@ -23,6 +23,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Consent slimmer: geen banner vooraf; video's vragen toestemming op de video zelf. Statistiek kies je in de Studio (Site-instellingen → Statistiek): Umami of Plausible cookieloos zonder banner, Google Analytics alleen na toestemming (dan wel een banner, intrekken wist de cookies). `PUBLIC_ANALYTICS_*` vervallen.
 
 ### Opgelost
+- Video bleef staan na Cookie-instellingen → opslaan als hij met "Video laden" (eenmalig) was geladen. Na elke keuze in het cookievenster worden de video's nu gelijkgezet met de opgeslagen keuze.
 - Video-melding stond in dev soms onopgemaakt: de CSS van cookieconsent en iframemanager werd via het script geladen. Nu in de frontmatter, dus altijd in de `<head>`.
 - "Cookie-instellingen" (footer, privacypagina) werkte niet na navigeren binnen de site: cookieconsent koppelt knoppen maar één keer. Nu één listener op het document.
 - Cookie-voorkeuren in donkere modus: titel van een categorie viel weg bij hover (licht vlak, witte tekst).
