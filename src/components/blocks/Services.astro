@@ -159,14 +159,15 @@ const id = has(block.anker) ? block.anker : undefined;
   }
   .services--strook .services__rij {
     --per-rij: 1.25;
+    --strook-gap: var(--space-m); /* Figma Grid/Gutter = Space M */
     display: flex;
-    gap: var(--gutter);
+    gap: var(--strook-gap);
     margin: 0;
     inline-size: max-content;
   }
   .services__item {
     flex: 0 0 auto;
-    inline-size: calc((100cqi - (var(--per-rij) - 1) * var(--gutter)) / var(--per-rij));
+    inline-size: calc((100cqi - (var(--per-rij) - 1) * var(--strook-gap)) / var(--per-rij));
     scroll-snap-align: start;
     transition: opacity 0.3s ease-out;
   }
@@ -258,11 +259,9 @@ const id = has(block.anker) ? block.anker : undefined;
       --per-rij: 2.25;
     }
   }
+  /* Desktop: drie kolommen in het raster, de rest staat erbuiten. */
   @container (min-width: 48rem) {
-    .services--beelden .services__rij {
-      --per-rij: 4;
-    }
-    .services--vormen .services__rij {
+    .services--strook .services__rij {
       --per-rij: 3;
     }
   }
