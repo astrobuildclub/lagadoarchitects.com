@@ -83,6 +83,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Sanity fase 4 en 5: de site leest alles uit Sanity. Server-rendered (`output: 'server'`) achter Netlify's CDN-cache (5 min, `stale-while-revalidate`); Visual Editing volgens `_standards/SANITY.md` (`/api/preview` met secret, ondertekende cookie, alleen in de iframe, Presentation tool met `resolve`). Datalaag `content.ts` → `loadQuery()` met cache per request, Zod controleert elk resultaat; stega alleen in getoonde tekst.
 - Beelden via de Sanity-CDN (`<Img>` met srcset, hotspot als `object-position`), deelafbeelding bijgesneden rond de hotspot. Kaartkleur rekent met hetzelfde algoritme op een thumbnail uit de CDN. Downloads met `?dl=`.
 - Portable Text via `<RichText>`; `#verras` in een link blijft de "Verras me"-knop. Eigen sitemap (`/sitemap-index.xml`) met projecten uit Sanity. Concepten zijn drafts: niet live, wel in de preview.
+- Document-ID's zonder punt (`page-home`, `project-<slug>`): Sanity behandelt ID's met een punt als privé, waardoor pagina's en projecten zonder token onzichtbaar waren (lokaal en op Netlify). Opnieuw gemigreerd, oude documenten verwijderd.
 
 ### Verwijderd
 - Content collections (`src/content.config.ts`), `src/lib/markdown.ts`, `marked`, `@astrojs/sitemap` en `scripts/placeholders.mjs`. `lagado-content/` blijft als archief en bron van de migratie.

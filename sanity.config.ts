@@ -45,7 +45,7 @@ export default defineConfig({
               .icon(ProjectsIcon)
               .child(S.documentTypeList('project').title('Projecten').defaultOrdering([{ field: 'volgorde', direction: 'asc' }])),
             S.divider(),
-            ...(['page.home', 'page.bureau', 'page.privacy', 'contact'] as const).map((id) =>
+            ...(['page-home', 'page-bureau', 'page-privacy', 'contact'] as const).map((id) =>
               S.listItem()
                 .title(SINGLETONS[id].title)
                 .id(id)

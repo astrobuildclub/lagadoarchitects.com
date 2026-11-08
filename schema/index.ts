@@ -10,8 +10,8 @@ export const schemaTypes = [...objects, ...blockTypes, project, page, contact, s
 export const SINGLETONS = {
   siteSettings: { type: 'siteSettings', title: 'Site-instellingen' },
   navigatie: { type: 'navigatie', title: 'Navigatie en footer' },
-  'page.home': { type: 'page', title: 'Home' },
-  'page.bureau': { type: 'page', title: 'Over' },
-  'page.privacy': { type: 'page', title: 'Privacy' },
+  'page-home': { type: 'page', title: 'Home' },
+  'page-bureau': { type: 'page', title: 'Over' },
+  'page-privacy': { type: 'page', title: 'Privacy' },
   contact: { type: 'contact', title: 'Contact' },
 } as const;

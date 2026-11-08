@@ -141,7 +141,8 @@ async function bestand(relPath: string | undefined) {
 
 // ── References naar projecten ─────────────────────────────
 let projectSlugs = new Set<string>();
-const projectId = (slug: string) => `project.${slug}`;
+// Geen punt in ID's: Sanity behandelt `a.b` als privé (alleen zichtbaar met token), net als `drafts.`.
+const projectId = (slug: string) => `project-${slug}`;
 function projectRef(slug: string | undefined, waar: string) {
   if (!slug) return undefined;
   if (!projectSlugs.has(slug)) {
@@ -314,7 +315,7 @@ async function projectDoc(slug: string, draft = false): Promise<Doc> {
 
 async function pageDoc(name: 'home' | 'bureau' | 'privacy'): Promise<Doc> {
   const p = pageSchema.parse(readFrontmatter(path.join(ROOT, `${name}.md`)));
-  const id = `page.${name}`;
+  const id = `page-${name}`;
   return { _id: id, _type: 'page', title: p.title, intro: pt(p.intro, `${id}.intro`), blocks: await blocks(p.blocks, {}, id), seo: seo(p.seo) };
 }
 

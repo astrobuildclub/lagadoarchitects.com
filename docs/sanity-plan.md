@@ -41,14 +41,14 @@ Volgt `lagado-content/README.md` 1-op-1; Nederlandse veldnamen, titels voor Vict
 - NL-taal Studio: `@sanity/locale-nl-nl` als die beschikbaar is.
 
 ## Fase 3 — Migratiescript (`scripts/migrate-to-sanity.ts`) ✅
-Eenmalig, idempotent (`createOrReplace` met deterministische `_id`s: `project.<slug>`, `page.home`, `siteSettings`, …).
-- Omvang: 43 projecten + pagina's. `bureau.md` wordt document `page.bureau`, gerenderd op `/over` (`resolve.ts` koppelt dat). Eerst tellen hoeveel beelden het zijn (upload-tijd, Sanity-quotum).
+Eenmalig, idempotent (`createOrReplace` met deterministische `_id`s: `project-<slug>`, `page-home`, `siteSettings`, …).
+- Omvang: 43 projecten + pagina's. `bureau.md` wordt document `page-bureau`, gerenderd op `/over` (`resolve.ts` koppelt dat). Eerst tellen hoeveel beelden het zijn (upload-tijd, Sanity-quotum).
 1. Lees alle `.md` met de bestaande Zod-schema's (frontmatter parsen met `gray-matter`/`yaml`, valideren met `projectSchema` etc.) → dezelfde fouten als nu.
 2. Beelden: elk `src` oplossen met dezelfde regels als `images.ts` (project → `projecten/images/<slug>/`, pagina → pad vanaf `lagado-content/`), uploaden via `client.assets.upload('image', …)`, cache op bestandspad zodat elk bestand één keer gaat. Placeholders overslaan als gewenst (vlag `--skip-placeholders`).
 3. Downloads → `assets.upload('file', …)`.
 4. Markdown → Portable Text met `@portabletext/markdown` / `@sanity/block-tools` (+ jsdom), voor `tekst`, `intro`, `bio`, etc.
 5. Blocks: `type` → `_type`, `_key` per array-item.
-6. Slugs in `gerelateerd`/`projectGrid.slugs`/`hero.beelden[].project` → `{ _type: 'reference', _ref: 'project.<slug>' }`.
+6. Slugs in `gerelateerd`/`projectGrid.slugs`/`hero.beelden[].project` → `{ _type: 'reference', _ref: 'project-<slug>' }`.
 7. Placeholders (`jaar: 0`, `""`) meenemen zoals ze zijn; `cleanItems`/`has()` blijven werken.
 - ✅ Gedraaid op 8 nov 2026, direct naar `production` (leeg; een Editor-token kan geen extra dataset aanmaken). 40 projecten, 2 concepten als draft, 312 beelden. `npx sanity documents validate` toont alleen de bekende invulplekken (alt-teksten bij 5 placeholder-projecten, e-mail en social-links in contact, opleverjaar van de concepten).
 

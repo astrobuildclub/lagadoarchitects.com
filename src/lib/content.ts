@@ -27,7 +27,7 @@ export async function getSettings(): Promise<Settings> {
 }
 
 export async function getPage(id: 'home' | 'bureau' | 'privacy'): Promise<Page> {
-  const { data } = await loadQuery({ query: PAGE_QUERY, params: { id: `page.${id}` } });
+  const { data } = await loadQuery({ query: PAGE_QUERY, params: { id: `page-${id}` } });
   return parse(pageSchema, data, `Pagina ${id}`);
 }
 
