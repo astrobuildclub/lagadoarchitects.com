@@ -1,6 +1,7 @@
 ---
+import Img from './Img.astro';
 import RichText from './RichText.astro';
-import type { RichText as RichTextValue } from '../lib/schema';
+import type { ImageRef, RichText as RichTextValue } from '../lib/schema';
 
 interface Props {
   title: string;
@@ -8,18 +9,28 @@ interface Props {
   intro?: RichTextValue | string;
   /** Intro over de volle breedte van de container in plaats van max 32ch (/projecten). */
   breed?: boolean;
+  /** Figma "Over": titel als klein label (step--1, vet), intro groot over de volle breedte. */
+  label?: boolean;
+  /** Breed beeld onder de intro (3:2). */
+  beeld?: ImageRef;
 }
-const { title, intro, breed = false } = Astro.props;
+const { title, intro, breed = false, label = false, beeld } = Astro.props;
 // Een link naar `#verras` in de intro wordt de knop "Verras me" van de projectfilters (richtext/Link.astro).
 ---
 
-<header class="page-header">
+<header class:list={['page-header', label && 'page-header--label feature']}>
   <h1>{title}</h1>
   {intro?.length ? (
-    <div class:list={['page-header__intro', breed && 'page-header__intro--breed']}>
+    <div class:list={['page-header__intro', (breed || label) && 'page-header__intro--breed']}>
       {typeof intro === 'string' ? <p>{intro}</p> : <RichText value={intro} />}
     </div>
   ) : null}
+  {beeld?.src && (
+    <figure class="page-header__beeld">
+      <Img src={beeld.src} alt={beeld.alt} sizes="(min-width: 80rem) 78rem, 100vw" priority />
+      {beeld.caption && <figcaption>{beeld.caption}</figcaption>}
+    </figure>
+  )}
 </header>
 
 <style>
@@ -54,6 +65,33 @@ const { title, intro, breed = false } = Astro.props;
   }
   .page-header__intro--breed {
     max-inline-size: none;
+  }
+  /* Label-variant (Over): klein vet label, intro step-2 / 1.2 over de volle breedte. */
+  .page-header--label h1 {
+    font-size: var(--step--1);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0;
+  }
+  .page-header--label .page-header__intro {
+    margin-block-start: var(--space-xs);
+    line-height: 1.2;
+    text-wrap: pretty;
+  }
+  .page-header__beeld {
+    margin-block-start: var(--space-3xl);
+  }
+  .page-header__beeld img {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+  }
+  .page-header__beeld figcaption {
+    margin-block-start: var(--space-2xs);
+    font-size: var(--step--1);
+    color: var(--color-muted);
   }
   /* Eerste alinea groot; volgende alinea's kleiner op een eigen regel (bv. de filterzin op /projecten). */
   .page-header__intro :global(p + p) {

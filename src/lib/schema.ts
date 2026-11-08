@@ -301,6 +301,8 @@ export const pageSchema = z.object({
   /** `blokken`: bouwstenen. `tekst`: één lopende tekst met koppen (`inhoud`), zoals Privacy. */
   template: z.enum(['blokken', 'tekst']).default('blokken'),
   intro: rich,
+  /** Breed beeld onder de paginakop (template `blokken`). */
+  beeld: imageRef.optional(),
   seo,
   blocks: z.array(block).default([]),
   inhoud: richText.default([]),

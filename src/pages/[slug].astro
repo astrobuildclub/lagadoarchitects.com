@@ -21,7 +21,8 @@ const settings = await getSettings();
   noindex={page.seo?.noindex}
 >
   <div class="layout flow">
-    <PageHeader title={page.title} intro={page.intro} />
+    {/* Bouwstenenpagina's (Over): titel als klein label, intro groot, eventueel een breed beeld (Figma). */}
+    <PageHeader title={page.title} intro={page.intro} label={page.template === 'blokken'} beeld={page.beeld} />
     {
       page.template === 'tekst' ? (
         <>

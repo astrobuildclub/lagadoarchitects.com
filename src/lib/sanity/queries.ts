@@ -44,6 +44,7 @@ export const SETTINGS_QUERY = groq`*[_id == "siteSettings"][0] {
 
 const PAGE = groq`{
   title, "slug": slug.current, template, intro, seo, inhoud, cookieKnop,
+  "beeld": beeld { ${IMG} },
   "blocks": blocks[] { ${BLOCKS} }
 }`;
 
