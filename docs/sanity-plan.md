@@ -5,12 +5,14 @@ De site leest nu alle content uit `lagado-content/*.md` via Astro content collec
 
 Uitgangspunt blijft: veldnamen ongewijzigd, componenten krijgen hetzelfde datavorm-contract. Wat wél verandert: beelden (Sanity-assets i.p.v. bestanden) en rich text (Portable Text i.p.v. markdown). Dat raakt componenten onvermijdelijk; we vangen het af in `Img.astro` en een nieuwe `RichText.astro`.
 
-Branch: `claude/lagado-sanity-integration-xyjrxm`. Werk in fases met elk een eigen commit; na fase 4 is de site functioneel op Sanity.
+Basis: `staging` (bijgewerkt 8 nov 2026 na rebase; de eerste versie ging uit van de verouderde `main`). Huidige stand: 43 projecten, routes `/`, `/projecten`, `/projecten/[slug]`, `/over` (uit `bureau.md`), `/contact`, `/privacy`; Interlude-transities op de `ClientRouter`; gelicenseerde fonts via `scripts/fonts.mjs` (prebuild).
+
+Branch: `claude/lagado-sanity-integration-xyjrxm`, PR naar `staging`. Werk in fases met elk een eigen commit; na fase 4 is de site functioneel op Sanity.
 
 ---
 
 ## Fase 0 — Sanity-project (Maarten, handmatig)
-- Project aanmaken op sanity.io/manage (dataset `production`), project-id noteren.
+- ✅ Project aangemaakt: project-id `unque637`, dataset `production`.
 - Tokens: `Visual Editing (Netlify)` (Viewer) en tijdelijk `Migratie` (Editor, alleen lokaal, daarna intrekken).
 - CORS: `http://localhost:4321`, `https://lagadoarchitects.netlify.app`, `https://*--lagadoarchitects.netlify.app`, `https://lagadoarchitects.com` (credentials aan).
 - Netlify env: `PUBLIC_SANITY_PROJECT_ID`, `PUBLIC_SANITY_DATASET`, `SANITY_API_READ_TOKEN` (secret, alle contexts).
@@ -19,15 +21,20 @@ Branch: `claude/lagado-sanity-integration-xyjrxm`. Werk in fases met elk een eig
 - `npm i @sanity/astro sanity @sanity/client @sanity/image-url @sanity/preview-url-secret @astrojs/react react react-dom @astrojs/netlify astro-portabletext styled-components groq` + `@sanity/visual-editing` (zelfde major als `@sanity/astro` meebrengt). Check bij installatie compatibiliteit met Astro 7.
 - `astro.config.mjs`: `sanity({ projectId, dataset, apiVersion: '2025-01-01', useCdn: false, studioBasePath: '/admin', stega: { studioUrl: '/admin' } })`, `react()`, `output: 'server'`, `adapter: netlify()`. `build.format: 'file'` en `trailingSlash: 'never'` behouden.
 - Sitemap: `@astrojs/sitemap` ziet SSR-routes niet → vervangen door `src/pages/sitemap-index.xml.ts` (of `customPages` met slugs uit Sanity bij build). Voorkeur: eigen endpoint dat projecten uit Sanity haalt.
-- `.env.example` + README-tabel: de drie Sanity-variabelen (+ `SANITY_API_WRITE_TOKEN` alleen voor het migratiescript, nooit in Netlify).
+- ✅ `.env.example` + README-tabel: Sanity-variabelen staan erin, naast `FONTS_URL`/`FONTS_TOKEN`.
+- `predev`/`prebuild` (`scripts/fonts.mjs`) blijven ongewijzigd; op Netlify blijven `FONTS_*` nodig.
 - Caching: `netlify.toml` / response-header `Cache-Control: public, max-age=0, s-maxage=…, stale-while-revalidate` + `Netlify-CDN-Cache-Control` met cache-tag; Sanity-webhook → Netlify purge-endpoint (of korte TTL als eerste stap).
 
 ## Fase 2 — Studio-schema (`schema/`)
 Volgt `lagado-content/README.md` 1-op-1; Nederlandse veldnamen, titels voor Victor.
 
 - `schema/objects/`: `seo` (standaard uit SANITY.md, maar velden `titel`/`beschrijving` houden zoals nu + `image`, `noindex`), `beeld` (Sanity `image` met hotspot + verplicht `alt` (mag leeg = decoratief, via custom validation die alleen `undefined` weigert) + `caption`), `link`, `kleur` (label + hex, validatie `^#[0-9a-f]{6}$`), `persoon`, `persItem`, `awardItem`, `downloadItem` (`label` + `bestand` als `file`), `richText` (Portable Text: normal, h3, strong/em, link — niet meer).
-- `schema/blocks/`: één objecttype per bouwsteen (`hero`, `text`, `image`, `gallery`, `columns`, `quote`, `video`, `colors`, `beforeAfter`, `projectGrid`, `team`, `list`, `cta`, `services`, `logos`, `downloads`), `name` = huidige `type`-waarde zodat `_type` direct mapt. Elk met `preview` voor een leesbare lijst in de Studio.
-- `schema/documents/project.ts`: alle velden uit `projectSchema`, met groepen (Content, Filters, Kleur, Credits, Pers, SEO). Waardenlijsten uit `src/lib/schema.ts` importeren (één bron). `slug` als `slug`-veld (bron `title`). `gerelateerd` en `projectGrid.slugs` → `reference` naar `project` (max 3). `hero.project` → reference. Custom validation: `jaarOplevering` verplicht bij `status === 'gerealiseerd'`. `prijsklasse` met `hidden` + beschrijving "nooit tonen zonder akkoord".
+- `schema/blocks/`: één objecttype per bouwsteen (`hero`, `text`, `image`, `gallery`, `columns`, `quote`, `video`, `colors`, `beforeAfter`, `projectGrid`, `statement`, `team`, `list`, `cta`, `services`, `logos`, `downloads`), `name` = huidige `type`-waarde zodat `_type` direct mapt. Elk met `preview` voor een leesbare lijst in de Studio. Velden volgens `staging`:
+  - `hero`: `kop` (tekst met regelafbreking), `kopWissel[]`, `subkop`, `subkopWissel[]`, `link`, `adres` (boolean), `tekst` (richText), `beelden` 0–5 (met optionele project-reference).
+  - `projectGrid`: `kop`, `featured`, `slugs` → references, `filter`, `limit`, `meer` (default true), `linkNaarOverzicht`, `links[]`.
+  - `statement`: `tekst`. `list`: + `zichtbaar`. `services`: + `anker`, `vormen`. `gallery`: `kolommen` 2/3.
+- `schema/documents/project.ts`: alle velden uit `projectSchema` op `staging`, met groepen zoals in de README-tabel *Opbouw van een project*: **Identiteit** (`title`, `tagline`, `vraag`, `intro`), **Filters** (`type` thuiskomen/de-hort-op, `vorm[]`, `kleuren[]`, `status` af/bijna/opgetekend, `schaal`, `opgave[]`, `materialen[]`, `prijsklasse`), **Projectgegevens** (`locatie`, `omvang`, `opdrachtgeverType`, `opdrachtgever`, `bouwteam[]`, `fotografie[]`, `jaarOpdracht`, `jaarOplevering`, `programma`), **Kleur** (`accentkleur`, `kleurpalet`), **Beeld & weergave** (`hero`, `featured`, `homepageGrootte` met 7 waarden, `kaartvorm`, `volgorde`, `gerelateerd`), **Credits & pers**, **SEO**. Meerkeuzes (`vorm`, `kleuren`, `opgave`, `materialen`) als `array` van strings met `options.list` (checkboxes); labels zoals Victor ze gebruikt (teksten_v4, `src/lib/labels.ts`). Waardenlijsten uit `src/lib/schema.ts` importeren (één bron). `slug` als `slug`-veld (bron `title`). `gerelateerd` en `projectGrid.slugs` → `reference` naar `project` (max 3). `hero.project` → reference. Custom validation: `jaarOplevering` verplicht bij `status === 'af'`. `prijsklasse` met `hidden` + beschrijving "nooit tonen zonder akkoord".
+- `contact.ts`: + `bio` (kop, foto, quote als richText), `stage` (kop, tekst als richText), `bedrijf.bank`. `siteSettings`: + `projecten.intro`.
 - `schema/documents/page.ts` voor home/bureau/privacy (vaste IDs), `contact.ts` (singleton).
 - `schema/singletons/siteSettings.ts`: huidige `settingsSchema`-velden (siteNaam, payoff, taal, url, seo-defaults, `projecten.toonPrijsfilter`, analytics). Afwijking van de standaard (`siteName` vs `siteNaam`): Nederlandse namen houden conform AGENTS.md, in README noteren. Navigatie + footer in singleton `navigatie` (zoals SANITY.md adviseert).
 - `sanity.config.ts`: structureTool met singletons (siteSettings, navigatie, contact, home, bureau, privacy) + lijst Projecten (gesorteerd op `volgorde`, orderable via `@sanity/orderable-document-list` optioneel), templates/actions-filter voor singletons, `presentationTool` met `resolve`.
@@ -35,6 +42,7 @@ Volgt `lagado-content/README.md` 1-op-1; Nederlandse veldnamen, titels voor Vict
 
 ## Fase 3 — Migratiescript (`scripts/migrate-to-sanity.mjs`)
 Eenmalig, idempotent (`createOrReplace` met deterministische `_id`s: `project.<slug>`, `page.home`, `siteSettings`, …).
+- Omvang: 43 projecten + pagina's. `bureau.md` wordt document `page.bureau`, gerenderd op `/over` (`resolve.ts` koppelt dat). Eerst tellen hoeveel beelden het zijn (upload-tijd, Sanity-quotum).
 1. Lees alle `.md` met de bestaande Zod-schema's (frontmatter parsen met `gray-matter`/`yaml`, valideren met `projectSchema` etc.) → dezelfde fouten als nu.
 2. Beelden: elk `src` oplossen met dezelfde regels als `images.ts` (project → `projecten/images/<slug>/`, pagina → pad vanaf `lagado-content/`), uploaden via `client.assets.upload('image', …)`, cache op bestandspad zodat elk bestand één keer gaat. Placeholders overslaan als gewenst (vlag `--skip-placeholders`).
 3. Downloads → `assets.upload('file', …)`.
@@ -53,12 +61,15 @@ Eenmalig, idempotent (`createOrReplace` met deterministische `_id`s: `project.<s
 - Stega: `stegaClean()` op alles wat logica/klasse/URL/head is — `type`, `breedte`, `beeldPositie`, `kolommen`, `soort`, `homepageGrootte`, filtervelden, `accentkleur`/`hex` (→ `hexToOklch`), `href`, `slug`, en alle SEO/JSON-LD-strings. Centraal in `content.ts` waar het kan, anders in `seo.ts`/`color.ts`.
 
 ## Fase 5 — Componenten
+- `src/lib/projectkleur.ts`: kaartkleur zonder sharp. `accentkleur` blijft eerst; de fallback wordt Sanity's `hero.asset->metadata.palette.dominant.background` (gratis in de asset-metadata). Contrastlogica (wit/zwart, WCAG 1.4.3) blijft. `sharp` kan dan uit de dependencies als niets anders het nog gebruikt.
+- `projectBeelden()` (hover-scrub op de kaart): geeft Sanity-beelden terug i.p.v. bestandsnamen; zelfde volgorde (hero, dan blokken), max. 6. Kan ook als GROQ-projectie.
 - `src/lib/images.ts`: `resolveImage(scope, image)` geeft een Sanity-beeld terug (scope niet meer nodig voor paden; signatuur vereenvoudigen). `downloadUrl()` → `asset->url` uit de query.
 - `src/components/Img.astro`: van `astro:assets` naar `<img srcset>` via `imageProps()` (IMAGES.md), met dezelfde props (`sizes`, `widths`, `priority`), plus `width`/`height` uit asset-metadata (CLS) en hotspot-crop. Callers (`ProjectCard`, `NextProject`, `Hero`, `Gallery`, `Image`, `Columns`, `Team`, `Logos`, `BeforeAfter`, `Video`, `contact.astro`, `[slug].astro`) passen alleen hun `resolveImage`/`projectImage`-aanroep aan.
 - `SiteMeta.astro` / `BaseLayout.astro`: `image?: ImageMetadata` → Sanity-beeld; OG-url via `urlFor(...).width(1200).height(630)`.
-- Nieuwe `src/components/RichText.astro` (astro-portabletext, alleen p/h3/strong/em/a; externe links `rel="noopener"`). Vervangt de 8 `md()`/`mdInline()`-aanroepen (`Text`, `Columns`, `Services`, `Team`, `PageHeader`, `contact.astro`, `[slug].astro`). `src/lib/markdown.ts` + `marked` weg.
+- Nieuwe `src/components/RichText.astro` (astro-portabletext, alleen p/h3/strong/em/a; externe links `rel="noopener"`). Vervangt de 8 `md()`/`mdInline()`-aanroepen (`Text`, `Columns`, `Services`, `Team`, `Hero`, `PageHeader`, `contact.astro`, `[slug].astro`). `src/lib/markdown.ts` + `marked` weg.
 - Routes: `getStaticPaths` in `projecten/[slug].astro` → SSR (`Astro.params.slug` + `getProject`, 404 als niet gevonden). Geen `prerender = true` op contentpagina's; `404.astro` en `robots.txt.ts` mogen prerenderen.
-- `BaseLayout.astro`: `<VisualEditing client:only="react" />` + reload-script (ClientRouter!) alleen als `Astro.locals.visualEditing`.
+- `BaseLayout.astro`: `<VisualEditing client:only="react" />` + reload-script (ClientRouter!) alleen als `Astro.locals.visualEditing`. Controleren dat Interlude (`src/lib/interlude/`, niet aanpassen) `data-astro-reload` respecteert; zo niet, Interlude in preview uitzetten via `src/interlude.config.ts`.
+- Hero-wisseltekst (GSAP): `kopWissel`/`subkopWissel` door `stegaClean()` als ze in `data-`-attributen of JS belanden.
 - `src/middleware.ts`, `src/pages/api/preview.ts`, `src/pages/api/preview/disable.ts`, `env.d.ts` (`App.Locals`) volgens SANITY.md.
 - Interactieve scripts (filters, lightbox, voor/na) initialiseren al op `astro:page-load` → geen wijziging; wel controleren dat stega-tekens niet in `data-`-attributen voor filters belanden.
 
@@ -87,7 +98,7 @@ Werkwijze voor later: elk nieuw blok of elke oplossing in LAGADO krijgt in de PR
 ## Verificatie
 1. `npm run check` en `npm run build` zonder fouten (assertNever en Zod vangen vergeten velden).
 2. Migratie tegen `migratie-test`: aantallen documenten/assets kloppen met de `.md`-bestanden; Studio toont alle projecten met beelden en alt-teksten.
-3. Visuele vergelijking: vóór migratie screenshots (Playwright, alle routes: `/`, `/projecten`, elk project, `/bureau`, `/contact`, `/privacy`) van de markdown-versie, daarna van de Sanity-versie; diff op inhoud en layout.
+3. Visuele vergelijking: vóór migratie screenshots (Playwright, alle routes: `/`, `/projecten`, alle 43 projecten, `/over`, `/contact`, `/privacy`; ook kaartkleuren en hover-scrub) van de markdown-versie, daarna van de Sanity-versie; diff op inhoud en layout.
 4. Visual Editing: de curl-tests uit SANITY.md → *Testen* (401 zonder secret, nagemaakte cookie = 0 islands, geldige cookie + iframe ≥ 1, `Cache-Control: private, no-store`), daarna de 6 stappen in de deploy preview.
 5. Stega-check in Presentation: filters op `/projecten`, accentkleuren, `breedte`-klassen, links en `<head>`/JSON-LD zonder onzichtbare tekens.
 6. Lighthouse/axe op deploy preview: beelden met `width`/`height`, alt aanwezig, geen nieuwe third-party requests buiten `cdn.sanity.io` (AVG: Sanity CDN is EU-verwerker? → noteren in privacyverklaring).
