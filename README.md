@@ -28,7 +28,7 @@
 nvm use
 npm install
 # fonts: zet de twee woff2's in public/fonts/ (zie Fonts hieronder)
-cp .env.example .env   # alleen als je nog geen .env hebt: statistiek, fonts, Sanity
+cp .env.example .env   # alleen als je nog geen .env hebt: fonts, Sanity
 npm run dev            # http://localhost:4321
 ```
 
@@ -40,8 +40,6 @@ Migratie naar Sanity (eenmalig, herhaalbaar): `npm run migrate -- --dry-run` en 
 
 | Naam | Waarvoor | Waar te vinden |
 |---|---|---|
-| `PUBLIC_ANALYTICS_SRC` | Script-URL van cookieloze statistiek (Plausible/Umami). Leeg = uit. | Account van de statistiekdienst |
-| `PUBLIC_ANALYTICS_DOMAIN` | `data-domain` voor dat script | Idem |
 | `FONTS_URL` | Map-URL waar `scripts/fonts.mjs` de woff2's ophaalt als `public/fonts/` leeg is (Netlify): `https://raw.githubusercontent.com/All-This/fonts/main/abc-areal` | Privé-repo `All-This/fonts` |
 | `FONTS_TOKEN` | Fine-grained GitHub-token, alleen `All-This/fonts`, Contents: Read-only. Geheim, nooit `PUBLIC_`. Verloopt: tijdig vernieuwen. | GitHub → Settings → Developer settings → Fine-grained tokens |
 | `PUBLIC_SANITY_PROJECT_ID` | Sanity-project | sanity.io/manage → project |
@@ -93,7 +91,8 @@ TODO.md              Openstaande projecttaken
 
 ## Privacy, toegankelijkheid en SEO
 
-- Geen tracking zonder toestemming. Video's (YouTube nocookie, Vimeo `dnt=1`) laden pas na klik/akkoord; geen externe thumbnails.
+- Geen banner vooraf. Video's (YouTube nocookie, Vimeo `dnt=1`) laden pas na klik/akkoord op de video zelf; geen externe thumbnails.
+- Statistiek: Site-instellingen → Statistiek. Umami of Plausible (cookieloos, geen toestemming nodig), of Google Analytics (pas na toestemming, dan wel een banner). Noem de dienst in de privacyverklaring.
 - Cookie-instellingen in footer en op `/privacy`.
 - Doel: WCAG 2.2 AA (semantiek, focus, `prefers-reduced-motion`).
 - SEO: titel + beschrijving, canonical, Open Graph/Twitter, JSON-LD (`ArchitectureFirm`, `CreativeWork` + breadcrumbs), sitemap, `robots.txt`.

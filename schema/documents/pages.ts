@@ -186,6 +186,7 @@ export const siteSettings = defineType({
     { name: 'menu', title: 'Menu' },
     { name: 'footer', title: 'Footer' },
     { name: 'projecten', title: 'Projecten' },
+    { name: 'statistiek', title: 'Statistiek' },
     { name: 'seo', title: 'SEO' },
   ],
   fields: [
@@ -233,10 +234,69 @@ export const siteSettings = defineType({
     defineField({
       name: 'analytics',
       title: 'Statistiek',
-      description: 'Alleen cookieloos en pas na toestemming. Het script staat in de omgevingsvariabelen.',
-      type: 'string',
-      group: 'algemeen',
-      readOnly: true,
+      description:
+        'Umami en Plausible tellen zonder cookies en zonder persoonsgegevens: ze draaien zonder toestemmingsbanner. Google Analytics plaatst cookies: dan vraagt de site eerst toestemming. Noem de dienst in de privacyverklaring.',
+      type: 'object',
+      group: 'statistiek',
+      fields: [
+        defineField({
+          name: 'dienst',
+          title: 'Dienst',
+          type: 'string',
+          options: {
+            list: [
+              { title: 'Geen', value: 'geen' },
+              { title: 'Umami (cookieloos)', value: 'umami' },
+              { title: 'Plausible (cookieloos)', value: 'plausible' },
+              { title: 'Google Analytics (met toestemming)', value: 'google' },
+            ],
+            layout: 'radio',
+          },
+          initialValue: 'geen',
+        }),
+        defineField({
+          name: 'umamiId',
+          title: 'Umami website-ID',
+          description: 'Umami → Settings → Websites → Edit → Website ID.',
+          type: 'string',
+          hidden: ({ parent }) => parent?.dienst !== 'umami',
+          validation: (r) => r.custom((v, ctx) => ((ctx.parent as { dienst?: string })?.dienst === 'umami' && !v ? 'Verplicht voor Umami' : true)),
+        }),
+        defineField({
+          name: 'umamiScript',
+          title: 'Umami-script',
+          description: 'Leeg = Umami Cloud (https://cloud.umami.is/script.js). Eigen server: de URL van script.js daar.',
+          type: 'url',
+          hidden: ({ parent }) => parent?.dienst !== 'umami',
+        }),
+        defineField({
+          name: 'plausibleDomein',
+          title: 'Plausible-domein',
+          description: 'Zoals in Plausible ingesteld, bv. lagadoarchitects.com.',
+          type: 'string',
+          hidden: ({ parent }) => parent?.dienst !== 'plausible',
+          validation: (r) => r.custom((v, ctx) => ((ctx.parent as { dienst?: string })?.dienst === 'plausible' && !v ? 'Verplicht voor Plausible' : true)),
+        }),
+        defineField({
+          name: 'plausibleScript',
+          title: 'Plausible-script',
+          description: 'Leeg = https://plausible.io/js/script.js. Eigen server (Community Edition): de URL daar.',
+          type: 'url',
+          hidden: ({ parent }) => parent?.dienst !== 'plausible',
+        }),
+        defineField({
+          name: 'googleId',
+          title: 'Google Analytics meet-ID',
+          description: 'G-XXXXXXXXXX. Laadt pas na toestemming; zonder toestemming geen enkel verzoek naar Google.',
+          type: 'string',
+          hidden: ({ parent }) => parent?.dienst !== 'google',
+          validation: (r) =>
+            r.custom((v, ctx) => {
+              if ((ctx.parent as { dienst?: string })?.dienst !== 'google') return true;
+              return /^G-[A-Z0-9]+$/.test(v ?? '') ? true : 'Een meet-ID begint met G-';
+            }),
+        }),
+      ],
     }),
     defineField({
       name: 'projecten',

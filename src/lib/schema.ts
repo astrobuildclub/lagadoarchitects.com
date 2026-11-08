@@ -272,7 +272,17 @@ export const settingsSchema = z.object({
   projecten: z
     .object({ intro: rich, toonPrijsfilter: z.boolean().default(false) })
     .default({ toonPrijsfilter: false }),
-  analytics: text,
+  /** Statistiek: cookieloos (Umami, Plausible) zonder banner, Google Analytics pas na toestemming. */
+  analytics: z
+    .object({
+      dienst: z.enum(['geen', 'umami', 'plausible', 'google']).default('geen'),
+      umamiId: text,
+      umamiScript: text,
+      plausibleDomein: text,
+      plausibleScript: text,
+      googleId: text,
+    })
+    .default({ dienst: 'geen' }),
 });
 
 export const pageSchema = z.object({

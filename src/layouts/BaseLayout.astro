@@ -33,6 +33,7 @@ const contact = await getContact();
 const isHome = cleanPath(Astro.url.pathname) === '/';
 // Alleen in de iframe van de Presentation tool, met een geldige preview-cookie (middleware.ts).
 const visualEditing = Astro.locals.visualEditing;
+const stats = settings.analytics;
 ---
 
 <!doctype html>
@@ -64,6 +65,19 @@ const visualEditing = Astro.locals.visualEditing;
       })();
     </script>
 
+    {
+      // Cookieloze statistiek: geen toestemming nodig (zie src/lib/consent.ts). Niet in dev en niet in de
+      // preview van de Studio, zodat redacteuren niet meetellen. Google Analytics laadt pas na toestemming.
+      !import.meta.env.DEV && !visualEditing && stats?.dienst === 'umami' && stats.umamiId && (
+        <script is:inline defer src={stats.umamiScript || 'https://cloud.umami.is/script.js'} data-website-id={stats.umamiId} />
+      )
+    }
+    {
+      !import.meta.env.DEV && !visualEditing && stats?.dienst === 'plausible' && stats.plausibleDomein && (
+        <script is:inline defer src={stats.plausibleScript || 'https://plausible.io/js/script.js'} data-domain={stats.plausibleDomein} />
+      )
+    }
+
     <ClientRouter fallback="swap" />
   </head>
   <body>
@@ -75,7 +89,7 @@ const visualEditing = Astro.locals.visualEditing;
       <slot />
     </main>
     <Footer settings={settings} />
-    <CookieConsent />
+    <CookieConsent analytics={settings.analytics} />
     <script>
       import '../scripts/transitie-kleur';
     </script>

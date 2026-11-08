@@ -11,6 +11,11 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Studio: alle pagina's onder *Pagina's* (Home, Contact, Over, Privacy) en zelf nieuwe pagina's aanmaken, met URL en template *Bouwstenen* of *Tekst*. Privacy is een tekstpagina (koppen in de tekst, knop Cookie-instellingen aan te zetten). Nieuwe route `src/pages/[slug].astro`; `over.astro` en `privacy.astro` weg.
 - Menu en footer in de site-instellingen; het document *Navigatie en footer* is weg. Footer = vier invulbare kolommen (`#cookies` wordt de knop Cookie-instellingen).
 - Presentation tool heet weer standaard *Presentation*.
+- Consent slimmer: geen banner vooraf; video's vragen toestemming op de video zelf. Statistiek kies je in de Studio (Site-instellingen → Statistiek): Umami of Plausible cookieloos zonder banner, Google Analytics alleen na toestemming (dan wel een banner, intrekken wist de cookies). `PUBLIC_ANALYTICS_*` vervallen.
+
+### Opgelost
+- "Cookie-instellingen" (footer, privacypagina) werkte niet na navigeren binnen de site: cookieconsent koppelt knoppen maar één keer. Nu één listener op het document.
+- Cookie-voorkeuren in donkere modus: titel van een categorie viel weg bij hover (licht vlak, witte tekst).
 - Bestaande content omgezet met `scripts/sanity/2026-11-08-paginas-en-footer.ts`; `npm run migrate` weigert nu zonder `--overschrijf-sanity`.
 
 ### Opgelost
