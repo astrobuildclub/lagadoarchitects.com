@@ -66,12 +66,14 @@ const { title, intro, breed = false, label = false, beeld } = Astro.props;
   .page-header__intro--breed {
     max-inline-size: none;
   }
-  /* Label-variant (Over): klein vet label, intro step-2 / 1.2 over de volle breedte. */
+  /* Label-variant (Over): titel klein in mono en grijs (zoals het jaar in het persblok), intro step-2 / 1.2 over de volle breedte. */
   .page-header--label h1 {
+    font-family: var(--font-mono);
     font-size: var(--step--1);
-    font-weight: 700;
+    font-weight: 400;
     line-height: 1.2;
     letter-spacing: 0;
+    color: var(--color-muted);
   }
   .page-header--label .page-header__intro {
     margin-block-start: var(--space-xs);

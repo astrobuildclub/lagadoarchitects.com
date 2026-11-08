@@ -21,7 +21,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 ### Gewijzigd
 - Blok *Pers of awards* volgt het Figma-persblok: vanaf 48rem twee gelijke kolommen, jaar (mono, step--1) links rechts uitgelijnd op de basislijn, tekst in step-1, projectlink onderstreept, lijn boven elk item. Mobiel: jaar klein boven de tekst. Nieuw veld *Intro*: kop en intro staan rechts boven de lijst. Op Over zijn kop en tekst van het tekstblok erboven verplaatst met `scripts/sanity/2026-11-09-persblok-intro.ts`. "Toon alles" is een knop die de rest erbij zet (zonder JavaScript staat alles er).
 - Lijnkleur (`--color-line`) in het lichte thema naar `#f4f4f4` (Figma).
-- Paginakop van bouwstenenpagina's (Over) volgens Figma: titel als klein label (step--1, vet), intro step-2 over de volle breedte. Nieuw veld *Beeld bovenaan* (pagina, 3:2) los van de bouwstenen. Tekstpagina's (Privacy), /projecten en Contact houden de grote titel.
+- Paginakop van bouwstenenpagina's (Over) volgens Figma: titel als klein label (mono, step--1, grijs zoals het jaar in het persblok), intro step-2 over de volle breedte. Nieuw veld *Beeld bovenaan* (pagina, 3:2) los van de bouwstenen. Tekstpagina's (Privacy), /projecten en Contact houden de grote titel.
 - Blok *Beeld naast tekst* volgens Figma ("Waarom samenwerken?"): twee gelijke kolommen, staand beeld (3:4) links of rechts, tekst onderaan uitgelijnd. Kop step-4 (regular), nieuw veld *Intro* (step-1) en tekst (step-0), optioneel *Tekst in twee kolommen*. Mobiel: beeld boven, tekst onder elkaar. Beeld niet meer verplicht (waarschuwing). Op Over is het tekstblok "Waarom samenwerken?" omgezet met `scripts/sanity/2026-11-09-waarom-samenwerken.ts`; het beeld moet nog worden toegevoegd.
 - Projectenoverzicht is een eigen pagina onder *Pagina's* (document `projecten`, type *Projectenpagina*) met titel, intro, prijsfilter en SEO. De tab Projecten in de site-instellingen is weg. Omzetten: `scripts/sanity/2026-11-08-projectenpagina.ts`.
 - `robots.txt` wordt per request opgebouwd (instelling uit Sanity) en sluit `/admin` en `/api/` uit.
@@ -31,6 +31,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Consent slimmer: geen banner vooraf; video's vragen toestemming op de video zelf. Statistiek kies je in de Studio (Site-instellingen → Statistiek): Umami of Plausible cookieloos zonder banner, Google Analytics alleen na toestemming (dan wel een banner, intrekken wist de cookies). `PUBLIC_ANALYTICS_*` vervallen.
 
 ### Opgelost
+- Een beeldbouwsteen zonder beeld (net toegevoegd, of upload mislukt) liet de hele pagina vallen ("klopt niet met het contentmodel"). Lege beeld- en voor/na-blokken worden nu overgeslagen.
 - Video bleef staan na Cookie-instellingen → opslaan als hij met "Video laden" (eenmalig) was geladen. Na elke keuze in het cookievenster worden de video's nu gelijkgezet met de opgeslagen keuze.
 - Video-melding stond in dev soms onopgemaakt: de CSS van cookieconsent en iframemanager werd via het script geladen. Nu in de frontmatter, dus altijd in de `<head>`.
 - *Verbergen voor zoekmachines* deed niets op projecten, de home en Contact: de noindex-tag ontbrak daar. Verborgen vaste pagina's (Projecten, Contact) staan nu ook niet meer in de sitemap en `llms.txt`.
