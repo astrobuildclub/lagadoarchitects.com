@@ -30,6 +30,57 @@ const config: ConsentConfig = {
 </script>
 
 <style is:global>
+  /*
+   * Video-placeholder (iframemanager) op de site-tokens. --accent is op een projectpagina de kleur van
+   * het project (BaseLayout), elders de sitekleur; --accent-tekst is zwart of wit, gekozen op contrast.
+   * Overlay: grotendeels de projectkleur, rechtsboven schemert de thumbnail door. De tekst staat in het
+   * midden, waar de kleur nog ~80% dekt: zo blijft --accent-tekst leesbaar op elk beeld.
+   */
+  div[data-service] {
+    --im-font-family: var(--font-sans);
+    --im-bg: var(--accent);
+    --im-color: var(--accent-tekst, var(--color-on-accent));
+    --im-overlay-bg: linear-gradient(
+      14deg,
+      var(--accent) 0%,
+      color-mix(in oklch, var(--accent) 85%, transparent) 50%,
+      color-mix(in oklch, var(--accent) 45%, transparent) 100%
+    );
+    --im-link-color: currentColor;
+    --im-link-hover-color: currentColor;
+    /* "Video laden": omgekeerde kleuren; "Altijd toestaan": omlijnd. */
+    --im-btn-bg: var(--accent-tekst, var(--color-on-accent));
+    --im-btn-color: var(--accent);
+    --im-btn-hover-bg: color-mix(in oklch, var(--accent-tekst, var(--color-on-accent)) 85%, var(--accent));
+    --im-btn-active-box-shadow: 0 0 0 0.25em color-mix(in oklch, var(--accent-tekst, var(--color-on-accent)) 35%, transparent);
+    --im-btn-s-bg: transparent;
+    --im-btn-s-color: var(--accent-tekst, var(--color-on-accent));
+    --im-btn-s-hover-bg: color-mix(in oklch, var(--accent-tekst, var(--color-on-accent)) 15%, transparent);
+    --im-btn-s-active-bg: color-mix(in oklch, var(--accent-tekst, var(--color-on-accent)) 25%, transparent);
+  }
+  div[data-service] .cll .c-n-a button {
+    border-radius: 999px;
+    box-shadow: none;
+    font-family: var(--font-sans);
+  }
+  div[data-service] .cll .c-n-a .c-la-b {
+    box-shadow: inset 0 0 0 1.5px currentColor;
+  }
+  div[data-service] .cll .c-n-a button:focus-visible,
+  div[data-service] .cll a:focus-visible {
+    outline: 2px solid var(--im-color);
+    outline-offset: 3px;
+  }
+  div[data-service] .cll a {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    div[data-service] .cll * {
+      transition: none !important;
+    }
+  }
+
   /* Consent-UI volgt de site-tokens (ook in donkere modus). */
   #cc-main {
     --cc-font-family: var(--font-sans);

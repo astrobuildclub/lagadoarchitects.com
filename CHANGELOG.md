@@ -9,6 +9,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 
 ### Toegevoegd
 - Video's tonen vóór toestemming de thumbnail van YouTube/Vimeo als placeholder (iframemanager `thumbnailUrl`), opgehaald via `/api/video-thumbnail/<dienst>/<id>`: de browser van de bezoeker praat niet met YouTube of Vimeo tot er toestemming is. Eigen posterbeeld gaat voor.
+- Video-placeholder in de stijl van de site: overlay in de projectkleur (`--accent`), tekst en knoppen in `--accent-tekst`, knoppen rond (`--im-*` gekoppeld aan de site-tokens in `CookieConsent.astro`), zichtbare focusring.
 - `/llms.txt`: wie LAGADO is plus een index van pagina's en projecten voor AI-assistenten. Intro in de Studio (Site-instellingen → SEO → *Intro voor AI-assistenten*).
 - JSON-LD `WebSite` op elke pagina; `ArchitectureFirm` staat nu ook op elke pagina (niet alleen de home), zodat de verwijzingen vanuit projecten kloppen.
 - Schakelaar *AI-modellen mogen de content gebruiken voor training* (Site-instellingen → SEO). Uit = trainingscrawlers geweerd in `robots.txt`; AI-zoekcrawlers blijven welkom.
