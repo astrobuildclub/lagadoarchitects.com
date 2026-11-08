@@ -1,13 +1,12 @@
 ---
 // Voor/na-vergelijking met een schuifregelaar (<input type="range">, toetsenbord werkt vanzelf).
 import Img from '../Img.astro';
-import { resolveImage } from '../../lib/images';
 import { has, type BlockProps } from './scope';
 
 type Props = BlockProps<'beforeAfter'>;
-const { block, scope } = Astro.props;
-const voor = resolveImage(scope, block.voor.src);
-const na = resolveImage(scope, block.na.src);
+const { block } = Astro.props;
+const voor = block.voor.src;
+const na = block.na.src;
 ---
 
 {

@@ -17,7 +17,7 @@ Branch: `claude/lagado-sanity-integration-xyjrxm`, PR naar `staging`. Werk in fa
 - CORS: `http://localhost:4321`, `https://lagadoarchitects.netlify.app`, `https://*--lagadoarchitects.netlify.app`, `https://lagadoarchitects.com` (credentials aan).
 - Netlify env: `PUBLIC_SANITY_PROJECT_ID`, `PUBLIC_SANITY_DATASET`, `SANITY_API_READ_TOKEN` (secret, alle contexts).
 
-## Fase 1 — Dependencies & config
+## Fase 1 — Dependencies & config ✅
 - `npm i @sanity/astro sanity @sanity/client @sanity/image-url @sanity/preview-url-secret @astrojs/react react react-dom @astrojs/netlify astro-portabletext styled-components groq` + `@sanity/visual-editing` (zelfde major als `@sanity/astro` meebrengt). Check bij installatie compatibiliteit met Astro 7.
 - `astro.config.mjs`: `sanity({ projectId, dataset, apiVersion: '2025-01-01', useCdn: false, studioBasePath: '/admin', stega: { studioUrl: '/admin' } })`, `react()`, `output: 'server'`, `adapter: netlify()`. `build.format: 'file'` en `trailingSlash: 'never'` behouden.
 - Sitemap: `@astrojs/sitemap` ziet SSR-routes niet → vervangen door `src/pages/sitemap-index.xml.ts` (of `customPages` met slugs uit Sanity bij build). Voorkeur: eigen endpoint dat projecten uit Sanity haalt.
@@ -25,7 +25,7 @@ Branch: `claude/lagado-sanity-integration-xyjrxm`, PR naar `staging`. Werk in fa
 - `predev`/`prebuild` (`scripts/fonts.mjs`) blijven ongewijzigd; op Netlify blijven `FONTS_*` nodig.
 - Caching: `netlify.toml` / response-header `Cache-Control: public, max-age=0, s-maxage=…, stale-while-revalidate` + `Netlify-CDN-Cache-Control` met cache-tag; Sanity-webhook → Netlify purge-endpoint (of korte TTL als eerste stap).
 
-## Fase 2 — Studio-schema (`schema/`)
+## Fase 2 — Studio-schema (`schema/`) ✅
 Volgt `lagado-content/README.md` 1-op-1; Nederlandse veldnamen, titels voor Victor.
 
 - `schema/objects/`: `seo` (standaard uit SANITY.md, maar velden `titel`/`beschrijving` houden zoals nu + `image`, `noindex`), `beeld` (Sanity `image` met hotspot + verplicht `alt` (mag leeg = decoratief, via custom validation die alleen `undefined` weigert) + `caption`), `link`, `kleur` (label + hex, validatie `^#[0-9a-f]{6}$`), `persoon`, `persItem`, `awardItem`, `downloadItem` (`label` + `bestand` als `file`), `richText` (Portable Text: normal, h3, strong/em, link — niet meer).
@@ -40,7 +40,7 @@ Volgt `lagado-content/README.md` 1-op-1; Nederlandse veldnamen, titels voor Vict
 - `sanity.config.ts`: structureTool met singletons (siteSettings, navigatie, contact, home, bureau, privacy) + lijst Projecten (gesorteerd op `volgorde`, orderable via `@sanity/orderable-document-list` optioneel), templates/actions-filter voor singletons, `presentationTool` met `resolve`.
 - NL-taal Studio: `@sanity/locale-nl-nl` als die beschikbaar is.
 
-## Fase 3 — Migratiescript (`scripts/migrate-to-sanity.mjs`)
+## Fase 3 — Migratiescript (`scripts/migrate-to-sanity.ts`) ✅
 Eenmalig, idempotent (`createOrReplace` met deterministische `_id`s: `project.<slug>`, `page.home`, `siteSettings`, …).
 - Omvang: 43 projecten + pagina's. `bureau.md` wordt document `page.bureau`, gerenderd op `/over` (`resolve.ts` koppelt dat). Eerst tellen hoeveel beelden het zijn (upload-tijd, Sanity-quotum).
 1. Lees alle `.md` met de bestaande Zod-schema's (frontmatter parsen met `gray-matter`/`yaml`, valideren met `projectSchema` etc.) → dezelfde fouten als nu.
@@ -52,7 +52,7 @@ Eenmalig, idempotent (`createOrReplace` met deterministische `_id`s: `project.<s
 7. Placeholders (`jaar: 0`, `""`) meenemen zoals ze zijn; `cleanItems`/`has()` blijven werken.
 - ✅ Gedraaid op 8 nov 2026, direct naar `production` (leeg; een Editor-token kan geen extra dataset aanmaken). 40 projecten, 2 concepten als draft, 312 beelden. `npx sanity documents validate` toont alleen de bekende invulplekken (alt-teksten bij 5 placeholder-projecten, e-mail en social-links in contact, opleverjaar van de concepten).
 
-## Fase 4 — Datalaag omzetten
+## Fase 4 — Datalaag omzetten ✅
 - `src/lib/sanity/`: `load-query.ts`, `visual-editing.ts`, `VisualEditing.tsx`, `resolve.ts` 1-op-1 uit SANITY.md; `image.ts` met `urlFor` + `imageProps()` uit `standards/IMAGES.md`.
 - `src/lib/sanity/queries.ts`: GROQ per document. Projecties leveren **exact de huidige vorm** op: `"type": _type` in blocks, `"slug": slug.current`, references dereferencen naar slugs (`"gerelateerd": gerelateerd[]->slug.current`), `seo{titel, beschrijving, …}`.
 - `src/lib/content.ts`: functies houden dezelfde signatuur; `getCollection/getEntry` → `loadQuery`. Defaults die Zod nu zet (`default([])`, `breedte: 'content'`, `kolommen: 3`, `homepageGrootte: 'm'`) via `coalesce()` in GROQ of door het resultaat door het bestaande Zod-schema te halen (aanrader: schema blijft de vangrail, alleen `src`/`tekst`-types aanpassen). `selectProjects`, `getNextProject`, `itemsFromPage`, `cleanItems` blijven zoals ze zijn.
@@ -60,7 +60,7 @@ Eenmalig, idempotent (`createOrReplace` met deterministische `_id`s: `project.<s
 - `src/content.config.ts` verwijderen.
 - Stega: `stegaClean()` op alles wat logica/klasse/URL/head is — `type`, `breedte`, `beeldPositie`, `kolommen`, `soort`, `homepageGrootte`, filtervelden, `accentkleur`/`hex` (→ `hexToOklch`), `href`, `slug`, en alle SEO/JSON-LD-strings. Centraal in `content.ts` waar het kan, anders in `seo.ts`/`color.ts`.
 
-## Fase 5 — Componenten
+## Fase 5 — Componenten ✅
 - `src/lib/projectkleur.ts`: kaartkleur zonder sharp. `accentkleur` blijft eerst; de fallback wordt Sanity's `hero.asset->metadata.palette.dominant.background` (gratis in de asset-metadata). Contrastlogica (wit/zwart, WCAG 1.4.3) blijft. `sharp` kan dan uit de dependencies als niets anders het nog gebruikt.
 - `projectBeelden()` (hover-scrub op de kaart): geeft Sanity-beelden terug i.p.v. bestandsnamen; zelfde volgorde (hero, dan blokken), max. 6. Kan ook als GROQ-projectie.
 - `src/lib/images.ts`: `resolveImage(scope, image)` geeft een Sanity-beeld terug (scope niet meer nodig voor paden; signatuur vereenvoudigen). `downloadUrl()` → `asset->url` uit de query.
@@ -73,7 +73,7 @@ Eenmalig, idempotent (`createOrReplace` met deterministische `_id`s: `project.<s
 - `src/middleware.ts`, `src/pages/api/preview.ts`, `src/pages/api/preview/disable.ts`, `env.d.ts` (`App.Locals`) volgens SANITY.md.
 - Interactieve scripts (filters, lightbox, voor/na) initialiseren al op `astro:page-load` → geen wijziging; wel controleren dat stega-tekens niet in `data-`-attributen voor filters belanden.
 
-## Fase 6 — Opruimen & docs
+## Fase 6 — Opruimen & docs ✅ (behalve `lagado-content/` weghalen: na livegang)
 - `lagado-content/`: markdown + beelden blijven tot na livegang als archief, daarna verwijderen (of verplaatsen naar `archive/`). `scripts/placeholders.mjs` en `npm run placeholders` weg.
 - `AGENTS.md` Projectspecifiek herschrijven: Sanity is de bron, schema-volgorde wordt `schema/` → `src/lib/schema.ts` → query → component; content altijd via `loadQuery()`; stegaClean-regel; nieuw bloktype = Sanity-objecttype + query-projectie + component + case.
 - `README.md` (stack, env-tabel, CMS-sectie, structuur), `lagado-content/README.md` → `schema/README.md` (contentmodel blijft gedocumenteerd), `TODO.md` (Sanity-item af; tokens intrekken, webhook), `CHANGELOG.md` regel per commit.
@@ -102,3 +102,8 @@ Werkwijze voor later: elk nieuw blok of elke oplossing in LAGADO krijgt in de PR
 4. Visual Editing: de curl-tests uit SANITY.md → *Testen* (401 zonder secret, nagemaakte cookie = 0 islands, geldige cookie + iframe ≥ 1, `Cache-Control: private, no-store`), daarna de 6 stappen in de deploy preview.
 5. Stega-check in Presentation: filters op `/projecten`, accentkleuren, `breedte`-klassen, links en `<head>`/JSON-LD zonder onzichtbare tekens.
 6. Lighthouse/axe op deploy preview: beelden met `width`/`height`, alt aanwezig, geen nieuwe third-party requests buiten `cdn.sanity.io` (AVG: Sanity CDN is EU-verwerker? → noteren in privacyverklaring).
+
+## Stand 8 nov 2026
+- Fase 1–6 gebouwd. Vergelijking markdown-versie (`staging`) ↔ Sanity-versie: 45 routes, 0 verschillen in tekst, titels, meta-beschrijvingen en alt-teksten; kaartkleuren binnen 1% lichtheid. Visual Editing-tests uit SANITY.md → *Testen* geslaagd (401 zonder secret, nagemaakte cookie uit, geldige cookie alleen in de iframe, `private, no-store`).
+- Nog te doen door Maarten: Viewer-token in Netlify, CORS-origins, Victor uitnodigen, Studio + Voorbeeld testen in de deploy preview, migratietoken intrekken, webhook voor cache purge (zie TODO.md).
+- Gekozen afwijkingen: kaartkleur via sharp op een CDN-thumbnail (identiek aan vroeger) i.p.v. Sanity's `palette`; geen aparte testdataset (Editor-token kan die niet aanmaken).

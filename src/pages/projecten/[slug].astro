@@ -1,28 +1,24 @@
 ---
-import type { GetStaticPaths } from 'astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import BlockRenderer from '../../components/BlockRenderer.astro';
 import Img from '../../components/Img.astro';
 import NextProject from '../../components/NextProject.astro';
 import ProjectCredits from '../../components/ProjectCredits.astro';
 import ProjectFacts from '../../components/ProjectFacts.astro';
-import { getNextProject, getProjects, getSettings } from '../../lib/content';
-import { projectImage } from '../../lib/images';
+import RichText from '../../components/RichText.astro';
+import { getNextProject, getProject, getSettings } from '../../lib/content';
 import { kaartkleur } from '../../lib/projectkleur';
-import { md } from '../../lib/markdown';
+import { platteTekst } from '../../lib/richtext';
 import { pageDescription, pageTitle } from '../../lib/seo';
-import type { Project } from '../../lib/schema';
 import { cleanPath } from '../../lib/url';
 
-export const getStaticPaths = (async () => {
-  const projects = await getProjects();
-  return projects.map((project) => ({ params: { slug: project.slug }, props: { project } }));
-}) satisfies GetStaticPaths;
-
-const { project } = Astro.props as { project: Project };
+// Server-rendered (niet geprerenderd): nieuwe projecten staan direct online en drafts werken in de Presentation tool.
+const project = await getProject(Astro.params.slug ?? '');
+if (!project) return Astro.rewrite('/404');
 const settings = await getSettings();
 const next = await getNextProject(project);
-const hero = projectImage(project.slug, project.hero.src);
+const hero = project.hero.src;
+const intro = platteTekst(project.intro);
 // De foto in de kop heeft de vorm van het project (styles/vorm.css). De projectkleur (accentkleur,
 // anders uit het hero-beeld) zit in de transitie, de vraag, de tekstselectie en de focusring.
 const kleur = await kaartkleur(project);
@@ -36,7 +32,7 @@ const jsonLd = [
     '@type': 'CreativeWork',
     name: project.title,
     headline: project.tagline,
-    description: project.intro.trim(),
+    description: intro,
     url,
     creator: { '@id': `${settings.url}/#organisatie` },
     locationCreated: { '@type': 'Place', name: [project.locatie.wijk, project.locatie.plaats].filter(Boolean).join(', ') },
@@ -56,7 +52,7 @@ const jsonLd = [
 
 <BaseLayout
   title={pageTitle(settings, project)}
-  description={pageDescription(settings, { ...project, fallbackDescription: `${project.tagline} ${project.intro}` })}
+  description={pageDescription(settings, { ...project, fallbackDescription: `${project.tagline} ${intro}` })}
   image={hero}
   imageAlt={project.hero.alt}
   type="article"
@@ -81,7 +77,7 @@ const jsonLd = [
               ))
             }
           </p>
-          <div class="project-kop__verhaal" set:html={md(project.intro)} />
+          <div class="project-kop__verhaal"><RichText value={project.intro} /></div>
         </div>
         <ProjectFacts project={project} />
       </div>

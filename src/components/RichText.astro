@@ -1,0 +1,15 @@
+---
+// Portable Text uit Sanity → HTML. Alleen alinea's, vet, cursief, links en lijstjes (zie schema/objects).
+// De opmaak (.prose) zit op het element eromheen, zoals voorheen bij de markdown.
+import { PortableText } from 'astro-portabletext';
+import type { RichText } from '../lib/schema';
+import Link from './richtext/Link.astro';
+
+interface Props {
+  value?: RichText;
+}
+
+const { value } = Astro.props;
+---
+
+{value?.length ? <PortableText value={value} components={{ mark: { link: Link } }} /> : null}

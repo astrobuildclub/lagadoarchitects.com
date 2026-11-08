@@ -2,7 +2,6 @@
 // Compacte footer (Figma 449:6819): boven het woordmerk met payoff, daaronder vijf kolommen:
 // herkomst van de naam (twee breed), adres, bedrijfsgegevens, en privacy/cookies/credits.
 import Logo from './Logo.astro';
-import { downloadUrl } from '../lib/images';
 import type { Contact, Settings } from '../lib/schema';
 
 interface Props {
@@ -13,7 +12,7 @@ const { settings, contact } = Astro.props;
 const { adres, bedrijf } = contact;
 const links = [...settings.footer.links, ...contact.social]
   .filter((l, i, all) => l.href && all.findIndex((x) => x.href === l.href) === i);
-const downloads = contact.downloads.map((d) => ({ ...d, url: downloadUrl(d.bestand) })).filter((d) => d.url);
+const downloads = contact.downloads.map((d) => ({ ...d, url: d.bestand })).filter((d) => d.url);
 const tel = contact.telefoon?.replace(/[^\d+]/g, '').replace('(0)', '');
 ---
 

@@ -1,19 +1,18 @@
 ---
 // Beeld naast tekst (bv. verhaal per ruimte). Op smalle schermen beeld boven tekst.
 import Img from '../Img.astro';
-import { resolveImage } from '../../lib/images';
-import { md } from '../../lib/markdown';
+import RichText from '../RichText.astro';
 import { has, type BlockProps } from './scope';
 
 type Props = BlockProps<'columns'>;
-const { block, scope } = Astro.props;
-const image = resolveImage(scope, block.image.src);
+const { block } = Astro.props;
+const image = block.image.src;
 ---
 
 <section class:list={['columns', 'feature', { 'columns--links': block.beeldPositie === 'links' }]}>
   <div class="columns__tekst">
     {has(block.kop) && <h2 class="columns__kop">{block.kop}</h2>}
-    <div class="prose" set:html={md(block.tekst)} />
+    <div class="prose"><RichText value={block.tekst} /></div>
   </div>
   {
     image && (

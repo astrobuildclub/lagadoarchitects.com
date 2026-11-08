@@ -5,7 +5,7 @@ Lees eerst `README.md` voor context en `CHANGELOG.md` voor recente wijzigingen.
 
 ## Project
 - Klant: LAGADO architects · Bedrijf: All This · SLA: TODO
-- Stack: Astro 7.3, geen CMS (Sanity volgt), Node 22 (zie `.nvmrc`)
+- Stack: Astro 7.3 (server-rendered op Netlify), Sanity (project `unque637`, Studio op `/admin`), Node 22 (zie `.nvmrc`)
 
 ## Werkwijze
 - Werk nooit direct op `main`. Branch vanaf `staging` → PR naar `staging` → deploy preview → merge. Naar `main` alleen gebundelde releases en hotfixes, volgens `~/Code/_standards/DEPLOY.md` (elke productiedeploy kost Netlify-credits).
@@ -26,15 +26,16 @@ Lees eerst `README.md` voor context en `CHANGELOG.md` voor recente wijzigingen.
 - Taal van UI-teksten en code-comments: Nederlands.
 
 ## Projectspecifiek
-- **Content is de bron.** Alles staat in `lagado-content/`. Wijzig het model in deze volgorde: `lagado-content/README.md` → `src/lib/schema.ts` → component. Veldnamen zijn Nederlands en worden later 1-op-1 Sanity-velden; niet hernoemen zonder reden.
-- **Eén datalaag.** Pagina's en componenten lezen content alleen via `src/lib/content.ts`. Geen `getCollection` elders: bij de overstap naar Sanity wisselt alleen die laag.
-- **Beelden** staan in `lagado-content/` en worden via `src/lib/images.ts` opgelost (projecten: bestandsnaam in `projecten/images/<slug>/`; pagina's: pad vanaf `lagado-content/`). Ontbrekend bestand = bouwfout. `alt` is verplicht, `""` = decoratief.
-- **Nieuw bloktype:** README-tabel → schema (discriminated union op `type`) → `src/components/blocks/X.astro` → case in `BlockRenderer.astro` (de `assertNever` geeft een typefout als je die vergeet).
-- **Placeholders** in de content (`jaar: 0000`, lege strings) zijn invulplekken voor Victor; componenten tonen ze niet (`cleanItems`, `has()`). Lege blokken renderen niets.
-- **Prijsklasse** nooit tonen zonder akkoord van Victor (`projecten.toonPrijsfilter` in `site.md`).
+- **Sanity is de bron.** Content en beelden staan in Sanity; `lagado-content/` is het archief van vóór de overstap (bron van `npm run migrate`), niet meer van de site. Wijzig het model in deze volgorde: `schema/` (Studio) → `src/lib/schema.ts` (Zod) → `src/lib/sanity/queries.ts` → component. Veldnamen zijn Nederlands; niet hernoemen zonder reden. Waardenlijsten staan één keer, in `src/lib/waarden.ts`.
+- **Eén datalaag.** Pagina's en componenten lezen content alleen via `src/lib/content.ts`, en die alleen via `loadQuery()` (`src/lib/sanity/load-query.ts`). Nooit zelf `sanityClient.fetch`, `perspective`, `token` of `stega` in componenten. Visual Editing volgens `~/Code/_standards/SANITY.md`.
+- **Stega:** in de Presentation tool krijgen strings onzichtbare tekens. `normalize.ts` maakt alles schoon behalve getoonde tekst (`TOON`); `<head>`, JSON-LD en SEO via `stegaClean()`. Nieuw tekstveld dat getoond wordt: naam aan `TOON` toevoegen.
+- **Beelden** zijn Sanity-beelden (`src` in `{ src, alt, caption }`), altijd via `<Img>` (srcset uit de Sanity-CDN, `src/lib/sanity/image.ts`), nooit via Astro `<Image>`. `alt` is verplicht; "Decoratief" in de Studio = `alt=""`.
+- **Rich text** is Portable Text, altijd via `<RichText>`. Platte tekst (SEO, JSON-LD): `platteTekst()`.
+- **Nieuw bloktype:** Sanity-objecttype in `schema/blocks/` (naam = `type`; `text` en `image` heten `textBlock`/`imageBlock`) → Zod in `schema.ts` (discriminated union op `type`) → projectie in `BLOCKS` (queries.ts) → `src/components/blocks/X.astro` → case in `BlockRenderer.astro` (de `assertNever` geeft een typefout als je die vergeet).
+- **Invulplekken:** lege velden komen niet uit Sanity mee; Zod vult verplichte-maar-nog-lege velden aan met `""` (`invulplek`). Componenten tonen lege waarden niet (`cleanItems`, `has()`). Lege blokken renderen niets.
+- **Prijsklasse** nooit tonen zonder akkoord van Victor (Site-instellingen → Projectoverzicht → Prijsklasse tonen).
 - **Geen contactformulier, geen kaart-iframe** (afspraak in het voorstel).
 - **Consent:** nieuwe embed-dienst = service in `src/lib/consent.ts` (iframemanager + cookieconsent-categorie `media`). Statistiek alleen cookieloos en pas na toestemming.
-- **Glob-patronen** in `src/content.config.ts`: sluit bestanden uit met een negatie (`['*.md', '!_*.md']`), niet met `[!_]*.md`. Dat laatste werkt bij de build maar breekt de hot reload in dev.
 - **Interactieve onderdelen** (filters, lightbox, voor/na, thema) initialiseren op `astro:page-load` vanwege de `<ClientRouter />`.
 - **Transities:** laag 3b, Interlude `3f1a9ce` met `curtain-lagado` (eigen variant van `curtain` waarin header en footer meedrijven), volgens `~/Code/_standards/TRANSITIONS.md` §7. Engine in `src/lib/interlude/` en transities in `src/transitions/` niet aanpassen (worden overschreven door `add-interlude.sh`); instellingen in `src/interlude.config.ts`, kleur via `--interlude-color` in `tokens.scss`. Modale `<dialog>`s sluiten op `interlude:leave`. Geen `transition:name`/`transition:animate` op elementen: die spelen niet.
 - Ontwerp volgt in Figma; houd componenten kaal en stuur stijl via tokens in `src/styles/tokens.scss` (Utopia via `utopia-core-scss`).

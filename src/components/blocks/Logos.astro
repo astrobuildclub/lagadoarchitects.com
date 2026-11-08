@@ -1,12 +1,11 @@
 ---
 // Klant- of perslogo's. Zonder logo wordt de naam getoond.
 import Img from '../Img.astro';
-import { resolveImage } from '../../lib/images';
 import { has, type BlockProps } from './scope';
 
 type Props = BlockProps<'logos'>;
-const { block, scope } = Astro.props;
-const items = block.items.map((item) => ({ ...item, image: item.logo ? resolveImage(scope, item.logo.src) : undefined }));
+const { block } = Astro.props;
+const items = block.items.map((item) => ({ ...item, image: item.logo?.src }));
 ---
 
 {

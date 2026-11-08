@@ -5,17 +5,16 @@
 // src/scripts/rotating-text.ts. Screenreaders krijgen één vaste zin met alle varianten;
 // zonder JS of met reduced motion staat de eerste variant er stil.
 import Img from '../Img.astro';
-import { resolveImage } from '../../lib/images';
 import { getContact } from '../../lib/content';
-import { md } from '../../lib/markdown';
+import RichText from '../RichText.astro';
 import { has, type BlockProps } from './scope';
 
 type Props = BlockProps<'hero'>;
-const { block, scope } = Astro.props;
-const images = block.beelden.map((b) => ({ ...b, image: resolveImage(scope, b.src, b.project) })).filter((b) => b.image);
+const { block } = Astro.props;
+const images = block.beelden.map((b) => ({ ...b, image: b.src }));
 
-const kopWissel = block.kopWissel.filter(has);
-const subkopWissel = block.subkopWissel.filter(has);
+const kopWissel = block.kopWissel.filter((w) => has(w));
+const subkopWissel = block.subkopWissel.filter((w) => has(w));
 const wisselt = kopWissel.length > 1 || subkopWissel.length > 1;
 const contact = block.adres ? await getContact() : undefined;
 const tel = contact?.telefoon?.replace(/[^\d+]/g, '').replace('(0)', '');
@@ -105,13 +104,13 @@ const woorden = (phrase: string) => phrase.split(' ').map((w, i, all) => (i < al
         </address>
       )
     }
-    {has(block.tekst) && <div class="hero__kolom hero__tekst" set:html={md(block.tekst)} />}
+    {has(block.tekst) && <div class="hero__kolom hero__tekst"><RichText value={block.tekst} /></div>}
   </div>
   {
     images.length > 0 && (
       <div class="wrapper wrapper--full hero__beelden" data-count={images.length}>
         {images.map((b, i) => (
-          <Img src={b.image!} alt={b.alt} priority={i === 0} sizes={i === 0 ? '100vw' : '50vw'} />
+          <Img src={b.image} alt={b.alt} priority={i === 0} sizes={i === 0 ? '100vw' : '50vw'} />
         ))}
       </div>
     )

@@ -1,5 +1,4 @@
 ---
-import type { ImageMetadata } from 'astro';
 import { ClientRouter } from 'astro:transitions';
 import '../styles/index.css';
 import CookieConsent from '../components/CookieConsent.astro';
@@ -8,13 +7,15 @@ import Header from '../components/Header.astro';
 import Interlude from '../components/Interlude.astro';
 import SiteMeta from '../components/SiteMeta.astro';
 import { getContact, getSettings } from '../lib/content';
+import VisualEditing from '../lib/sanity/VisualEditing';
+import type { SanityImage } from '../lib/schema';
 import { organizationJsonLd } from '../lib/seo';
 import { cleanPath } from '../lib/url';
 
 interface Props {
   title: string;
   description: string;
-  image?: ImageMetadata;
+  image?: SanityImage;
   imageAlt?: string;
   type?: 'website' | 'article';
   noindex?: boolean;
@@ -30,6 +31,8 @@ const accentStijl = [accent && `--accent: ${accent}`, accentTekst && `--accent-t
 const settings = await getSettings();
 const contact = await getContact();
 const isHome = cleanPath(Astro.url.pathname) === '/';
+// Alleen in de iframe van de Presentation tool, met een geldige preview-cookie (middleware.ts).
+const visualEditing = Astro.locals.visualEditing;
 ---
 
 <!doctype html>
@@ -76,6 +79,25 @@ const isHome = cleanPath(Astro.url.pathname) === '/';
     <script>
       import '../scripts/transitie-kleur';
     </script>
+    {visualEditing && <VisualEditing client:only="react" />}
+    {
+      visualEditing && (
+        <script is:inline>
+          // Alleen in de Presentation tool: elke klik wordt een volledige page load i.p.v. een
+          // ClientRouter-swap. De router haalt pagina's op via fetch (Sec-Fetch-Dest: empty), dus zonder
+          // Visual Editing; dan verliest de Studio de verbinding. Op window in de capture-fase: dit draait
+          // vóór Interlude en de router, die allebei links met data-astro-reload met rust laten.
+          window.addEventListener(
+            'click',
+            (event) => {
+              const link = event.target instanceof Element && event.target.closest('a[href]');
+              if (link) link.setAttribute('data-astro-reload', '');
+            },
+            true,
+          );
+        </script>
+      )
+    }
   </body>
 </html>
 

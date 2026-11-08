@@ -1,6 +1,6 @@
 ---
-// Rendert `blocks` uit de content in volgorde. Nieuw bloktype? Eerst lagado-content/README.md,
-// dan src/lib/schema.ts, dan hier een case en een component in ./blocks.
+// Rendert `blocks` uit de content in volgorde. Nieuw bloktype? Eerst schema/blocks/ (Studio), dan
+// src/lib/schema.ts en de projectie in src/lib/sanity/queries.ts, dan hier een case en een component in ./blocks.
 import type { Block } from '../lib/schema';
 import { assertNever, type BlockScope } from './blocks/scope';
 import BeforeAfter from './blocks/BeforeAfter.astro';

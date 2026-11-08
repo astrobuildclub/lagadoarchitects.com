@@ -1,10 +1,10 @@
 ---
-import { downloadUrl } from '../../lib/images';
 import { has, type BlockProps } from './scope';
 
 type Props = BlockProps<'downloads'>;
 const { block } = Astro.props;
-const items = block.items.map((d) => ({ ...d, url: downloadUrl(d.bestand) })).filter((d) => d.url);
+// `bestand` is de URL van het bestand in Sanity.
+const items = block.items.map((d) => ({ ...d, url: d.bestand })).filter((d) => d.url);
 ---
 
 {

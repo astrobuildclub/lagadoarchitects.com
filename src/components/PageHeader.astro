@@ -1,24 +1,25 @@
 ---
-import { md } from '../lib/markdown';
+import RichText from './RichText.astro';
+import type { RichText as RichTextValue } from '../lib/schema';
 
 interface Props {
   title: string;
-  intro?: string;
+  /** Portable Text uit Sanity, of een vaste zin (404). */
+  intro?: RichTextValue | string;
   /** Intro over de volle breedte van de container in plaats van max 32ch (/projecten). */
   breed?: boolean;
 }
 const { title, intro, breed = false } = Astro.props;
-// Een link naar `#verras` in de intro wordt de knop "Verras me" van de projectfilters
-// (ProjectFilter zoekt `[data-random]`). Zonder JS blijft het uitgeschakelde, gewone tekst.
-const introHtml = md(intro).replace(
-  /<a href="#verras">(.*?)<\/a>/,
-  '<button type="button" class="verras" data-random disabled>$1</button>',
-);
+// Een link naar `#verras` in de intro wordt de knop "Verras me" van de projectfilters (richtext/Link.astro).
 ---
 
 <header class="page-header">
   <h1>{title}</h1>
-  {intro && <div class:list={['page-header__intro', breed && 'page-header__intro--breed']} set:html={introHtml} />}
+  {intro?.length ? (
+    <div class:list={['page-header__intro', breed && 'page-header__intro--breed']}>
+      {typeof intro === 'string' ? <p>{intro}</p> : <RichText value={intro} />}
+    </div>
+  ) : null}
 </header>
 
 <style>

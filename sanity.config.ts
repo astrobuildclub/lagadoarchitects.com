@@ -1,5 +1,5 @@
 // Sanity Studio, ingebouwd in de site op /admin (@sanity/astro).
-// Presentation tool (Visual Editing) volgt in fase 4, samen met /api/preview (zie docs/sanity-plan.md).
+// Presentation tool: de site met drafts en klikbare overlays (standards/SANITY.md §3).
 import { nlNLLocale } from '@sanity/locale-nl-nl';
 import { CogIcon } from '@sanity/icons/Cog';
 import { DocumentIcon } from '@sanity/icons/Document';
@@ -7,11 +7,16 @@ import { EnvelopeIcon } from '@sanity/icons/Envelope';
 import { MenuIcon } from '@sanity/icons/Menu';
 import { ProjectsIcon } from '@sanity/icons/Projects';
 import { defineConfig } from 'sanity';
+import { presentationTool } from 'sanity/presentation';
 import { structureTool } from 'sanity/structure';
+import { resolve } from './src/lib/sanity/resolve';
 import { SINGLETONS, schemaTypes } from './schema';
 
 const projectId = import.meta.env.PUBLIC_SANITY_PROJECT_ID || 'unque637';
 const dataset = import.meta.env.PUBLIC_SANITY_DATASET || 'production';
+
+// In de Studio op /admin is de site dezelfde origin; lokaal (sanity CLI) valt hij terug op de dev-server.
+const previewOrigin = typeof location !== 'undefined' ? location.origin : 'http://localhost:4321';
 
 const singletonIds = new Set(Object.keys(SINGLETONS));
 /** Types die alleen als singleton bestaan: geen "nieuw document" in de Studio. */
@@ -56,6 +61,11 @@ export default defineConfig({
                 .child(S.document().schemaType(SINGLETONS[id].type).documentId(id).title(SINGLETONS[id].title)),
             ),
           ]),
+    }),
+    presentationTool({
+      title: 'Voorbeeld',
+      resolve,
+      previewUrl: { initial: previewOrigin, previewMode: { enable: '/api/preview', disable: '/api/preview/disable' } },
     }),
     nlNLLocale(),
   ],

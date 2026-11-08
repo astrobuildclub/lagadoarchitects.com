@@ -1,7 +1,6 @@
 // @ts-check
 import netlify from '@astrojs/netlify';
 import react from '@astrojs/react';
-import sitemap from '@astrojs/sitemap';
 import sanity from '@sanity/astro';
 import { defineConfig } from 'astro/config';
 import { loadEnv } from 'vite';
@@ -15,7 +14,9 @@ export default defineConfig({
   trailingSlash: 'never',
   build: { format: 'file' },
   prefetch: { prefetchAll: false, defaultStrategy: 'hover' },
-  // Statisch tot de datalaag op Sanity draait (fase 4); de Studio op /admin rendert in de browser.
+  // Server-rendered: content komt per request uit Sanity (achter Netlify's CDN-cache, zie middleware.ts),
+  // zodat publicaties zonder build online staan en Visual Editing drafts kan tonen.
+  output: 'server',
   adapter: netlify(),
   integrations: [
     sanity({
@@ -27,6 +28,5 @@ export default defineConfig({
       stega: { studioUrl: '/admin' },
     }),
     react(),
-    sitemap({ filter: (page) => !page.includes('/404') && !page.includes('/admin') }),
   ],
 });

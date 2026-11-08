@@ -11,7 +11,7 @@ import path from 'node:path';
 import { markdownToPortableText } from '@portabletext/markdown';
 import { createClient } from '@sanity/client';
 import { parse as parseYaml } from 'yaml';
-import { contactSchema, pageSchema, projectSchema, settingsSchema, type Block } from '../src/lib/schema';
+import { contactSchema, pageSchema, projectSchema, settingsSchema, type Block } from './markdown-schema';
 
 const DRY = process.argv.includes('--dry-run');
 const ROOT = path.resolve(import.meta.dirname, '../lagado-content');

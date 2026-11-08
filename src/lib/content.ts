@@ -1,31 +1,57 @@
-// De enige plek die content leest. Als Sanity komt, worden alleen deze functies vervangen
-// (GROQ in plaats van getCollection); componenten en pagina's blijven gelijk.
-import { getCollection, getEntry } from 'astro:content';
-import type { Block, Contact, ListItem, Page, Project, Settings } from './schema';
+// De enige plek die content leest. Bron: Sanity, via loadQuery() (published, of drafts in de Presentation tool).
+// De queries leveren de vorm uit schema.ts; Zod controleert die bij elk request, zodat componenten
+// en pagina's niets van Sanity hoeven te weten.
+import { stegaClean } from '@sanity/client/stega';
+import { loadQuery } from './sanity/load-query';
+import { parse } from './sanity/normalize';
+import { CONTACT_QUERY, PAGE_QUERY, PROJECTS_QUERY, SETTINGS_QUERY } from './sanity/queries';
+import {
+  contactSchema,
+  pageSchema,
+  projectSchema,
+  settingsSchema,
+  type Block,
+  type Contact,
+  type ListItem,
+  type Page,
+  type Project,
+  type Settings,
+} from './schema';
 
+// ── Documenten ─────────────────────────────────────────────
 export async function getSettings(): Promise<Settings> {
-  const entry = await getEntry('settings', 'site');
-  if (!entry) throw new Error('lagado-content/site.md ontbreekt');
-  return entry.data;
+  const { data } = await loadQuery<{ instellingen: Record<string, unknown> | null; navigatie: Record<string, unknown> | null }>({
+    query: SETTINGS_QUERY,
+  });
+  return parse(settingsSchema, data.instellingen && { ...data.instellingen, ...data.navigatie }, 'Site-instellingen');
 }
 
 export async function getPage(id: 'home' | 'bureau' | 'privacy'): Promise<Page> {
-  const entry = await getEntry('pages', id);
-  if (!entry) throw new Error(`lagado-content/${id}.md ontbreekt`);
-  return entry.data;
+  const { data } = await loadQuery({ query: PAGE_QUERY, params: { id: `page.${id}` } });
+  return parse(pageSchema, data, `Pagina ${id}`);
 }
 
 export async function getContact(): Promise<Contact> {
-  const entry = await getEntry('contact', 'contact');
-  if (!entry) throw new Error('lagado-content/contact.md ontbreekt');
-  return entry.data;
+  const { data } = await loadQuery({ query: CONTACT_QUERY });
+  return parse(contactSchema, data, 'Contact');
 }
 
-/** Alle projecten, op `volgorde` (laag = eerst), daarna op titel. */
+/**
+ * Alle projecten, op `volgorde` (laag = eerst), daarna op titel. Een project dat niet klopt met het model
+ * (bv. een half ingevulde draft in de preview) wordt overgeslagen en gelogd, zodat de rest van de site blijft werken.
+ */
 export async function getProjects(): Promise<Project[]> {
-  const entries = await getCollection('projecten');
-  return entries
-    .map((e) => ({ ...e.data, slug: e.id }))
+  const { data } = await loadQuery<unknown[]>({ query: PROJECTS_QUERY });
+  return (data ?? [])
+    .flatMap((raw) => {
+      const slug = (raw as { slug?: string }).slug ?? '?';
+      try {
+        return [{ ...parse(projectSchema, raw, `Project ${slug}`), slug: stegaClean(slug) }];
+      } catch (err) {
+        console.error(err instanceof Error ? err.message : err);
+        return [];
+      }
+    })
     .sort((a, b) => a.volgorde - b.volgorde || a.title.localeCompare(b.title, 'nl'));
 }
 
@@ -61,7 +87,7 @@ export async function getNextProject(current: Project): Promise<Project | undefi
 }
 
 // ── Opschonen van placeholders ─────────────────────────────
-// Het sjabloon gebruikt `jaar: 0000` en lege strings als invulplek. Die tonen we niet.
+// Lege velden komen uit Sanity niet mee; items met alleen een jaar of resultaat tonen we niet.
 export const hasContent = (item: Record<string, unknown>) =>
   Object.entries(item).some(([k, v]) => k !== 'jaar' && k !== 'resultaat' && typeof v === 'string' && v.trim() !== '');
 

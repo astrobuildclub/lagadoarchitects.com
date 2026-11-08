@@ -1,5 +1,5 @@
 ---
-import { md } from '../../lib/markdown';
+import RichText from '../RichText.astro';
 import { has, type BlockProps } from './scope';
 
 type Props = BlockProps<'text'>;
@@ -9,7 +9,7 @@ const Heading = block.niveau === 3 ? 'h3' : 'h2';
 
 <section class="text">
   {has(block.kop) && <Heading class="text__kop">{block.kop}</Heading>}
-  <div class="prose" set:html={md(block.tekst)} />
+  <div class="prose"><RichText value={block.tekst} /></div>
 </section>
 
 <style>

@@ -10,13 +10,13 @@
 | **SLA** | TODO (optioneel, zie voorstel) |
 | **Live** | TODO — domein bij cloud86 (alleen DNS); tijdelijk [lagadoarchitects.netlify.app](https://lagadoarchitects.netlify.app/) |
 | **Netlify** | team All This, site `lagadoarchitects` → [lagadoarchitects.netlify.app](https://lagadoarchitects.netlify.app/) |
-| **CMS** | Overstap naar Sanity loopt (project `unque637`, Studio op `/admin`; zie `docs/sanity-plan.md`). De site leest tot fase 4 nog uit `lagado-content/` (.md). |
+| **CMS** | Sanity, project `unque637`, dataset `production`. Studio op [`/admin`](https://lagadoarchitects.netlify.app/admin), met live preview (Presentation). Plan en stand: `docs/sanity-plan.md`. |
 | **Repo** | [github.com/astrobuildclub/lagadoarchitects.com](https://github.com/astrobuildclub/lagadoarchitects.com) |
 | **Notion** | TODO |
 
 ## Stack
 
-- Astro 7.3 · Node 22 (`.nvmrc`) · static, met `@astrojs/netlify` voor de Studio op `/admin`
+- Astro 7.3 · Node 22 (`.nvmrc`) · server-rendered (`@astrojs/netlify`) achter Netlify's CDN-cache (5 min, zie `src/middleware.ts`)
 - Sanity (`@sanity/astro`, `sanity` v6): schema's in `schema/`, Studio-config in `sanity.config.ts`
 - Styling: CSS + SCSS-tokens via `utopia-core-scss` (OKLCH, fluid type/space, cascade layers). Fonts: ABC Areal + ABC Areal Mono (variabel, self-hosted, niet in git; zie [Fonts](#fonts)). Geen Tailwind.
 - Animatie: GSAP (gebundeld, alleen core) voor de wisseltekst in de hero (`src/scripts/rotating-text.ts`) en paginatransities met Interlude (`curtain`) op `<ClientRouter />`
@@ -28,7 +28,6 @@
 nvm use
 npm install
 # fonts: zet de twee woff2's in public/fonts/ (zie Fonts hieronder)
-npm run placeholders   # placeholder-beelden voor wat nog niet is aangeleverd
 cp .env.example .env   # alleen als je nog geen .env hebt: statistiek, fonts, Sanity
 npm run dev            # http://localhost:4321
 ```
@@ -47,7 +46,7 @@ Migratie naar Sanity (eenmalig, herhaalbaar): `npm run migrate -- --dry-run` en 
 | `FONTS_TOKEN` | Fine-grained GitHub-token, alleen `All-This/fonts`, Contents: Read-only. Geheim, nooit `PUBLIC_`. Verloopt: tijdig vernieuwen. | GitHub → Settings → Developer settings → Fine-grained tokens |
 | `PUBLIC_SANITY_PROJECT_ID` | Sanity-project | sanity.io/manage → project |
 | `PUBLIC_SANITY_DATASET` | Dataset (`production`) | Idem |
-| `SANITY_API_READ_TOKEN` | Server-only token (Viewer) voor Visual Editing | sanity.io/manage → API → Tokens |
+| `SANITY_API_READ_TOKEN` | Server-only token (Viewer) voor Visual Editing; zonder token werkt de site, alleen de preview niet | sanity.io/manage → API → Tokens |
 | `SANITY_API_WRITE_TOKEN` | Alleen lokaal (Editor), voor het migratiescript; daarna intrekken | Idem |
 
 Waarden staan nooit in git. Productiewaarden: Netlify → Site configuration → Environment variables (let op deploy contexts).
@@ -66,12 +65,11 @@ De licentie (§10) verbiedt fonts in publieke repositories, en deze repo is publ
 ## Structuur
 
 ```
-lagado-content/      Content (.md) + beelden + downloads. Zie lagado-content/README.md
+lagado-content/      Archief van de markdown-content van vóór Sanity (bron van npm run migrate)
                      (input/ = brondocumenten van de klant, niet in git)
 schema/              Sanity-schema's: objects/, blocks/, documents/ (waardenlijsten uit src/lib/waarden.ts)
-scripts/             placeholders.mjs (overschrijft nooit bestaand beeld)
+scripts/             fonts.mjs, migrate-to-sanity.ts (+ markdown-schema.ts, bevroren)
 src/
-  content.config.ts  Content collections (glob op lagado-content/)
   components/        Layout, projectkaarten, BlockRenderer.astro
   components/blocks/ Eén component per bloktype
   layouts/           BaseLayout.astro
@@ -85,11 +83,12 @@ TODO.md              Openstaande projecttaken
 
 ## Content en CMS
 
-- **Nu:** content in `lagado-content/`. Victor levert Word-sjabloon + beeldmap; wij zetten om naar `projecten/<slug>.md` volgens `_template.md`. Bouwfout = ontbrekend verplicht veld of beeld.
-- **Contentmodel:** `lagado-content/README.md` is leidend; `src/lib/schema.ts` volgt 1-op-1.
+- **Beheer:** Victor werkt in de Studio op `/admin` (inloggen met zijn Sanity-account). "Voorbeeld" toont de site met drafts; publiceren staat binnen ~5 minuten live (CDN-cache).
+- **Contentmodel:** `schema/` (Studio) is leidend; `src/lib/schema.ts` (Zod) controleert bij elk request wat de queries (`src/lib/sanity/queries.ts`) opleveren. Uitleg per veld: `lagado-content/README.md` (nog geldig voor betekenis en waardenlijsten).
+- **Beelden:** in Sanity, geleverd via de Sanity-CDN met `srcset` (`<Img>`). Hotspot in de Studio bepaalt de uitsnede.
+- **Verborgen projecten:** een draft die nooit is gepubliceerd (bv. Tasgram, Tommy Jeans).
 - **Pagina's:** Home, Projecten (`/projecten`, met filters), Project (`/projecten/<slug>`), Over (`/over`, content in `bureau.md`), Contact (geen formulier), Privacy.
 - **Bouwstenen:** hero, text, image, gallery, columns, quote, video, colors, beforeAfter, projectGrid, team, list, cta, services, logos, downloads.
-- **Straks Sanity:**zelfde veldnamen; alleen `src/lib/content.ts` (en `images.ts`) wisselt.
 
 ## Privacy, toegankelijkheid en SEO
 
@@ -108,20 +107,22 @@ TODO.md              Openstaande projecttaken
 | `staging` | Branch deploy (goedgekeurde features, nog niet live) | https://staging--lagadoarchitects.netlify.app |
 | PR's | Deploy preview | link in de PR |
 
-Features gaan via een PR naar `staging`. Naar `main` alleen gebundelde releases (PR `staging → main`) en hotfixes. Commits met alleen documentatie (`*.md` in de root, `.github/`) starten geen build; Markdown-content in `lagado-content/` wel. Zie `~/Code/_standards/DEPLOY.md`.
+Features gaan via een PR naar `staging`. Naar `main` alleen gebundelde releases (PR `staging → main`) en hotfixes. Commits met alleen documentatie (`*.md` in de root, `.github/`) starten geen build. Content-wijzigingen in Sanity hebben geen build nodig. Zie `~/Code/_standards/DEPLOY.md`.
 
 ### Netlify
 
 - Node 22 via `.nvmrc` + `NODE_VERSION` in `netlify.toml`
+- Env: `PUBLIC_SANITY_PROJECT_ID`, `PUBLIC_SANITY_DATASET`, `SANITY_API_READ_TOKEN` (secret, ook voor Deploy previews), `FONTS_URL`, `FONTS_TOKEN`
+- Sanity CORS-origins (met credentials): `http://localhost:4321`, `https://lagadoarchitects.netlify.app`, `https://*--lagadoarchitects.netlify.app`, `https://lagadoarchitects.com`
 
 ## Bekende issues en afspraken
 
-- Beelden zijn placeholders; alt-teksten grotendeels leeg.
+- Alt-teksten deels leeg (de Studio markeert ze rood).
 - E-mail, LinkedIn, BNI, architectenregister-link en downloads ontbreken nog.
-- Prijsklasse nooit tonen zonder akkoord Victor (`projecten.toonPrijsfilter` in `site.md`).
+- Prijsklasse nooit tonen zonder akkoord Victor (Site-instellingen → Projectoverzicht).
 - Filters pas vanaf meer dan één waarde per groep.
 - Visueel ontwerp volgt in Figma; scaffold is bewust kaal.
-- Victors invuldocument gebruikt andere waardenlijsten; leidend is `lagado-content/README.md`.
+- Victors invuldocument gebruikt andere waardenlijsten; leidend is `src/lib/waarden.ts`.
 - Lokaal: `.claude/launch.json` gebruikt poort 4322 als 4321 bezet is.
 
 ---

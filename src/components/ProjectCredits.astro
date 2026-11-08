@@ -1,7 +1,6 @@
 ---
 // Credits, pers & awards en press-kit onderaan een project. Bouwteam en fotografie staan in het factsheet.
 import { cleanItems } from '../lib/content';
-import { downloadUrl } from '../lib/images';
 import { label } from '../lib/labels';
 import type { Project } from '../lib/schema';
 
@@ -15,7 +14,7 @@ const credits = p.credits
   .filter((c) => c.personen.length);
 const pers = cleanItems(p.pers);
 const awards = cleanItems(p.awards);
-const pressKit = downloadUrl(p.pressKit);
+const pressKit = p.pressKit;
 const hasAny = credits.length || pers.length || awards.length || pressKit;
 ---
 

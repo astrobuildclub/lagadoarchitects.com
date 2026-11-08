@@ -1,11 +1,10 @@
 ---
 import Img from '../Img.astro';
-import { resolveImage } from '../../lib/images';
 import { has, type BlockProps } from './scope';
 
 type Props = BlockProps<'image'>;
-const { block, scope, index } = Astro.props;
-const image = resolveImage(scope, block.src);
+const { block, index } = Astro.props;
+const image = block.src;
 const sizes = {
   content: '(min-width: 48rem) 42rem, 100vw',
   popout: '(min-width: 60rem) 54rem, 100vw',
