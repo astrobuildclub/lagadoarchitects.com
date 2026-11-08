@@ -8,7 +8,7 @@ import { has, type BlockProps } from './scope';
 
 type Props = BlockProps<'list'>;
 const { block } = Astro.props;
-const source = has(block.toonUit) ? await itemsFromPage(block.toonUit as 'bureau', block.soort) : cleanItems(block.items);
+const source = has(block.toonUit) ? await itemsFromPage(block.toonUit, block.soort) : cleanItems(block.items);
 const projects = await getProjects();
 const items = (block.limit ? source.slice(0, block.limit) : source).map((item) => ({
   jaar: item.jaar,

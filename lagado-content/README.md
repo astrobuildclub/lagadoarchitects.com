@@ -1,5 +1,7 @@
 # Lagado — contentstructuur
 
+> **Archief.** Sinds de overstap naar Sanity (nov 2026) leest de site niet meer uit deze map; hij is de bron van `npm run migrate`. De uitleg over velden, waardenlijsten en bouwstenen hieronder geldt nog steeds, nu voor de Studio. Schema: `schema/`, waardenlijsten: `src/lib/waarden.ts`.
+
 Eén `.md`-bestand per pagina of project. De **frontmatter** bevat de vaste velden, `blocks:` bevat de bouwstenen in volgorde. Veldnamen zijn identiek aan het Zod-schema (Astro content collections) en later aan het Sanity-schema, zodat de overstap naar Sanity een import is en geen herschrijving.
 
 ## Mappen

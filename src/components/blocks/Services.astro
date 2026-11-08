@@ -2,7 +2,7 @@
 // Diensten of principes als tegels. Met `vormen: true` krijgt elke tegel om en om een van de
 // drie projectvormen (styles/vorm.css) en een kleurvlak; de tekstkleur is per vlak gekozen op
 // contrast (WCAG 1.4.3). `anker` maakt de sectie bereikbaar via bv. /over#diensten.
-import { md } from '../../lib/markdown';
+import RichText from '../RichText.astro';
 import { has, type BlockProps } from './scope';
 
 type Props = BlockProps<'services'>;
@@ -30,7 +30,7 @@ const VLAKKEN = [
             style={block.vormen ? `--tegel-vlak: ${VLAKKEN[i % VLAKKEN.length][0]}; --tegel-tekst: ${VLAKKEN[i % VLAKKEN.length][1]}` : undefined}
           >
             <h3>{item.titel}</h3>
-            {has(item.tekst) && <div class="prose" set:html={md(item.tekst)} />}
+            {has(item.tekst) && <div class="prose"><RichText value={item.tekst} /></div>}
           </li>
         ))}
       </ul>

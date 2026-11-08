@@ -1,38 +1,58 @@
-// Contentmodel. Veldnamen en waardenlijsten volgen lagado-content/README.md
-// en worden later 1-op-1 het Sanity-schema. Wijzig eerst de README, dan dit bestand.
+// Contentmodel zoals de site het gebruikt. Bron is Sanity (schema/); de queries in src/lib/sanity/queries.ts
+// leveren precies deze vorm, en Zod controleert dat bij elk request. Wijzig eerst schema/, dan dit bestand.
 import { z } from 'astro/zod';
 
-// ── Waardenlijsten ─────────────────────────────────────────
-// Filters op /projecten (Victors eigen woorden, zie README).
-export const TYPE = ['thuiskomen', 'de-hort-op'] as const;
-export const VORM = ['recht', 'rond', 'schuin'] as const;
-export const KLEUR = ['rood', 'oranje', 'geel', 'groen', 'blauw', 'paars', 'roze', 'wit', 'zwart', 'grijs'] as const;
-export const STATUS = ['af', 'bijna', 'opgetekend'] as const;
-export const SCHAAL = ['stoel', 'kamer', 'huis', 'plein'] as const;
-export const OPGAVE = ['interieur', 'verbouw', 'nieuwbouw', 'landschap'] as const;
-export const MATERIAAL = ['hout', 'steen', 'beton', 'glas', 'tegels', 'metaal'] as const;
-
-export const PROGRAMMA = ['woning', 'winkel', 'horeca', 'kantoor', 'publiek', 'openbare-ruimte', 'meubel'] as const;
-export const OPDRACHTGEVER_TYPE = ['particulier', 'zakelijk', 'publiek'] as const;
-export const PRIJSKLASSE = ['laag', 'midden', 'hoog'] as const;
-export const BREEDTE = ['content', 'popout', 'feature', 'full'] as const;
-/** Kaarthoogte op de homepage (projectGrid): hoog, toren en groot beslaan 2 rijen, de rest 1 (Figma 447:2103). */
-export const HOMEPAGE_GROOTTE = ['mini', 'klein', 'hoog', 'toren', 'breed', 'groot', 'lang'] as const;
-/** Vorm van de kaart in het homeraster; leeg = afgeleid van de eerste `vorm`. */
-export const KAARTVORM = ['ovaal', 'afgerond', 'zacht', 'recht', 'schuin'] as const;
+// ── Waardenlijsten (src/lib/waarden.ts, gedeeld met de Studio) ──
+import {
+  BREEDTE,
+  HOMEPAGE_GROOTTE,
+  KAARTVORM,
+  KLEUR,
+  MATERIAAL,
+  OPDRACHTGEVER_TYPE,
+  OPGAVE,
+  PRIJSKLASSE,
+  PROGRAMMA,
+  RESULTAAT,
+  SCHAAL,
+  STATUS,
+  TYPE,
+  VORM,
+} from './waarden';
+export * from './waarden';
 
 // ── Bouwstenen voor velden ─────────────────────────────────
 const text = z.string().optional();
+/** Invulplek: verplicht in de Studio, maar nog leeg mag (Victor vult later in). Leeg = `""`, componenten slaan het over. */
+const invulplek = z.string().default('');
 const href = z.string().optional();
+
+/** Sanity-beeld: asset met afmetingen, plus crop en hotspot uit de Studio. */
+const fractie = z.number().nullable().optional();
+export const sanityImage = z.object({
+  asset: z.object({
+    _id: z.string(),
+    url: z.string(),
+    metadata: z.object({
+      dimensions: z.object({ width: z.number(), height: z.number() }),
+    }),
+  }),
+  crop: z.object({ top: fractie, bottom: fractie, left: fractie, right: fractie }).nullable().optional(),
+  hotspot: z.object({ x: fractie, y: fractie, width: fractie, height: fractie }).nullable().optional(),
+});
+
+/** Portable Text (alinea's, vet, cursief, links, lijstjes). Leeg = []. */
+export const richText = z.array(z.looseObject({ _type: z.string(), _key: z.string().optional() }));
+const rich = richText.optional();
 
 /** Beeld: `alt` is verplicht (WCAG 1.1.1), `""` betekent decoratief. */
 export const imageRef = z.object({
-  src: z.string(),
+  src: sanityImage,
   alt: z.string(),
   caption: text,
 });
 
-const link = z.object({ label: z.string(), href: z.string() });
+const link = z.object({ label: z.string(), href: invulplek });
 const seo = z
   .object({ titel: text, beschrijving: text })
   .optional();
@@ -47,7 +67,7 @@ const persItem = z.object({
 const awardItem = z.object({
   jaar: z.number().optional(),
   naam: text,
-  resultaat: z.enum(['winnaar', 'genomineerd', 'finalist']).optional(),
+  resultaat: z.enum(RESULTAAT).optional(),
   project: text,
 });
 
@@ -65,17 +85,17 @@ const heroBlock = z.object({
   link: link.optional(),
   /** Adres uit contact.md als kolom naast kop en subkop. */
   adres: z.boolean().default(false),
-  /** Korte tekst (markdown) als laatste kolom, bv. de herkomst van de naam. */
-  tekst: text,
+  /** Korte tekst als laatste kolom, bv. de herkomst van de naam. */
+  tekst: rich,
   /** 0–5 beelden; leeg = hero zonder beeld. */
-  beelden: z.array(imageRef.extend({ project: text })).max(5).default([]),
+  beelden: z.array(imageRef).max(5).default([]),
 });
 
 const textBlock = z.object({
   type: z.literal('text'),
   kop: text,
   niveau: z.union([z.literal(2), z.literal(3)]).optional(),
-  tekst: z.string(),
+  tekst: richText.default([]),
 });
 
 const imageBlock = imageRef.extend({
@@ -92,7 +112,7 @@ const galleryBlock = z.object({
 const columnsBlock = z.object({
   type: z.literal('columns'),
   kop: text,
-  tekst: z.string(),
+  tekst: richText.default([]),
   image: imageRef,
   beeldPositie: z.enum(['links', 'rechts']).default('rechts'),
 });
@@ -108,11 +128,11 @@ const videoBlock = z.object({
   type: z.literal('video'),
   url: z.string(),
   titel: z.string(),
-  poster: text,
+  poster: sanityImage.optional(),
   caption: text,
 });
 
-const kleur = z.object({ label: z.string(), hex: z.string() });
+const kleur = z.object({ label: z.string(), hex: invulplek });
 const colorsBlock = z.object({
   type: z.literal('colors'),
   kleuren: z.array(kleur).default([]),
@@ -155,7 +175,7 @@ const teamBlock = z.object({
       naam: z.string(),
       rol: text,
       foto: imageRef.pick({ src: true, alt: true }).optional(),
-      bio: text,
+      bio: rich,
       linkedin: text,
     }),
   ),
@@ -167,6 +187,7 @@ const listBlock = z.object({
   kop: text,
   items: z.array(listItem).default([]),
   /** Haal items uit een andere pagina (bv. `bureau`) in plaats van `items`. */
+  /** Slug van de pagina waar de items vandaan komen. */
   toonUit: text,
   limit: z.number().optional(),
   /** Zoveel items direct zichtbaar; de rest achter "Toon alles" (uitklap). */
@@ -187,7 +208,7 @@ const servicesBlock = z.object({
   anker: text,
   /** Tegels in de kaartvormen (recht, rond, schuin om en om) en accentkleuren. */
   vormen: z.boolean().default(false),
-  items: z.array(z.object({ titel: z.string(), tekst: text })).default([]),
+  items: z.array(z.object({ titel: z.string(), tekst: rich })).default([]),
 });
 
 const logosBlock = z.object({
@@ -198,7 +219,8 @@ const logosBlock = z.object({
     .default([]),
 });
 
-const downloadItem = z.object({ label: z.string(), bestand: z.string() });
+/** `bestand` is de URL van het bestand in Sanity. */
+const downloadItem = z.object({ label: z.string(), bestand: invulplek });
 const downloadsBlock = z.object({
   type: z.literal('downloads'),
   kop: text,
@@ -227,6 +249,8 @@ export const block = z.discriminatedUnion('type', [
 export type Block = z.infer<typeof block>;
 export type BlockOf<T extends Block['type']> = Extract<Block, { type: T }>;
 export type ImageRef = z.infer<typeof imageRef>;
+export type SanityImage = z.infer<typeof sanityImage>;
+export type RichText = z.infer<typeof richText>;
 export type PersItem = z.infer<typeof persItem>;
 export type AwardItem = z.infer<typeof awardItem>;
 export type ListItem = z.infer<typeof listItem>;
@@ -238,41 +262,54 @@ export const settingsSchema = z.object({
   taal: z.string().default('nl'),
   url: z.url(),
   navigatie: z.array(link).min(1).max(5),
-  footer: z.object({
-    tekst: text,
-    links: z.array(z.object({ label: z.string(), href: z.string() })).default([]),
-    privacy: z.string(),
-    /** Uitsmijter onderaan de footer (Gulliver). */
-  }),
+  /** Vier kolommen onder het logo (de eerste twee breed). Een link naar #cookies is de knop Cookie-instellingen. */
+  footer: z.object({ kolommen: z.array(z.object({ tekst: richText.default([]) })).max(4).default([]) }).default({ kolommen: [] }),
   seo: z.object({
     titelPatroon: z.string().default('%s'),
     beschrijving: text,
-    deelAfbeelding: z.object({ src: z.string(), alt: z.string() }).partial().optional(),
+    deelAfbeelding: imageRef.pick({ src: true, alt: true }).optional(),
   }),
   projecten: z
-    .object({ intro: text, toonPrijsfilter: z.boolean().default(false) })
+    .object({ intro: rich, toonPrijsfilter: z.boolean().default(false) })
     .default({ toonPrijsfilter: false }),
-  analytics: text,
+  /** Statistiek: cookieloos (Umami, Plausible) zonder banner, Google Analytics pas na toestemming. */
+  analytics: z
+    .object({
+      dienst: z.enum(['geen', 'umami', 'plausible', 'google']).default('geen'),
+      umamiId: text,
+      umamiScript: text,
+      plausibleDomein: text,
+      plausibleScript: text,
+      googleId: text,
+    })
+    .default({ dienst: 'geen' }),
 });
 
 export const pageSchema = z.object({
   title: z.string(),
-  intro: text,
-  seo,
+  /** Leeg bij de home (die staat op `/`). */
+  slug: text,
+  /** `blokken`: bouwstenen. `tekst`: één lopende tekst met koppen (`inhoud`), zoals Privacy. */
+  template: z.enum(['blokken', 'tekst']).default('blokken'),
+  intro: rich,
+  seo: z.object({ titel: text, beschrijving: text, noindex: z.boolean().optional() }).optional(),
   blocks: z.array(block).default([]),
+  inhoud: richText.default([]),
+  /** Tekstpagina: knop "Cookie-instellingen aanpassen" onderaan (Privacy). */
+  cookieKnop: z.boolean().default(false),
 });
 
 export const contactSchema = z.object({
   title: z.string(),
-  intro: text,
-  tekst: text,
-  sfeerbeeld: z.object({ src: z.string(), alt: z.string() }).optional(),
+  intro: rich,
+  tekst: rich,
+  sfeerbeeld: imageRef.pick({ src: true, alt: true }).optional(),
   contactpersoon: z.object({ naam: z.string(), rol: text }).optional(),
-  /** Portret met quote van de oprichter. `quote` is markdown (links mogen). */
-  bio: z.object({ kop: text, foto: z.object({ src: z.string(), alt: z.string() }).optional(), quote: z.string() }).optional(),
-  /** Oproep voor stagiairs. `tekst` is markdown. */
-  stage: z.object({ kop: z.string(), tekst: z.string() }).optional(),
-  email: z.string(),
+  /** Portret met quote van de oprichter. */
+  bio: z.object({ kop: text, foto: imageRef.pick({ src: true, alt: true }).optional(), quote: richText.default([]) }).optional(),
+  /** Oproep voor stagiairs. */
+  stage: z.object({ kop: z.string(), tekst: richText.default([]) }).optional(),
+  email: invulplek,
   telefoon: text,
   adres: z.object({
     naam: text,
@@ -283,7 +320,7 @@ export const contactSchema = z.object({
     bezoek: text,
   }),
   kaart: z
-    .object({ link: text, statischBeeld: z.object({ src: z.string(), alt: z.string() }).optional() })
+    .object({ link: text, statischBeeld: imageRef.pick({ src: true, alt: true }).optional() })
     .optional(),
   bedrijf: z.object({
     kvk: text,
@@ -292,13 +329,15 @@ export const contactSchema = z.object({
     bank: text,
     lidmaatschappen: z.array(z.object({ label: z.string(), href })).default([]),
   }),
-  social: z.array(z.object({ label: z.string(), href: z.string() })).default([]),
+  social: z.array(link).default([]),
   downloads: z.array(downloadItem).default([]),
   seo,
 });
 
 const persoon = z.object({ naam: z.string(), url: text });
 
+// "jaarOplevering verplicht als status = af" bewaakt de Studio bij publiceren (schema/documents/project.ts);
+// hier niet, zodat een onvolledige draft in de Presentation tool toch te zien is.
 export const projectSchema = z
   .object({
     // Identiteit
@@ -306,7 +345,7 @@ export const projectSchema = z
     tagline: z.string().min(1),
     /** De ontwerpvraag, groot bovenaan de projecttekst. Trigger voor bezoekers om hun eigen vraag te herkennen. */
     vraag: text,
-    intro: z.string().min(1),
+    intro: richText.default([]),
 
     // Filters (volgorde zoals op /projecten); ook getoond in het factsheet
     type: z.enum(TYPE),
@@ -348,14 +387,11 @@ export const projectSchema = z
     credits: z.array(z.object({ rol: z.string(), personen: z.array(persoon) })).default([]),
     pers: z.array(persItem).default([]),
     awards: z.array(awardItem).default([]),
+    /** URL van het bestand in Sanity. */
     pressKit: text,
 
     seo,
     blocks: z.array(block).default([]),
-  })
-  .refine((p) => p.status !== 'af' || !!p.jaarOplevering, {
-    message: 'jaarOplevering is verplicht als status = af',
-    path: ['jaarOplevering'],
   });
 
 export type Settings = z.infer<typeof settingsSchema>;

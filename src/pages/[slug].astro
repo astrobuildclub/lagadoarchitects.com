@@ -1,0 +1,59 @@
+---
+// Pagina's uit Sanity op /<slug> (Over, Privacy en wat Victor zelf toevoegt). Vaste routes (/projecten,
+// /contact) gaan voor; de Studio voorkomt dat een pagina zo'n URL krijgt.
+// Template `blokken`: bouwstenen. Template `tekst`: één lopende tekst met koppen (Privacy).
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BlockRenderer from '../components/BlockRenderer.astro';
+import PageHeader from '../components/PageHeader.astro';
+import RichText from '../components/RichText.astro';
+import { getPage, getSettings } from '../lib/content';
+import { platteTekst } from '../lib/richtext';
+import { pageDescription, pageTitle } from '../lib/seo';
+
+const page = await getPage(Astro.params.slug ?? '');
+if (!page) return Astro.rewrite('/404');
+const settings = await getSettings();
+---
+
+<BaseLayout
+  title={pageTitle(settings, page)}
+  description={pageDescription(settings, { ...page, fallbackDescription: platteTekst(page.intro) })}
+  noindex={page.seo?.noindex}
+>
+  <div class="layout flow">
+    <PageHeader title={page.title} intro={page.intro} />
+    {
+      page.template === 'tekst' ? (
+        <>
+          <div class="prose tekstpagina">
+            <RichText value={page.inhoud} />
+          </div>
+          {page.cookieKnop && (
+            <p>
+              <button type="button" class="button" data-cc="show-preferencesModal">
+                Cookie-instellingen aanpassen
+              </button>
+            </p>
+          )}
+        </>
+      ) : (
+        <BlockRenderer blocks={page.blocks} />
+      )
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  /* Koppen in een tekstpagina zoals de koppen van het tekstblok (Text.astro); een h2 opent een nieuwe
+     sectie, met dezelfde ruimte als tussen blokken (.flow, layout.css). */
+  .tekstpagina :global(:is(h2, h3)) {
+    margin-block: var(--space-l) var(--space-s);
+    letter-spacing: -0.05ch;
+  }
+  .tekstpagina :global(h2) {
+    margin-block-start: var(--flow-space, var(--space-xl-3xl));
+  }
+  .tekstpagina :global(:is(h2, h3):first-child) {
+    margin-block-start: 0;
+  }
+</style>

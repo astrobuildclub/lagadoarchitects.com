@@ -1,10 +1,10 @@
 // Kaartkleur van een project: `accentkleur` als die is ingevuld, anders de bepalende kleur van het
-// hero-beeld (sharp, bij de build). De tekstkleur (wit of zwart) volgt uit het contrast (WCAG 1.4.3).
-import { statSync } from 'node:fs';
-import path from 'node:path';
+// hero-beeld (sharp, op een thumbnail van 48×48 uit de Sanity-CDN). De tekstkleur (wit of zwart) volgt
+// uit het contrast (WCAG 1.4.3).
 import sharp from 'sharp';
+import { urlFor } from './sanity/image';
 import { hexToOklch } from './color';
-import type { Project } from './schema';
+import type { Project, SanityImage } from './schema';
 
 export interface Kaartkleur {
   /** Vlakkleur als oklch(). */
@@ -18,6 +18,8 @@ type Rgb = [number, number, number];
 const WIT = 'oklch(99% 0 0)';
 const ZWART = 'oklch(18% 0 0)';
 const cache = new Map<string, Rgb>();
+/** Als de thumbnail niet laadt: neutraal, zodat de pagina nooit op een kaartkleur breekt. */
+const GRIJS: Rgb = [128, 128, 128];
 
 const toHex = (rgb: Rgb) => `#${rgb.map((c) => c.toString(16).padStart(2, '0')).join('')}`;
 
@@ -43,13 +45,15 @@ function luminance([r, g, b]: Rgb) {
  * levert het gemiddelde van zijn pixels. Zo wint het blauw van een trap van een witte muur.
  * Heeft het beeld nauwelijks kleur (< 4 % verzadigde pixels), dan het gemiddelde van alles.
  */
-async function bepalend(slug: string, src: string): Promise<Rgb> {
-  const file = path.join(process.cwd(), 'lagado-content/projecten/images', slug, src);
-  // Wijzigingsdatum in de sleutel: een vervangen foto krijgt in dev meteen een nieuwe kleur.
-  const key = `${file}:${statSync(file).mtimeMs}`;
-  const hit = cache.get(key);
+async function bepalend(beeld: SanityImage): Promise<Rgb> {
+  // Asset-ID's veranderen als de foto verandert (inhoudshash): de cache blijft altijd geldig.
+  // Crop en hotspot horen erbij, die zijn per project in te stellen.
+  const url = urlFor(beeld).width(48).height(48).fit('crop').format('png').url();
+  const hit = cache.get(url);
   if (hit) return hit;
-  const { data } = await sharp(file).resize(48, 48, { fit: 'cover' }).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Thumbnail voor de kaartkleur niet geladen (${res.status}): ${url}`);
+  const { data } = await sharp(Buffer.from(await res.arrayBuffer())).resize(48, 48, { fit: 'cover' }).removeAlpha().raw().toBuffer({ resolveWithObject: true });
   const vakken = Array.from({ length: 24 }, () => ({ gewicht: 0, n: 0, rgb: [0, 0, 0] }));
   const totaal = [0, 0, 0];
   let kleurrijk = 0;
@@ -77,12 +81,12 @@ async function bepalend(slug: string, src: string): Promise<Rgb> {
   const rgb = (
     kleurrijk / pixels < 0.04 ? totaal.map((c) => Math.round(c / pixels)) : beste.rgb.map((c) => Math.round(c / beste.n))
   ) as Rgb;
-  cache.set(key, rgb);
+  cache.set(url, rgb);
   return rgb;
 }
 
 export async function kaartkleur(p: Project): Promise<Kaartkleur> {
-  const rgb = fromHex(p.accentkleur) ?? (await bepalend(p.slug, p.hero.src));
+  const rgb = fromHex(p.accentkleur) ?? (await bepalend(p.hero.src).catch(() => GRIJS));
   const l = luminance(rgb);
   // Contrast met wit (L=1) tegen zwart (L≈0.0277 voor oklch 18%): kies de hoogste ratio.
   const metWit = 1.05 / (l + 0.05);

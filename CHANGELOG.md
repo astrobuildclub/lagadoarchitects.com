@@ -7,6 +7,17 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 
 ## [Unreleased]
 
+### Gewijzigd
+- Studio: alle pagina's onder *Pagina's* (Home, Contact, Over, Privacy) en zelf nieuwe pagina's aanmaken, met URL en template *Bouwstenen* of *Tekst*. Privacy is een tekstpagina (koppen in de tekst, knop Cookie-instellingen aan te zetten). Nieuwe route `src/pages/[slug].astro`; `over.astro` en `privacy.astro` weg.
+- Menu en footer in de site-instellingen; het document *Navigatie en footer* is weg. Footer = vier invulbare kolommen (`#cookies` wordt de knop Cookie-instellingen).
+- Presentation tool heet weer standaard *Presentation*.
+- Consent slimmer: geen banner vooraf; video's vragen toestemming op de video zelf. Statistiek kies je in de Studio (Site-instellingen → Statistiek): Umami of Plausible cookieloos zonder banner, Google Analytics alleen na toestemming (dan wel een banner, intrekken wist de cookies). `PUBLIC_ANALYTICS_*` vervallen.
+
+### Opgelost
+- "Cookie-instellingen" (footer, privacypagina) werkte niet na navigeren binnen de site: cookieconsent koppelt knoppen maar één keer. Nu één listener op het document.
+- Cookie-voorkeuren in donkere modus: titel van een categorie viel weg bij hover (licht vlak, witte tekst).
+- Bestaande content omgezet met `scripts/sanity/2026-11-08-paginas-en-footer.ts`; `npm run migrate` weigert nu zonder `--overschrijf-sanity`.
+
 ### Opgelost
 - /projecten: de kaartvorm volgt altijd de `vorm` uit de content, zodat de kaart klopt met het vormfilter (Easehouse, schuin, verscheen rond door `kaartvorm: afgerond`). `kaartvorm` geldt alleen op de home.
 
@@ -74,6 +85,19 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Vijf placeholder-projecten + veld `homepageGrootte` (`s` / `m` / `l`) voor het homepage-raster.
 - Fonts: Instrument Sans (variable) en DM Mono (specs/meta), self-hosted via Fontsource.
 - `utopia-core-scss` + Sass: type- en spaceschaal in `tokens.scss` (360→2560, tweakbaar).
+- `docs/sanity-plan.md`: plan voor de overstap van markdown naar Sanity (server-output, Visual Editing, Portable Text, migratiescript, terugvoeren naar `_standards`).
+- Sanity-variabelen in `.env.example` en de README-tabel.
+- `docs/sanity-plan.md` bijgewerkt naar het contentmodel op `staging` (filters, kaartkleur, hero-wisseltekst, `/over`) en project-id `unque637`.
+- Sanity fase 1: `@sanity/astro`, `sanity` v6, React, `@astrojs/netlify`; Studio op `/admin` (project `unque637`, NL-taal). Site blijft statisch tot de datalaag omgaat.
+- Sanity fase 2: Studio-schema's in `schema/` (project, pagina's, contact, site-instellingen, navigatie, 17 bouwstenen, beeld met verplichte alt of "decoratief", Portable Text). Waardenlijsten verhuisd naar `src/lib/waarden.ts`, gedeeld door Zod en Studio.
+- Sanity fase 3: `scripts/migrate-to-sanity.ts` (`npm run migrate`, `-- --dry-run`). Herhaalbaar: vaste document-ID's en `_key`s, markdown → Portable Text, slugs → references, verborgen projecten (`_naam.md`) als draft. Gemigreerd naar `production`: 40 projecten, 2 concepten, pagina's, contact, instellingen en 312 beelden. `projecten.intro` in de site-instellingen is nu ook Portable Text.
+- Sanity fase 4 en 5: de site leest alles uit Sanity. Server-rendered (`output: 'server'`) achter Netlify's CDN-cache (5 min, `stale-while-revalidate`); Visual Editing volgens `_standards/SANITY.md` (`/api/preview` met secret, ondertekende cookie, alleen in de iframe, Presentation tool met `resolve`). Datalaag `content.ts` → `loadQuery()` met cache per request, Zod controleert elk resultaat; stega alleen in getoonde tekst.
+- Beelden via de Sanity-CDN (`<Img>` met srcset, hotspot als `object-position`), deelafbeelding bijgesneden rond de hotspot. Kaartkleur rekent met hetzelfde algoritme op een thumbnail uit de CDN. Downloads met `?dl=`.
+- Portable Text via `<RichText>`; `#verras` in een link blijft de "Verras me"-knop. Eigen sitemap (`/sitemap-index.xml`) met projecten uit Sanity. Concepten zijn drafts: niet live, wel in de preview.
+- Document-ID's zonder punt (`page-home`, `project-<slug>`): Sanity behandelt ID's met een punt als privé, waardoor pagina's en projecten zonder token onzichtbaar waren (lokaal en op Netlify). Opnieuw gemigreerd, oude documenten verwijderd.
+
+### Verwijderd
+- Content collections (`src/content.config.ts`), `src/lib/markdown.ts`, `marked`, `@astrojs/sitemap` en `scripts/placeholders.mjs`. `lagado-content/` blijft als archief en bron van de migratie.
 
 ### Opgelost
 - Beeldviewer (gallery-lightbox): alle beelden stonden tegelijk in beeld, de nog niet geladen als kapot beeld met alt-tekst (`display: grid` overschreef `hidden`). Nu één beeld tegelijk, het vorige en volgende worden vooraf geladen, de pagina scrolt niet mee en de knoppen zijn grijze pillen.

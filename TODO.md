@@ -12,7 +12,7 @@ Openstaande projecttaken. Afgeronde items → regel in `CHANGELOG.md` onder `[Un
 - [ ] Figma-ontwerp verwerken (tokens + componenten)
 - [ ] Victors projectcontent + echte beelden i.p.v. placeholders
 - [ ] Alt-teksten invullen
-- [ ] Homepage-statement (`home.md` text-blok)
+- [ ] Homepage-statement (Home → tekstblok)
 - [ ] Contact: e-mail, LinkedIn, BNI, architectenregister, downloads
 - [ ] Prijsklasse-filter: alleen na akkoord Victor
 
@@ -27,5 +27,9 @@ Openstaande projecttaken. Afgeronde items → regel in `CHANGELOG.md` onder `[Un
 - [ ] Home: wat komt er verder op de home (onder de hero)?
 
 ## Techniek (later)
-- [ ] Sanity CMS (zelfde veldnamen als `lagado-content/`)
+- [ ] Sanity: Viewer-token als `SANITY_API_READ_TOKEN` in Netlify (Production, Deploy previews, Branch deploys) en CORS-origins toevoegen (zie README → Netlify)
+- [ ] Sanity: Victor uitnodigen (rol Editor) en Studio + Voorbeeld testen in de deploy preview
+- [ ] Sanity: Editor-token van de migratie intrekken zodra de migratie definitief is
+- [ ] Sanity: webhook bij publiceren → Netlify cache purge (nu max. 5 min vertraging)
+- [ ] `lagado-content/` en `scripts/markdown-schema.ts` weg na livegang
 - [ ] Cookieloze statistiek (`PUBLIC_ANALYTICS_*`) na consent

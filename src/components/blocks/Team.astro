@@ -1,12 +1,11 @@
 ---
 import Img from '../Img.astro';
-import { resolveImage } from '../../lib/images';
-import { md } from '../../lib/markdown';
+import RichText from '../RichText.astro';
 import { has, type BlockProps } from './scope';
 
 type Props = BlockProps<'team'>;
-const { block, scope } = Astro.props;
-const personen = block.personen.map((p) => ({ ...p, image: p.foto ? resolveImage(scope, p.foto.src) : undefined }));
+const { block } = Astro.props;
+const personen = block.personen.map((p) => ({ ...p, image: p.foto?.src }));
 ---
 
 <section class="team popout">
@@ -19,7 +18,7 @@ const personen = block.personen.map((p) => ({ ...p, image: p.foto ? resolveImage
           <div>
             <h3>{p.naam}</h3>
             {has(p.rol) && <p class="muted">{p.rol}</p>}
-            {has(p.bio) && <div class="prose" set:html={md(p.bio)} />}
+            {has(p.bio) && <div class="prose"><RichText value={p.bio} /></div>}
             {has(p.linkedin) && <p><a href={p.linkedin} rel="noopener">LinkedIn</a></p>}
           </div>
         </li>

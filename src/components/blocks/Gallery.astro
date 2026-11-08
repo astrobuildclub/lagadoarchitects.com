@@ -1,20 +1,13 @@
 ---
 // Raster met lightbox. Zonder JS is elk beeld een link naar het grote bestand;
 // met JS opent een <dialog> met vorige/volgende (pijltjestoetsen) en Escape om te sluiten.
-import { getImage } from 'astro:assets';
 import Img from '../Img.astro';
-import { resolveImage } from '../../lib/images';
+import { imageUrl } from '../../lib/sanity/image';
 import { has, type BlockProps } from './scope';
 
 type Props = BlockProps<'gallery'>;
-const { block, scope } = Astro.props;
-const items = await Promise.all(
-  block.images.map(async (item) => {
-    const image = resolveImage(scope, item.src)!;
-    const large = await getImage({ src: image, width: Math.min(image.width, 2400) });
-    return { ...item, image, large: large.src };
-  }),
-);
+const { block } = Astro.props;
+const items = block.images.map((item) => ({ ...item, image: item.src, large: imageUrl(item.src, 2400) }));
 const sizes = block.kolommen === 2 ? '50vw' : '(min-width: 48rem) 33vw, 50vw';
 ---
 

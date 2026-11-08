@@ -1,24 +1,24 @@
 ---
-// Contact: geen formulier en geen kaart-iframe (AVG). Gegevens uit lagado-content/contact.md.
+// Contact: geen formulier en geen kaart-iframe (AVG). Gegevens uit het document Contact in Sanity.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Img from '../components/Img.astro';
 import PageHeader from '../components/PageHeader.astro';
 import { getContact, getSettings } from '../lib/content';
-import { downloadUrl, pageImage } from '../lib/images';
-import { md } from '../lib/markdown';
+import RichText from '../components/RichText.astro';
+import { platteTekst } from '../lib/richtext';
 import { pageDescription, pageTitle } from '../lib/seo';
 
 const settings = await getSettings();
 const c = await getContact();
-const sfeerbeeld = c.sfeerbeeld?.src ? pageImage(c.sfeerbeeld.src) : undefined;
-const bioFoto = c.bio?.foto?.src ? pageImage(c.bio.foto.src) : undefined;
-const kaartBeeld = c.kaart?.statischBeeld?.src ? pageImage(c.kaart.statischBeeld.src) : undefined;
+const sfeerbeeld = c.sfeerbeeld?.src;
+const bioFoto = c.bio?.foto?.src;
+const kaartBeeld = c.kaart?.statischBeeld?.src;
 const tel = c.telefoon?.replace('(0)', '').replace(/[^\d+]/g, '');
 const social = c.social.filter((s) => s.href);
-const downloads = c.downloads.map((d) => ({ ...d, url: downloadUrl(d.bestand) })).filter((d) => d.url);
+const downloads = c.downloads.map((d) => ({ ...d, url: d.bestand })).filter((d) => d.url);
 ---
 
-<BaseLayout title={pageTitle(settings, c)} description={pageDescription(settings, { ...c, fallbackDescription: c.intro })}>
+<BaseLayout title={pageTitle(settings, c)} description={pageDescription(settings, { ...c, fallbackDescription: platteTekst(c.intro) })}>
   <div class="layout flow">
     <PageHeader title={c.title} intro={c.intro} />
 
@@ -36,13 +36,13 @@ const downloads = c.downloads.map((d) => ({ ...d, url: downloadUrl(d.bestand) })
           {bioFoto && <Img src={bioFoto} alt={c.bio.foto!.alt} sizes="(min-width: 48rem) 16rem, 60vw" class="bio__foto" />}
           <div>
             {c.bio.kop && <h2>{c.bio.kop}</h2>}
-            <blockquote class="prose" set:html={md(c.bio.quote)} />
+            <blockquote class="prose"><RichText value={c.bio.quote} /></blockquote>
           </div>
         </section>
       )
     }
 
-    {c.tekst && <div class="prose contact__cta" set:html={md(c.tekst)} />}
+    {c.tekst?.length ? <div class="prose contact__cta"><RichText value={c.tekst} /></div> : null}
 
     <div class="contact popout">
       <section>
@@ -103,7 +103,7 @@ const downloads = c.downloads.map((d) => ({ ...d, url: downloadUrl(d.bestand) })
       c.stage && (
         <section class="stage prose">
           <h2>{c.stage.kop}</h2>
-          <Fragment set:html={md(c.stage.tekst)} />
+          <RichText value={c.stage.tekst} />
         </section>
       )
     }

@@ -1,20 +1,17 @@
 ---
-// Compacte footer (Figma 449:6819): boven het woordmerk met payoff, daaronder vijf kolommen:
-// herkomst van de naam (twee breed), adres, bedrijfsgegevens, en privacy/cookies/credits.
+// Compacte footer (Figma 449:6819): boven het woordmerk met payoff, daaronder vier kolommen uit de
+// site-instellingen in Sanity (Footer → Kolommen). De eerste is twee keer zo breed (herkomst van de naam).
+// Een link naar #cookies wordt de knop Cookie-instellingen (richtext/Link.astro).
 import Logo from './Logo.astro';
-import { downloadUrl } from '../lib/images';
-import type { Contact, Settings } from '../lib/schema';
+import RichText from './RichText.astro';
+import { heeftTekst } from '../lib/richtext';
+import type { Settings } from '../lib/schema';
 
 interface Props {
   settings: Settings;
-  contact: Contact;
 }
-const { settings, contact } = Astro.props;
-const { adres, bedrijf } = contact;
-const links = [...settings.footer.links, ...contact.social]
-  .filter((l, i, all) => l.href && all.findIndex((x) => x.href === l.href) === i);
-const downloads = contact.downloads.map((d) => ({ ...d, url: downloadUrl(d.bestand) })).filter((d) => d.url);
-const tel = contact.telefoon?.replace(/[^\d+]/g, '').replace('(0)', '');
+const { settings } = Astro.props;
+const kolommen = settings.footer.kolommen.filter((k) => heeftTekst(k.tekst));
 ---
 
 <footer class="site-footer">
@@ -29,33 +26,13 @@ const tel = contact.telefoon?.replace(/[^\d+]/g, '').replace('(0)', '');
     </div>
 
     <div class="site-footer__grid">
-      {settings.footer.tekst && <p class="site-footer__tekst">{settings.footer.tekst}</p>}
-
-      <address>
-        {adres.naam && <>{adres.naam}<br /></>}
-        {adres.straat}<br />
-        {adres.postcode} {adres.plaats}
-        {contact.telefoon && <><br /><a href={`tel:${tel}`}>{contact.telefoon}</a></>}
-        {contact.email && <><br /><a href={`mailto:${contact.email}`}>{contact.email}</a></>}
-      </address>
-
-      <ul role="list">
-        {bedrijf.kvk && <li>KVK: {bedrijf.kvk}</li>}
-        {bedrijf.btw && <li>BTW: {bedrijf.btw}</li>}
-        {bedrijf.architectenregister && <li>Architectenregister: {bedrijf.architectenregister}</li>}
-        {bedrijf.bank && <li>Bank: {bedrijf.bank}</li>}
-      </ul>
-
-      <ul role="list">
-        <li><a href={settings.footer.privacy}>Privacy</a></li>
-        <li>
-          <button type="button" class="link-button" data-cc="show-preferencesModal">Cookie-instellingen</button>
-        </li>
-        {links.map((l) => <li><a href={l.href} rel="noopener">{l.label}</a></li>)}
-        {downloads.map((d) => <li><a href={d.url} download>{d.label}</a></li>)}
-        <li><a href="https://abcdinamo.com/typefaces/areal" rel="noopener">Areal by ABC Dinamo</a></li>
-        <li><a href="https://allthis.digital" rel="noopener">allthis.digital</a></li>
-      </ul>
+      {
+        kolommen.map((k, i) => (
+          <div class:list={['site-footer__kolom', i === 0 && 'site-footer__tekst']}>
+            <RichText value={k.tekst} />
+          </div>
+        ))
+      }
     </div>
   </div>
 </footer>
@@ -110,16 +87,16 @@ const tel = contact.telefoon?.replace(/[^\d+]/g, '').replace('(0)', '');
   .site-footer__tekst {
     max-inline-size: 60ch;
   }
-  address {
-    font-style: normal;
+  .site-footer__kolom :global(p + p) {
+    margin-block-start: 1.125em;
   }
-  a {
+  .site-footer :global(a) {
     text-decoration: none;
   }
-  a:hover {
+  .site-footer :global(a:hover) {
     text-decoration: underline;
   }
-  .link-button {
+  .site-footer :global(.link-button) {
     padding: 0;
     border: 0;
     background: none;
@@ -128,7 +105,7 @@ const tel = contact.telefoon?.replace(/[^\d+]/g, '').replace('(0)', '');
     letter-spacing: inherit;
     cursor: pointer;
   }
-  .link-button:hover {
+  .site-footer :global(.link-button:hover) {
     text-decoration: underline;
   }
 </style>

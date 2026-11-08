@@ -6,7 +6,7 @@
 // Met de muis horizontaal scrubben door de beelden (project-card.ts).
 // De data-*-attributen voeden de filters op /projecten.
 import Img from './Img.astro';
-import { projectBeelden, projectImage } from '../lib/images';
+import { projectBeelden } from '../lib/images';
 import { kaartkleur } from '../lib/projectkleur';
 import { label } from '../lib/labels';
 import type { Project } from '../lib/schema';
@@ -67,12 +67,12 @@ const filters = {
   <a href={`/projecten/${p.slug}`} data-transitie-kleur={kleur.vlak}>
     <div class="project-card__vorm">
       <div class="project-card__beelden">
-        <Img src={projectImage(p.slug, p.hero.src)} alt={p.hero.alt} sizes={sizes} priority={priority} class="project-card__beeld is-actief" />
+        <Img src={p.hero.src} alt={p.hero.alt} sizes={sizes} priority={priority} class="project-card__beeld is-actief" />
         {
           meer.length > 0 && (
             <template data-meer-beelden>
               {meer.map((src) => (
-                <Img src={projectImage(p.slug, src)} alt="" sizes={sizes} class="project-card__beeld" />
+                <Img src={src} alt="" sizes={sizes} class="project-card__beeld" />
               ))}
             </template>
           )

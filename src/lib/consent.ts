@@ -1,8 +1,21 @@
-// Cookie-consent (vanilla-cookieconsent v3) + GDPR-vriendelijke embeds (iframemanager).
-// Patroon uit AstroStudioStarter/narwal, maar: via npm gebundeld (geen CDN), alles in het
-// Nederlands, en geen thumbnails van YouTube/Vimeo vóór toestemming (dat is ook een request).
+// Cookie-consent (vanilla-cookieconsent v3) + AVG-vriendelijke embeds (iframemanager).
+// Gebundeld via npm (geen CDN), Nederlands, geen thumbnails van YouTube/Vimeo vóór toestemming.
+//
+// Slim: toestemming vragen we pas als er iets is dat het nodig heeft.
+// - Video's: de vraag staat op de video zelf ("Video laden" / "Altijd toestaan"). Geen banner vooraf.
+// - Statistiek zonder cookies (Umami, Plausible): geen toestemming nodig, laadt in BaseLayout. Geen banner.
+// - Google Analytics: plaatst cookies, dus banner bij het eerste bezoek en pas laden na "toestaan".
+// "Cookie-instellingen" (footer, privacypagina) opent altijd het voorkeurenvenster om een keuze te wijzigen.
 import * as CookieConsent from 'vanilla-cookieconsent';
 import '@orestbida/iframemanager';
+
+export interface ConsentConfig {
+  /** Google Analytics meet-ID (G-…): alleen dan een banner en een categorie Statistiek. */
+  googleId?: string;
+  /** Naam van de cookieloze statistiekdienst, voor de uitleg in het voorkeurenvenster. */
+  cookieloos?: string;
+  privacyHref?: string;
+}
 
 type IframeManager = {
   run: (config: unknown) => void;
@@ -14,45 +27,52 @@ const im = () => (window as unknown as { iframemanager: () => IframeManager }).i
 
 const MEDIA = ['youtube', 'vimeo'] as const;
 
-/** Statistiek staat uit tot er een cookieloos script in .env staat (zie .env.example). */
-const ANALYTICS_SRC = import.meta.env.PUBLIC_ANALYTICS_SRC as string | undefined;
-const ANALYTICS_DOMAIN = import.meta.env.PUBLIC_ANALYTICS_DOMAIN as string | undefined;
-
-function loadAnalytics() {
-  if (!ANALYTICS_SRC || document.getElementById('analytics')) return;
+// ── Google Analytics (alleen na toestemming) ─────────────────
+function loadGoogleAnalytics(id: string) {
+  if (document.getElementById('ga')) return;
+  const w = window as unknown as { dataLayer: unknown[]; gtag: (...args: unknown[]) => void };
+  w.dataLayer = w.dataLayer || [];
+  w.gtag = function gtag() {
+    // gtag verwacht het arguments-object, geen array.
+    // eslint-disable-next-line prefer-rest-params
+    w.dataLayer.push(arguments);
+  };
+  w.gtag('js', new Date());
+  // Paginawissels van de ClientRouter telt GA4 zelf (browsergeschiedenis, enhanced measurement).
+  w.gtag('config', id, { anonymize_ip: true });
   const s = document.createElement('script');
-  s.id = 'analytics';
-  s.defer = true;
-  s.src = ANALYTICS_SRC;
-  if (ANALYTICS_DOMAIN) s.dataset.domain = ANALYTICS_DOMAIN;
+  s.id = 'ga';
+  s.async = true;
+  s.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;
   document.head.append(s);
 }
 
-const notice = (service: string) => ({
+// ── Video's ──────────────────────────────────────────────────
+const notice = (service: string, privacyHref: string) => ({
   nl: {
-    notice: `Deze video wordt geladen via ${service}. ${service} kan daarbij cookies plaatsen. <a href="/privacy">Meer informatie</a>.`,
+    notice: `Deze video wordt geladen via ${service}. ${service} kan daarbij cookies plaatsen. <a href="${privacyHref}">Meer informatie</a>.`,
     loadBtn: 'Video laden',
     loadAllBtn: 'Altijd toestaan',
   },
 });
 
-const iframeConfig = {
+const iframeConfig = (privacyHref: string) => ({
   currLang: 'nl',
   services: {
     youtube: {
       embedUrl: 'https://www.youtube-nocookie.com/embed/{data-id}',
       iframe: { allow: 'accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen;' },
       cookie: { name: 'cc_youtube' },
-      languages: notice('YouTube'),
+      languages: notice('YouTube', privacyHref),
     },
     vimeo: {
       embedUrl: 'https://player.vimeo.com/video/{data-id}?dnt=1',
       iframe: { allow: 'fullscreen; picture-in-picture;' },
       cookie: { name: 'cc_vimeo' },
-      languages: notice('Vimeo'),
+      languages: notice('Vimeo', privacyHref),
     },
   },
-  // Klik op "Altijd toestaan" in een video → ook in de consent-voorkeuren vastleggen.
+  // "Altijd toestaan" op een video → ook in de cookie-voorkeuren vastleggen (en andersom).
   onChange: ({ changedServices, eventSource }: { changedServices: string[]; eventSource: { type: string; action: string } }) => {
     if (eventSource.type !== 'click') return;
     const accepted = CookieConsent.getUserPreferences().acceptedServices.media ?? [];
@@ -62,25 +82,36 @@ const iframeConfig = {
         : accepted.filter((s) => !changedServices.includes(s));
     CookieConsent.acceptService(next, 'media');
   },
-};
+});
 
-/** Video's in de pagina koppelen aan de huidige consent. Opnieuw aanroepen na een page swap. */
-function scanEmbeds() {
+/** Video's in de pagina koppelen aan de huidige keuze. Opnieuw na elke page swap. */
+function scanEmbeds(privacyHref: string) {
   const manager = im();
-  // Hard reset: begin elke pagina met schone facades (ook na een ClientRouter-swap).
+  // Hard reset: elke pagina begint met schone facades (ook na een ClientRouter-swap).
   manager.reset(true);
-  manager.run(iframeConfig);
+  manager.run(iframeConfig(privacyHref));
   for (const s of MEDIA) {
     if (CookieConsent.acceptedService(s, 'media')) manager.acceptService(s);
   }
 }
 
+// ── Start ────────────────────────────────────────────────────
 let started = false;
 
-export function initConsent(privacyHref = '/privacy') {
-  scanEmbeds();
+export function initConsent({ googleId, cookieloos, privacyHref = '/privacy' }: ConsentConfig = {}) {
+  scanEmbeds(privacyHref);
   if (started) return;
   started = true;
+
+  // Eén listener voor alle "Cookie-instellingen"-knoppen. Cookieconsent koppelt [data-cc] zelf maar één
+  // keer, bij de start; knoppen die de ClientRouter later in de pagina zet, zou hij missen.
+  document.addEventListener('click', (event) => {
+    const knop = event.target instanceof Element && event.target.closest('[data-cc="show-preferencesModal"]');
+    if (!knop) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    CookieConsent.showPreferences();
+  });
 
   const mediaService = (name: (typeof MEDIA)[number], label: string) => ({
     label,
@@ -88,7 +119,28 @@ export function initConsent(privacyHref = '/privacy') {
     onReject: () => im().rejectService(name),
   });
 
+  const statistiek = googleId
+    ? [
+        {
+          title: 'Statistiek',
+          description: 'Google Analytics: hoe bezoekers de site gebruiken. Plaatst cookies en stuurt gegevens naar Google.',
+          linkedCategory: 'analytics',
+        },
+      ]
+    : cookieloos
+      ? [
+          {
+            title: 'Statistiek',
+            description: `We tellen bezoeken met ${cookieloos}: zonder cookies en zonder persoonsgegevens. Daar is geen toestemming voor nodig.`,
+          },
+        ]
+      : [];
+
   CookieConsent.run({
+    // Banner alleen als er iets is dat vooraf toestemming nodig heeft (Google Analytics).
+    autoShow: !!googleId,
+    // Zonder dit ziet cookieconsent automatische browsers (ook tests) als bot en start hij niet.
+    hideFromBots: false,
     guiOptions: {
       consentModal: { layout: 'box', position: 'bottom left', equalWeightButtons: true },
       preferencesModal: { layout: 'box', equalWeightButtons: true },
@@ -98,14 +150,18 @@ export function initConsent(privacyHref = '/privacy') {
       media: {
         services: { youtube: mediaService('youtube', 'YouTube'), vimeo: mediaService('vimeo', 'Vimeo') },
       },
-      analytics: {},
+      ...(googleId && {
+        analytics: {
+          // Intrekken: Google-cookies weg en herladen, zodat het script ook weg is.
+          autoClear: { cookies: [{ name: /^_ga/ }, { name: '_gid' }], reloadPage: true },
+        },
+      }),
     },
     onConsent: () => {
-      if (CookieConsent.acceptedCategory('analytics')) loadAnalytics();
+      if (googleId && CookieConsent.acceptedCategory('analytics')) loadGoogleAnalytics(googleId);
     },
-    // Video's volgen wijzigingen via onAccept/onReject per dienst (zie mediaService).
     onChange: () => {
-      if (CookieConsent.acceptedCategory('analytics')) loadAnalytics();
+      if (googleId && CookieConsent.acceptedCategory('analytics')) loadGoogleAnalytics(googleId);
     },
     language: {
       default: 'nl',
@@ -113,9 +169,9 @@ export function initConsent(privacyHref = '/privacy') {
         nl: {
           consentModal: {
             title: 'Cookies',
-            description: `We gebruiken alleen noodzakelijke cookies. Video's van YouTube en Vimeo laden pas als je daar toestemming voor geeft. <a href="${privacyHref}">Privacyverklaring</a>`,
-            acceptAllBtn: 'Alles toestaan',
-            acceptNecessaryBtn: 'Alleen noodzakelijk',
+            description: `Mogen we met Google Analytics bijhouden hoe de site gebruikt wordt? Dat plaatst cookies. Video's van YouTube en Vimeo vragen apart toestemming. <a href="${privacyHref}">Privacyverklaring</a>`,
+            acceptAllBtn: 'Toestaan',
+            acceptNecessaryBtn: 'Weigeren',
             showPreferencesBtn: 'Instellingen',
           },
           preferencesModal: {
@@ -127,23 +183,19 @@ export function initConsent(privacyHref = '/privacy') {
             serviceCounterLabel: 'dienst|diensten',
             sections: [
               {
-                description: `Kies welke cookies je toestaat. Je kunt je keuze altijd aanpassen via 'Cookie-instellingen' onderaan de pagina. Meer in onze <a href="${privacyHref}">privacyverklaring</a>.`,
+                description: `Kies wat je toestaat. Je kunt je keuze altijd aanpassen via 'Cookie-instellingen' onderaan de pagina. Meer in onze <a href="${privacyHref}">privacyverklaring</a>.`,
               },
               {
                 title: 'Noodzakelijk',
-                description: 'Nodig om je keuze en het kleurthema (licht/donker) te onthouden.',
+                description: 'Onthoudt je keuze hier en het kleurthema (licht/donker). Geen tracking.',
                 linkedCategory: 'necessary',
               },
               {
                 title: 'Ingesloten media',
-                description: "Video's van YouTube (zonder tracking-domein) en Vimeo. Deze diensten kunnen cookies plaatsen.",
+                description: "Video's van YouTube (via youtube-nocookie.com) en Vimeo. Deze diensten kunnen cookies plaatsen zodra je een video laadt.",
                 linkedCategory: 'media',
               },
-              {
-                title: 'Statistiek',
-                description: 'Anonieme bezoekersstatistiek, zonder cookies en zonder persoonsgegevens.',
-                linkedCategory: 'analytics',
-              },
+              ...statistiek,
             ],
           },
         },
