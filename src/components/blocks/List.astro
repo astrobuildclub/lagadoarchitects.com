@@ -3,10 +3,11 @@
 // Placeholder-items uit het sjabloon (jaar 0000, lege velden) worden niet getoond.
 // `zichtbaar`: de eerste n items staan er direct, de rest komt erbij met "Toon alles".
 //
-// Layout (Figma "persblok"): vanaf 48rem twee gelijke kolommen. Kop en tekst staan rechts; het jaar staat
+// Layout (Figma "persblok"): vanaf 48rem twee gelijke kolommen. Kop, intro en tekst staan rechts; het jaar staat
 // links, rechts uitgelijnd en op de basislijn van de eerste regel. Lijn boven elk item, alleen rechts.
 // Smaller: één kolom, jaar klein boven de tekst.
 import ListItem from '../ListItem.astro';
+import RichText from '../RichText.astro';
 import { cleanItems, getProjects, itemsFromPage } from '../../lib/content';
 import { has, type BlockProps } from './scope';
 
@@ -30,7 +31,12 @@ const id = `lijst-${Math.random().toString(36).slice(2, 8)}`;
   items.length > 0 && (
     <section class="list feature">
       <div class="list__grid">
-        {has(block.kop) && <h2 class="list__kop">{block.kop}</h2>}
+        {(has(block.kop) || block.intro.length > 0) && (
+          <div class="list__kop">
+            {has(block.kop) && <h2>{block.kop}</h2>}
+            {block.intro.length > 0 && <RichText value={block.intro} />}
+          </div>
+        )}
         <ul role="list" id={id}>
           {items.map((item, i) => <ListItem {...item} meer={i >= zichtbaar} />)}
         </ul>
@@ -78,12 +84,23 @@ const id = `lijst-${Math.random().toString(36).slice(2, 8)}`;
     grid-template-columns: minmax(0, 1fr);
     column-gap: var(--space-m);
   }
+  /* Kop en intro: Figma "Onze hoogste punten", beide step-1, kop vet. */
   .list__kop {
-    margin-block-end: var(--space-m);
+    display: grid;
+    gap: var(--space-2xs);
+    padding-block-end: var(--space-m);
     font-size: var(--step-1);
-    font-weight: 700;
     line-height: 1.2;
+    text-wrap: pretty;
+  }
+  .list__kop h2 {
+    font-size: inherit;
+    font-weight: 700;
+    line-height: inherit;
     letter-spacing: 0;
+  }
+  .list__kop :global(p) {
+    margin: 0;
   }
   ul {
     display: grid;

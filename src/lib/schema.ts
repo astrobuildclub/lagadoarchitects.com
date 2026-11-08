@@ -188,6 +188,7 @@ const listBlock = z.object({
   type: z.literal('list'),
   soort: z.enum(['pers', 'awards']),
   kop: text,
+  intro: richText.default([]),
   items: z.array(listItem).default([]),
   /** Haal items uit een andere pagina (bv. `bureau`) in plaats van `items`. */
   /** Slug van de pagina waar de items vandaan komen. */

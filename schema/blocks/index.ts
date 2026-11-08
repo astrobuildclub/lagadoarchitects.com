@@ -242,6 +242,7 @@ export const list = defineType({
   fields: [
     defineField({ name: 'soort', title: 'Soort', type: 'string', options: { list: opties(['pers', 'awards']), layout: 'radio', direction: 'horizontal' }, validation: (r) => r.required() }),
     kop,
+    defineField({ name: 'intro', title: 'Intro', description: 'Korte tekst onder de kop, naast de lijst.', type: 'richText' }),
     defineField({ name: 'items', title: 'Items', type: 'array', of: [{ type: 'listItem' }] }),
     defineField({
       name: 'toonUit',
