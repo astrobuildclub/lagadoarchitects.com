@@ -136,7 +136,12 @@ export const siteSettings = defineType({
       type: 'object',
       group: 'projecten',
       fields: [
-        defineField({ name: 'intro', title: 'Intro op /projecten', type: 'text', rows: 3 }),
+        defineField({
+          name: 'intro',
+          title: 'Intro op /projecten',
+          description: 'Een link naar #verras wordt de knop "Verras me".',
+          type: 'richText',
+        }),
         defineField({
           name: 'toonPrijsfilter',
           title: 'Prijsklasse tonen',

@@ -50,7 +50,7 @@ Eenmalig, idempotent (`createOrReplace` met deterministische `_id`s: `project.<s
 5. Blocks: `type` → `_type`, `_key` per array-item.
 6. Slugs in `gerelateerd`/`projectGrid.slugs`/`hero.beelden[].project` → `{ _type: 'reference', _ref: 'project.<slug>' }`.
 7. Placeholders (`jaar: 0`, `""`) meenemen zoals ze zijn; `cleanItems`/`has()` blijven werken.
-- Draaien tegen een dataset `migratie-test` eerst, daarna `production`.
+- ✅ Gedraaid op 8 nov 2026, direct naar `production` (leeg; een Editor-token kan geen extra dataset aanmaken). 40 projecten, 2 concepten als draft, 312 beelden. `npx sanity documents validate` toont alleen de bekende invulplekken (alt-teksten bij 5 placeholder-projecten, e-mail en social-links in contact, opleverjaar van de concepten).
 
 ## Fase 4 — Datalaag omzetten
 - `src/lib/sanity/`: `load-query.ts`, `visual-editing.ts`, `VisualEditing.tsx`, `resolve.ts` 1-op-1 uit SANITY.md; `image.ts` met `urlFor` + `imageProps()` uit `standards/IMAGES.md`.

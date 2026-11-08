@@ -35,6 +35,8 @@ npm run dev            # http://localhost:4321
 
 Overige scripts: `npm run build`, `npm run preview`, `npm run check`.
 
+Migratie naar Sanity (eenmalig, herhaalbaar): `npm run migrate -- --dry-run` en daarna `npm run migrate`. Vraagt `SANITY_API_WRITE_TOKEN` (Editor) in `.env`.
+
 ### Environment-variabelen
 
 | Naam | Waarvoor | Waar te vinden |

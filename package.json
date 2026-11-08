@@ -15,7 +15,8 @@
     "check": "astro check",
     "fonts": "node --env-file-if-exists=.env scripts/fonts.mjs",
     "placeholders": "node scripts/placeholders.mjs",
-    "astro": "astro"
+    "astro": "astro",
+    "migrate": "tsx --env-file-if-exists=.env scripts/migrate-to-sanity.ts"
   },
   "dependencies": {
     "@astrojs/netlify": "^8.2.12",
@@ -54,6 +55,7 @@
     "@portabletext/markdown": "^2.9.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "tsx": "^4.23.15",
     "typescript": "^6.0.3"
   }
 }

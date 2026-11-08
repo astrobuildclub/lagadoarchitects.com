@@ -79,6 +79,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - `docs/sanity-plan.md` bijgewerkt naar het contentmodel op `staging` (filters, kaartkleur, hero-wisseltekst, `/over`) en project-id `unque637`.
 - Sanity fase 1: `@sanity/astro`, `sanity` v6, React, `@astrojs/netlify`; Studio op `/admin` (project `unque637`, NL-taal). Site blijft statisch tot de datalaag omgaat.
 - Sanity fase 2: Studio-schema's in `schema/` (project, pagina's, contact, site-instellingen, navigatie, 17 bouwstenen, beeld met verplichte alt of "decoratief", Portable Text). Waardenlijsten verhuisd naar `src/lib/waarden.ts`, gedeeld door Zod en Studio.
+- Sanity fase 3: `scripts/migrate-to-sanity.ts` (`npm run migrate`, `-- --dry-run`). Herhaalbaar: vaste document-ID's en `_key`s, markdown → Portable Text, slugs → references, verborgen projecten (`_naam.md`) als draft. Gemigreerd naar `production`: 40 projecten, 2 concepten, pagina's, contact, instellingen en 312 beelden. `projecten.intro` in de site-instellingen is nu ook Portable Text.
 
 ### Opgelost
 - Beeldviewer (gallery-lightbox): alle beelden stonden tegelijk in beeld, de nog niet geladen als kapot beeld met alt-tekst (`display: grid` overschreef `hidden`). Nu één beeld tegelijk, het vorige en volgende worden vooraf geladen, de pagina scrolt niet mee en de knoppen zijn grijze pillen.
