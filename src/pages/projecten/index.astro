@@ -3,20 +3,21 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHeader from '../../components/PageHeader.astro';
 import ProjectFilter from '../../components/ProjectFilter.astro';
 import ProjectList from '../../components/ProjectList.astro';
-import { getProjects, getSettings } from '../../lib/content';
+import { getProjectenPagina, getProjects, getSettings } from '../../lib/content';
 import { pageDescription, pageTitle } from '../../lib/seo';
 
 const settings = await getSettings();
 const projects = await getProjects();
-const page = { title: 'Projecten', fallbackDescription: `Architectuur en interieur van ${settings.siteNaam}: ${settings.payoff.toLowerCase()}.` };
+const pagina = await getProjectenPagina();
+const page = { title: pagina.title, seo: pagina.seo, fallbackDescription: `Architectuur en interieur van ${settings.siteNaam}: ${settings.payoff.toLowerCase()}.` };
 ---
 
-<BaseLayout title={pageTitle(settings, page)} description={pageDescription(settings, page)}>
+<BaseLayout title={pageTitle(settings, page)} description={pageDescription(settings, page)} noindex={pagina.seo?.noindex}>
   <!-- Volle breedte (gutter tot gutter, gelijk met header en footer): filters erboven, projecten als raster of lijst. -->
   <div class="wrapper wrapper--full wat">
-    <PageHeader title="Projecten" intro={settings.projecten.intro} breed />
+    <PageHeader title={pagina.title} intro={pagina.intro} breed />
     <div class="wat__body">
-      <ProjectFilter projects={projects} toonPrijs={settings.projecten.toonPrijsfilter} target="projecten" />
+      <ProjectFilter projects={projects} toonPrijs={pagina.toonPrijsfilter} target="projecten" />
       <div>
         <!-- Aantal en weergave op één regel, zelfde typografie. Gevuld en zichtbaar via ProjectFilter. -->
         <div class="wat__meta">

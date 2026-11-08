@@ -273,9 +273,6 @@ export const settingsSchema = z.object({
     /** Uit = trainingscrawlers geweerd in robots.txt. */
     aiTraining: z.boolean().default(true),
   }),
-  projecten: z
-    .object({ intro: rich, toonPrijsfilter: z.boolean().default(false) })
-    .default({ toonPrijsfilter: false }),
   /** Statistiek: cookieloos (Umami, Plausible) zonder banner, Google Analytics pas na toestemming. */
   analytics: z
     .object({
@@ -301,6 +298,14 @@ export const pageSchema = z.object({
   inhoud: richText.default([]),
   /** Tekstpagina: knop "Cookie-instellingen aanpassen" onderaan (Privacy). */
   cookieKnop: z.boolean().default(false),
+});
+
+/** /projecten: intro, filterinstellingen en SEO (document met vaste ID `projecten`). */
+export const projectenPaginaSchema = z.object({
+  title: z.string().default('Projecten'),
+  intro: rich,
+  toonPrijsfilter: z.boolean().default(false),
+  seo: z.object({ titel: text, beschrijving: text, noindex: z.boolean().optional() }).optional(),
 });
 
 export const contactSchema = z.object({
@@ -401,4 +406,5 @@ export const projectSchema = z
 export type Settings = z.infer<typeof settingsSchema>;
 export type Page = z.infer<typeof pageSchema>;
 export type Contact = z.infer<typeof contactSchema>;
+export type ProjectenPagina = z.infer<typeof projectenPaginaSchema>;
 export type Project = z.infer<typeof projectSchema> & { slug: string };

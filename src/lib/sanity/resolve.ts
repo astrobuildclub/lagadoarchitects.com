@@ -6,6 +6,7 @@ export const resolve: PresentationPluginOptions['resolve'] = {
   mainDocuments: defineDocuments([
     { route: '/', filter: `_id == "page-home"` },
     { route: '/contact', filter: `_id == "contact"` },
+    { route: '/projecten', filter: `_id == "projecten"` },
     { route: '/projecten/:slug', filter: `_type == "project" && slug.current == $slug` },
     { route: '/:slug', filter: `_type == "page" && slug.current == $slug` },
   ]),
@@ -26,6 +27,10 @@ export const resolve: PresentationPluginOptions['resolve'] = {
         if ((doc?.id ?? '').replace(/^drafts\./, '') === 'page-home') return { locations: [{ title: 'Home', href: '/' }] };
         return doc?.slug ? { locations: [{ title: doc.title || doc.slug, href: `/${doc.slug}` }] } : undefined;
       },
+    }),
+    projectenPagina: defineLocations({
+      select: { title: 'title' },
+      resolve: () => ({ locations: [{ title: 'Projecten', href: '/projecten' }] }),
     }),
     contact: defineLocations({
       select: { title: 'title' },

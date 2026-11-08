@@ -85,7 +85,7 @@ TODO.md              Openstaande projecttaken
 - **Contentmodel:** `schema/` (Studio) is leidend; `src/lib/schema.ts` (Zod) controleert bij elk request wat de queries (`src/lib/sanity/queries.ts`) opleveren. Uitleg per veld: `lagado-content/README.md` (nog geldig voor betekenis en waardenlijsten).
 - **Beelden:** in Sanity, geleverd via de Sanity-CDN met `srcset` (`<Img>`). Hotspot in de Studio bepaalt de uitsnede.
 - **Verborgen projecten:** een draft die nooit is gepubliceerd (bv. Tasgram, Tommy Jeans).
-- **Pagina's:** Home, Projecten (`/projecten`, met filters), Project (`/projecten/<slug>`), Contact (geen formulier) en pagina's uit Sanity op `/<slug>` (`src/pages/[slug].astro`): Over, Privacy en wat er bij komt. Template *Bouwstenen* of *Tekst* (één lopende tekst met koppen, zoals Privacy).
+- **Pagina's:** Home, Projecten (`/projecten`, met filters; intro, prijsfilter en SEO in het document *Projecten* onder Pagina's), Project (`/projecten/<slug>`), Contact (geen formulier) en pagina's uit Sanity op `/<slug>` (`src/pages/[slug].astro`): Over, Privacy en wat er bij komt. Template *Bouwstenen* of *Tekst* (één lopende tekst met koppen, zoals Privacy).
 - **Menu en footer:** in de Site-instellingen (tabs Menu en Footer). Footer = vier kolommen, de eerste twee breed; een link naar `#cookies` wordt de knop Cookie-instellingen.
 - **Bouwstenen:** hero, text, image, gallery, columns, quote, video, colors, beforeAfter, projectGrid, team, list, cta, services, logos, downloads.
 

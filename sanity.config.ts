@@ -18,7 +18,7 @@ const previewOrigin = typeof location !== 'undefined' ? location.origin : 'http:
 
 const singletonIds = new Set(Object.keys(SINGLETONS));
 /** Types die alleen als singleton bestaan: geen "nieuw document" in de Studio. Pagina's kun je wel aanmaken. */
-const singletonTypes = new Set(['siteSettings', 'contact']);
+const singletonTypes = new Set(['siteSettings', 'contact', 'projectenPagina']);
 const singletonActions = new Set(['publish', 'discardChanges', 'restore']);
 
 export default defineConfig({
@@ -36,8 +36,8 @@ export default defineConfig({
               .title('Projecten')
               .icon(ProjectsIcon)
               .child(S.documentTypeList('project').title('Projecten').defaultOrdering([{ field: 'volgorde', direction: 'asc' }])),
-            // Alle pagina's in één lijst: Home, Contact, Over, Privacy en wat je zelf toevoegt.
-            // Home en Contact kun je niet verwijderen of dupliceren (vaste ID's, zie SINGLETONS).
+            // Alle pagina's in één lijst: Home, Projecten, Contact, Over, Privacy en wat je zelf toevoegt.
+            // Home, Projecten en Contact kun je niet verwijderen of dupliceren (vaste ID's, zie SINGLETONS).
             S.listItem()
               .title("Pagina's")
               .id('paginas')
@@ -46,10 +46,10 @@ export default defineConfig({
                 S.documentList()
                   .title("Pagina's")
                   .apiVersion('2025-01-01')
-                  .filter('_type in ["page", "contact"]')
+                  .filter('_type in ["page", "projectenPagina", "contact"]')
                   .defaultOrdering([{ field: 'title', direction: 'asc' }])
                   .initialValueTemplates([S.initialValueTemplateItem('page')])
-                  .canHandleIntent((intent, { type }) => ['create', 'edit'].includes(intent) && ['page', 'contact'].includes(type)),
+                  .canHandleIntent((intent, { type }) => ['create', 'edit'].includes(intent) && ['page', 'projectenPagina', 'contact'].includes(type)),
               ),
             S.divider(),
             S.listItem()
