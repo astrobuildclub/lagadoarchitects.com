@@ -9,6 +9,7 @@
   "scripts": {
     "predev": "node --env-file-if-exists=.env scripts/fonts.mjs",
     "dev": "astro dev",
+    "dev:schoon": "astro dev stop; rm -rf node_modules/.vite && astro dev --background",
     "prebuild": "node --env-file-if-exists=.env scripts/fonts.mjs",
     "build": "astro build",
     "preview": "astro preview",

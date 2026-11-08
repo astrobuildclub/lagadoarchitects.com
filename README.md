@@ -34,6 +34,8 @@ npm run dev            # http://localhost:4321
 
 Overige scripts: `npm run build`, `npm run preview`, `npm run check`.
 
+**Studio (/admin) zwart, "Invalid hook call" of "504 Outdated Optimize Dep"?** Vite heeft onderweg opnieuw gebundeld (na `npm install` of een wijziging in `astro.config.mjs`) en de open Studio-tab gebruikt nog de oude bestanden. Oplossing: `npm run dev:schoon` (stopt de server, leegt `node_modules/.vite`, start op de achtergrond) en daarna de Studio-tab hard herladen (Cmd+Shift+R). Staat er in `astro dev logs` "new dependencies optimized: …", zet die dan in `vite.optimizeDeps.include` in `astro.config.mjs`.
+
 Migratie naar Sanity (eenmalig, herhaalbaar): `npm run migrate -- --dry-run` en daarna `npm run migrate`. Vraagt `SANITY_API_WRITE_TOKEN` (Editor) in `.env`.
 
 ### Environment-variabelen

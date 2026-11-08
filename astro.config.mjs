@@ -32,8 +32,8 @@ export default defineConfig({
   vite: {
     // Dev: alles wat de Studio (/admin) en de site laden vooraf laten bundelen. Anders ontdekt Vite ze pas
     // onderweg, bundelt opnieuw en verwijzen al geladen Studio-onderdelen naar oude versies:
-    // "504 Outdated Optimize Dep", zwart scherm of "Upload mislukt". Bij hardnekkige fouten: astro dev stop,
-    // rm -rf node_modules/.vite, opnieuw starten.
+    // "504 Outdated Optimize Dep", zwart scherm of "Upload mislukt". Zie je in de logs "new dependencies optimized",
+    // zet die dan hier bij. Toch zwart? `npm run dev:schoon` en de Studio-tab hard herladen (Cmd+Shift+R).
     optimizeDeps: {
       include: [
         'sanity',
@@ -56,6 +56,11 @@ export default defineConfig({
         'vanilla-cookieconsent',
         'gsap',
         'lottie-web/build/player/lottie_light',
+        // ClientRouter (<ClientRouter />): anders pas ontdekt bij het eerste paginabezoek.
+        'astro/virtual-modules/transitions-events.js',
+        'astro/virtual-modules/transitions-router.js',
+        'astro/virtual-modules/transitions-swap-functions.js',
+        'astro/virtual-modules/transitions-types.js',
       ],
     },
   },

@@ -8,6 +8,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 ## [Unreleased]
 
 ### Toegevoegd
+- Script `npm run dev:schoon` (server stoppen, Vite-cache legen, opnieuw starten) voor een zwarte Studio; uitleg in de README. De ClientRouter-modules worden nu vooraf gebundeld, zodat Vite niet halverwege opnieuw bundelt.
 - Iconen uit Tabler Icons (`@tabler/icons`, outline) via `<Icon naam="…">` (`src/components/Icon.astro`); alleen de geïmporteerde iconen komen in de bundel.
 - Dienstenblok: veld *Weergave* (Raster, Beelden, Vormen) en per dienst een *Beeld*; bij Vormen een *Achtergrondbeeld*. Beelden (Figma 537:2202) en Vormen (539:2357) zijn een carousel: swipen (scroll-snap), slepen met de muis (met een ronde volgcursor die licht naijlt, GSAP quickTo) of de pijlen naast de kop. Op desktop drie kolommen met tussenruimte space-m (Figma Grid/Gutter); kaarten buiten het raster staan links en rechts op 20% en worden zichtbaar als ze erin schuiven; klik op zo'n kaart schuift hem het raster in (`src/scripts/strook.ts`). Raster blijft de standaard.
 - Videoblok: veld *Verhouding* (standaard *Automatisch*). Automatisch = Vimeo via oEmbed (dichtstbijzijnde verhouding), YouTube Shorts 9:16, anders 16:9. Staande video's worden niet hoger dan ~80% van het scherm (`src/lib/video.ts`).
