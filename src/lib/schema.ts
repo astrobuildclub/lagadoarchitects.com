@@ -131,6 +131,8 @@ const videoBlock = z.object({
   titel: z.string(),
   poster: sanityImage.optional(),
   caption: text,
+  /** `auto` = uit de video zelf (Vimeo oEmbed, YouTube Shorts 9:16), anders 16:9. */
+  verhouding: z.enum(['auto', '16:9', '21:9', '4:3', '1:1', '9:16']).default('auto'),
 });
 
 const kleur = z.object({ label: z.string(), hex: invulplek });

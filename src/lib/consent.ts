@@ -1,5 +1,5 @@
 // Cookie-consent (vanilla-cookieconsent v3) + AVG-vriendelijke embeds (iframemanager).
-// Gebundeld via npm (geen CDN), Nederlands, geen thumbnails van YouTube/Vimeo vóór toestemming.
+// Gebundeld via npm (geen CDN), Nederlands. Thumbnails van YouTube/Vimeo via onze eigen server, nooit rechtstreeks.
 //
 // Slim: toestemming vragen we pas als er iets is dat het nodig heeft.
 // - Video's: de vraag staat op de video zelf ("Video laden" / "Altijd toestaan"). Geen banner vooraf.
@@ -60,14 +60,19 @@ const iframeConfig = (privacyHref: string) => ({
   currLang: 'nl',
   services: {
     youtube: {
-      embedUrl: 'https://www.youtube-nocookie.com/embed/{data-id}',
-      iframe: { allow: 'accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen;' },
+      // enablejsapi: de player praat via postMessage met video-player.ts (autoplay na klik, één tegelijk).
+      embedUrl: () => `https://www.youtube-nocookie.com/embed/{data-id}?enablejsapi=1&origin=${encodeURIComponent(location.origin)}`,
+      // Placeholder via onze eigen server (src/pages/api/video-thumbnail): geen contact met YouTube vóór toestemming.
+      // Een eigen posterbeeld (data-thumbnail) gaat voor.
+      thumbnailUrl: '/api/video-thumbnail/youtube/{data-id}',
+      iframe: { allow: 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen;' },
       cookie: { name: 'cc_youtube' },
       languages: notice('YouTube', privacyHref),
     },
     vimeo: {
       embedUrl: 'https://player.vimeo.com/video/{data-id}?dnt=1',
-      iframe: { allow: 'fullscreen; picture-in-picture;' },
+      thumbnailUrl: '/api/video-thumbnail/vimeo/{data-id}',
+      iframe: { allow: 'autoplay; fullscreen; picture-in-picture;' },
       cookie: { name: 'cc_vimeo' },
       languages: notice('Vimeo', privacyHref),
     },
@@ -111,6 +116,19 @@ export function initConsent({ googleId, cookieloos, privacyHref = '/privacy' }: 
     event.preventDefault();
     event.stopImmediatePropagation();
     CookieConsent.showPreferences();
+  });
+
+  // Na elke keuze in het cookievenster (opslaan, alles toestaan, alleen noodzakelijk) de video's gelijkzetten
+  // met wat daar staat. Cookieconsent roept onReject alleen aan als een dienst eerst was toegestaan; een video die
+  // met "Video laden" eenmalig is geladen, bleef anders staan. Sluiten met het kruisje (pm__close-btn) verandert niets.
+  document.addEventListener('click', (event) => {
+    if (!(event.target instanceof Element && event.target.closest('#cc-main .pm__btn, #cc-main .cm__btn'))) return;
+    setTimeout(() => {
+      for (const s of MEDIA) {
+        if (CookieConsent.acceptedService(s, 'media')) im().acceptService(s);
+        else im().rejectService(s);
+      }
+    });
   });
 
   const mediaService = (name: (typeof MEDIA)[number], label: string) => ({

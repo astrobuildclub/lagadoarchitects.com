@@ -8,6 +8,10 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 ## [Unreleased]
 
 ### Toegevoegd
+- Videoblok: veld *Verhouding* (standaard *Automatisch*). Automatisch = Vimeo via oEmbed (dichtstbijzijnde verhouding), YouTube Shorts 9:16, anders 16:9. Staande video's worden niet hoger dan ~80% van het scherm (`src/lib/video.ts`).
+- Video's spelen direct af na een klik op "Video laden" of "Altijd toestaan", alleen de aangeklikte video. Er speelt nooit meer dan één video tegelijk: start er een, dan pauzeren de andere (YouTube en Vimeo, via postMessage, zonder extra scripts; `src/lib/video-player.ts`).
+- Video's tonen vóór toestemming de thumbnail van YouTube/Vimeo als placeholder (iframemanager `thumbnailUrl`), opgehaald via `/api/video-thumbnail/<dienst>/<id>`: de browser van de bezoeker praat niet met YouTube of Vimeo tot er toestemming is. Eigen posterbeeld gaat voor.
+- Video-placeholder in de stijl van de site: overlay in de projectkleur (`--accent`), tekst en knoppen in `--accent-tekst`, knoppen rond (`--im-*` gekoppeld aan de site-tokens in `CookieConsent.astro`), zichtbare focusring.
 - Schakelaar *Vindbaar in AI-zoekmachines* (Site-instellingen → SEO). Uit = ook ChatGPT, Claude, Perplexity enz. geweerd in `robots.txt`.
 - *Verbergen voor zoekmachines* sluit een pagina nu ook uit voor alle AI-crawlers (per pad in `robots.txt`). Google ziet de noindex-tag en wordt daarom niet geblokkeerd.
 - `/llms.txt`: wie LAGADO is plus een index van pagina's en projecten voor AI-assistenten. Intro in de Studio (Site-instellingen → SEO → *Intro voor AI-assistenten*).
@@ -23,6 +27,8 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Consent slimmer: geen banner vooraf; video's vragen toestemming op de video zelf. Statistiek kies je in de Studio (Site-instellingen → Statistiek): Umami of Plausible cookieloos zonder banner, Google Analytics alleen na toestemming (dan wel een banner, intrekken wist de cookies). `PUBLIC_ANALYTICS_*` vervallen.
 
 ### Opgelost
+- Video bleef staan na Cookie-instellingen → opslaan als hij met "Video laden" (eenmalig) was geladen. Na elke keuze in het cookievenster worden de video's nu gelijkgezet met de opgeslagen keuze.
+- Video-melding stond in dev soms onopgemaakt: de CSS van cookieconsent en iframemanager werd via het script geladen. Nu in de frontmatter, dus altijd in de `<head>`.
 - *Verbergen voor zoekmachines* deed niets op projecten, de home en Contact: de noindex-tag ontbrak daar. Verborgen vaste pagina's (Projecten, Contact) staan nu ook niet meer in de sitemap en `llms.txt`.
 - Veld *Prijsklasse* verwees nog naar de oude tab in de site-instellingen.
 - "Cookie-instellingen" (footer, privacypagina) werkte niet na navigeren binnen de site: cookieconsent koppelt knoppen maar één keer. Nu één listener op het document.

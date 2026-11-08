@@ -112,8 +112,27 @@ export const video = defineType({
   fields: [
     defineField({ name: 'url', title: 'YouTube- of Vimeo-URL', type: 'url', validation: (r) => r.required() }),
     defineField({ name: 'titel', title: 'Titel', type: 'string', validation: (r) => r.required() }),
-    defineField({ name: 'poster', title: 'Posterbeeld', description: 'Eigen beeld; we laden geen thumbnails van YouTube of Vimeo.', type: 'beeld' }),
+    defineField({ name: 'poster', title: 'Posterbeeld', description: 'Leeg = de thumbnail van YouTube of Vimeo, opgehaald via onze eigen server (bezoekers praten vóór toestemming niet met YouTube of Vimeo).', type: 'beeld' }),
     defineField({ name: 'caption', title: 'Onderschrift', type: 'string' }),
+    defineField({
+      name: 'verhouding',
+      title: 'Verhouding',
+      description: 'Automatisch: Vimeo zoals de video is, YouTube Shorts staand (9:16), andere YouTube-video\'s 16:9.',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Automatisch', value: 'auto' },
+          { title: 'Breed (16:9)', value: '16:9' },
+          { title: 'Bioscoop (21:9)', value: '21:9' },
+          { title: 'Klassiek (4:3)', value: '4:3' },
+          { title: 'Vierkant (1:1)', value: '1:1' },
+          { title: 'Staand (9:16)', value: '9:16' },
+        ],
+        layout: 'radio',
+        direction: 'horizontal',
+      },
+      initialValue: 'auto',
+    }),
   ],
   preview: { select: { title: 'titel', media: 'poster' }, prepare: ({ title, media }) => ({ title, subtitle: 'Video', media }) },
 });
