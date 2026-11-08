@@ -53,7 +53,7 @@
   --popout-width: 6rem;
   --feature-width: 12rem;
   /* Ruimte tussen de header en het begin van elke pagina (hero, paginakop, projectkop). */
-  --page-top: var(--space-4xl);
+  --page-top: 30svh; /* 30% van de schermhoogte; svh: springt niet mee met de adresbalk op mobiel */
   /* Ruimte tussen de projecttegels op de home (Figma: 27px op 1512). */
   --tile-gap: var(--space-m);
 
