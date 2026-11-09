@@ -7,6 +7,9 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 
 ## [Unreleased]
 
+### Beveiliging
+- Videoblok: `<` en `>` worden uit de titel gehaald voordat die naar iframemanager gaat. iframemanager 1.3.0 (nieuwste versie) zet `data-title` als HTML in de pagina, waardoor een titel in de Studio script kon uitvoeren.
+
 ### Toegevoegd
 - Script `npm run dev:schoon` (server stoppen, Vite-cache legen, opnieuw starten) voor een zwarte Studio; uitleg in de README. De ClientRouter-modules worden nu vooraf gebundeld, zodat Vite niet halverwege opnieuw bundelt.
 - Iconen uit Tabler Icons (`@tabler/icons`, outline) via `<Icon naam="…">` (`src/components/Icon.astro`); alleen de geïmporteerde iconen komen in de bundel.
