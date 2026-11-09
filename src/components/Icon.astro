@@ -1,0 +1,28 @@
+---
+// Tabler Icons (outline, @tabler/icons) als inline SVG. Alleen de iconen in ICONEN komen in de bundel:
+// nieuw icoon nodig? Importeer het hieronder en zet het in de lijst. Kleur volgt `currentColor`.
+// Decoratief (aria-hidden); geef de knop of link zelf een toegankelijke naam.
+import arrowLeft from '@tabler/icons/outline/arrow-left.svg?raw';
+import arrowRight from '@tabler/icons/outline/arrow-right.svg?raw';
+import handMove from '@tabler/icons/outline/hand-move.svg?raw';
+
+const ICONEN = { 'arrow-left': arrowLeft, 'arrow-right': arrowRight, 'hand-move': handMove } as const;
+
+interface Props {
+  naam: keyof typeof ICONEN;
+  /** Breedte en hoogte (px of CSS-lengte). */
+  maat?: number | string;
+  /** Lijndikte (Tabler: 2). */
+  lijn?: number;
+  class?: string;
+}
+const { naam, maat = 24, lijn = 1.5, class: className } = Astro.props;
+const svg = ICONEN[naam]
+  .replace(/\s(width|height|stroke-width|class)="[^"]*"/g, '')
+  .replace(
+    '<svg',
+    `<svg width="${maat}" height="${maat}" stroke-width="${lijn}" aria-hidden="true" focusable="false"${className ? ` class="${className}"` : ''}`,
+  );
+---
+
+<Fragment set:html={svg} />

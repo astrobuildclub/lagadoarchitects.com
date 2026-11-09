@@ -10,7 +10,6 @@ import { pageDescription, pageTitle } from '../lib/seo';
 
 const settings = await getSettings();
 const c = await getContact();
-const sfeerbeeld = c.sfeerbeeld?.src;
 const bioFoto = c.bio?.foto?.src;
 const kaartBeeld = c.kaart?.statischBeeld?.src;
 const tel = c.telefoon?.replace('(0)', '').replace(/[^\d+]/g, '');
@@ -20,15 +19,8 @@ const downloads = c.downloads.map((d) => ({ ...d, url: d.bestand })).filter((d) 
 
 <BaseLayout title={pageTitle(settings, c)} description={pageDescription(settings, { ...c, fallbackDescription: platteTekst(c.intro) })} noindex={c.seo?.noindex}>
   <div class="layout flow">
-    <PageHeader title={c.title} intro={c.intro} />
-
-    {
-      sfeerbeeld && (
-        <figure class="feature">
-          <Img src={sfeerbeeld} alt={c.sfeerbeeld!.alt} priority />
-        </figure>
-      )
-    }
+    {/* Hero zoals Over: titel als label, intro groot, sfeerbeeld breed eronder (optioneel). */}
+    <PageHeader title={c.title} intro={c.intro} label beeld={c.sfeerbeeld} />
 
     {
       c.bio && (

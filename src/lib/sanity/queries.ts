@@ -33,6 +33,7 @@ const BLOCKS = groq`
   _type == "projectGrid" => { "slugs": slugs[]->slug.current, "filter": filter[] { veld, waarde } },
   _type == "team" => { "personen": personen[] { ..., "foto": foto { ${IMG} } } },
   _type == "list" => { "items": items[] { ..., "project": project->slug.current }, "toonUit": toonUit->slug.current },
+  _type == "services" => { "achtergrond": achtergrond { ${IMG} }, "items": items[] { ..., "beeld": beeld { ${IMG} } } },
   _type == "logos" => { "items": items[] { ..., "logo": logo { ${IMG} } } },
   _type == "downloads" => { "items": items[] { label, "bestand": ${DL} } }
 `;
@@ -44,6 +45,7 @@ export const SETTINGS_QUERY = groq`*[_id == "siteSettings"][0] {
 
 const PAGE = groq`{
   title, "slug": slug.current, template, intro, seo, inhoud, cookieKnop,
+  "beeld": beeld { ${IMG} },
   "blocks": blocks[] { ${BLOCKS} }
 }`;
 

@@ -7,7 +7,13 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 
 ## [Unreleased]
 
+### Beveiliging
+- Videoblok: `<` en `>` worden uit de titel gehaald voordat die naar iframemanager gaat. iframemanager 1.3.0 (nieuwste versie) zet `data-title` als HTML in de pagina, waardoor een titel in de Studio script kon uitvoeren.
+
 ### Toegevoegd
+- Script `npm run dev:schoon` (server stoppen, Vite-cache legen, opnieuw starten) voor een zwarte Studio; uitleg in de README. De ClientRouter-modules worden nu vooraf gebundeld, zodat Vite niet halverwege opnieuw bundelt.
+- Iconen uit Tabler Icons (`@tabler/icons`, outline) via `<Icon naam="…">` (`src/components/Icon.astro`); alleen de geïmporteerde iconen komen in de bundel.
+- Dienstenblok: veld *Weergave* (Raster, Beelden, Vormen) en per dienst een *Beeld*; bij Vormen een *Achtergrondbeeld*. Beelden (Figma 537:2202) en Vormen (539:2357) zijn een carousel: swipen (scroll-snap), slepen met de muis (met een ronde volgcursor die licht naijlt, GSAP quickTo) of de pijlen naast de kop. Op desktop drie kolommen met tussenruimte space-m (Figma Grid/Gutter); kaarten buiten het raster staan links en rechts op 20% en worden zichtbaar als ze erin schuiven; klik op zo'n kaart schuift hem het raster in (`src/scripts/strook.ts`). Raster blijft de standaard.
 - Videoblok: veld *Verhouding* (standaard *Automatisch*). Automatisch = Vimeo via oEmbed (dichtstbijzijnde verhouding), YouTube Shorts 9:16, anders 16:9. Staande video's worden niet hoger dan ~80% van het scherm (`src/lib/video.ts`).
 - Video's spelen direct af na een klik op "Video laden" of "Altijd toestaan", alleen de aangeklikte video. Er speelt nooit meer dan één video tegelijk: start er een, dan pauzeren de andere (YouTube en Vimeo, via postMessage, zonder extra scripts; `src/lib/video-player.ts`).
 - Video's tonen vóór toestemming de thumbnail van YouTube/Vimeo als placeholder (iframemanager `thumbnailUrl`), opgehaald via `/api/video-thumbnail/<dienst>/<id>`: de browser van de bezoeker praat niet met YouTube of Vimeo tot er toestemming is. Eigen posterbeeld gaat voor.
@@ -19,6 +25,12 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Schakelaar *AI-modellen mogen de content gebruiken voor training* (Site-instellingen → SEO). Uit = trainingscrawlers geweerd in `robots.txt`; AI-zoekcrawlers blijven welkom.
 
 ### Gewijzigd
+- Blok *Pers of awards* volgt het Figma-persblok: vanaf 48rem twee gelijke kolommen, jaar (mono, step--1) links rechts uitgelijnd op de basislijn, tekst in step-1, projectlink onderstreept, lijn boven elk item. Mobiel: jaar klein boven de tekst. Nieuw veld *Intro*: kop en intro staan rechts boven de lijst. Op Over zijn kop en tekst van het tekstblok erboven verplaatst met `scripts/sanity/2026-11-09-persblok-intro.ts`. "Toon alles" is een knop die de rest erbij zet (zonder JavaScript staat alles er).
+- Lijnkleur (`--color-line`) in het lichte thema naar `#f4f4f4` (Figma).
+- Ruimte tussen de navigatie en het begin van elke pagina (`--page-top`) is nu 30svh (was `space-4xl`): home-hero, paginakop en projectkop.
+- Paginakop van bouwstenenpagina's (Over) volgens Figma: titel als klein label (mono, step--1, grijs zoals het jaar in het persblok), intro step-2 over de volle breedte. Nieuw veld *Beeld bovenaan* (pagina, 3:2) los van de bouwstenen. Tekstpagina's (Privacy) en /projecten houden de grote titel.
+- Contact krijgt dezelfde hero: titel als label, intro groot, *Beeld bovenaan* (het bestaande sfeerbeeld) optioneel breed eronder.
+- Blok *Beeld naast tekst* volgens Figma ("Waarom samenwerken?"): twee gelijke kolommen, staand beeld (3:4) links of rechts, tekst onderaan uitgelijnd. Kop step-4 (regular), nieuw veld *Intro* (step-1) en tekst (step-0), optioneel *Tekst in twee kolommen*. Mobiel: beeld boven, tekst onder elkaar. Beeld niet meer verplicht (waarschuwing). Op Over is het tekstblok "Waarom samenwerken?" omgezet met `scripts/sanity/2026-11-09-waarom-samenwerken.ts`; het beeld moet nog worden toegevoegd.
 - Projectenoverzicht is een eigen pagina onder *Pagina's* (document `projecten`, type *Projectenpagina*) met titel, intro, prijsfilter en SEO. De tab Projecten in de site-instellingen is weg. Omzetten: `scripts/sanity/2026-11-08-projectenpagina.ts`.
 - `robots.txt` wordt per request opgebouwd (instelling uit Sanity) en sluit `/admin` en `/api/` uit.
 - Studio: alle pagina's onder *Pagina's* (Home, Contact, Over, Privacy) en zelf nieuwe pagina's aanmaken, met URL en template *Bouwstenen* of *Tekst*. Privacy is een tekstpagina (koppen in de tekst, knop Cookie-instellingen aan te zetten). Nieuwe route `src/pages/[slug].astro`; `over.astro` en `privacy.astro` weg.
@@ -27,6 +39,8 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Consent slimmer: geen banner vooraf; video's vragen toestemming op de video zelf. Statistiek kies je in de Studio (Site-instellingen → Statistiek): Umami of Plausible cookieloos zonder banner, Google Analytics alleen na toestemming (dan wel een banner, intrekken wist de cookies). `PUBLIC_ANALYTICS_*` vervallen.
 
 ### Opgelost
+- "Upload mislukt" en zwart scherm in de lokale Studio (`504 Outdated Optimize Dep`): Vite bundelde de Studio-dependencies midden in een sessie opnieuw. Nu vooraf in `optimizeDeps.include` (astro.config.mjs).
+- Een beeldbouwsteen zonder beeld (net toegevoegd, of upload mislukt) liet de hele pagina vallen ("klopt niet met het contentmodel"). Lege beeld- en voor/na-blokken worden nu overgeslagen.
 - Video bleef staan na Cookie-instellingen → opslaan als hij met "Video laden" (eenmalig) was geladen. Na elke keuze in het cookievenster worden de video's nu gelijkgezet met de opgeslagen keuze.
 - Video-melding stond in dev soms onopgemaakt: de CSS van cookieconsent en iframemanager werd via het script geladen. Nu in de frontmatter, dus altijd in de `<head>`.
 - *Verbergen voor zoekmachines* deed niets op projecten, de home en Contact: de noindex-tag ontbrak daar. Verborgen vaste pagina's (Projecten, Contact) staan nu ook niet meer in de sitemap en `llms.txt`.

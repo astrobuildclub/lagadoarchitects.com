@@ -59,6 +59,14 @@ export const page = defineType({
       hidden: ({ document }) => isHome(document),
     }),
     defineField({ name: 'intro', title: 'Intro', type: 'richText', group: 'content' }),
+    defineField({
+      name: 'beeld',
+      title: 'Beeld bovenaan',
+      description: 'Breed beeld onder de intro (3:2). Leeg = geen beeld.',
+      type: 'beeld',
+      group: 'content',
+      hidden: ({ document }) => isHome(document) || document?.template === 'tekst',
+    }),
     defineField({ ...blocksField(), group: 'content', hidden: ({ document }) => document?.template === 'tekst' }),
     defineField({
       name: 'inhoud',
@@ -119,7 +127,7 @@ export const contact = defineType({
     defineField({ name: 'title', title: 'Titel', type: 'string', group: 'content', validation: (r) => r.required() }),
     defineField({ name: 'intro', title: 'Intro', type: 'richText', group: 'content' }),
     defineField({ name: 'tekst', title: 'Tekst', type: 'richText', group: 'content' }),
-    defineField({ name: 'sfeerbeeld', title: 'Sfeerbeeld', type: 'beeld', group: 'content' }),
+    defineField({ name: 'sfeerbeeld', title: 'Beeld bovenaan', description: 'Breed beeld onder de intro (3:2). Leeg = geen beeld.', type: 'beeld', group: 'content' }),
     defineField({
       name: 'contactpersoon',
       title: 'Contactpersoon',

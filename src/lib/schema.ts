@@ -113,8 +113,10 @@ const galleryBlock = z.object({
 const columnsBlock = z.object({
   type: z.literal('columns'),
   kop: text,
+  intro: richText.default([]),
   tekst: richText.default([]),
-  image: imageRef,
+  kolommen: z.boolean().default(false),
+  image: imageRef.optional(),
   beeldPositie: z.enum(['links', 'rechts']).default('rechts'),
 });
 
@@ -188,6 +190,7 @@ const listBlock = z.object({
   type: z.literal('list'),
   soort: z.enum(['pers', 'awards']),
   kop: text,
+  intro: richText.default([]),
   items: z.array(listItem).default([]),
   /** Haal items uit een andere pagina (bv. `bureau`) in plaats van `items`. */
   /** Slug van de pagina waar de items vandaan komen. */
@@ -211,7 +214,10 @@ const servicesBlock = z.object({
   anker: text,
   /** Tegels in de kaartvormen (recht, rond, schuin om en om) en accentkleuren. */
   vormen: z.boolean().default(false),
-  items: z.array(z.object({ titel: z.string(), tekst: rich })).default([]),
+  /** raster: tegels (zoals voorheen). beelden: strook met beeld per dienst. vormen: donkere vormen over `achtergrond`. */
+  weergave: z.enum(['raster', 'beelden', 'vormen']).default('raster'),
+  achtergrond: imageRef.optional(),
+  items: z.array(z.object({ titel: z.string(), tekst: rich, beeld: imageRef.optional() })).default([]),
 });
 
 const logosBlock = z.object({
@@ -298,6 +304,8 @@ export const pageSchema = z.object({
   /** `blokken`: bouwstenen. `tekst`: één lopende tekst met koppen (`inhoud`), zoals Privacy. */
   template: z.enum(['blokken', 'tekst']).default('blokken'),
   intro: rich,
+  /** Breed beeld onder de paginakop (template `blokken`). */
+  beeld: imageRef.optional(),
   seo,
   blocks: z.array(block).default([]),
   inhoud: richText.default([]),
@@ -317,7 +325,7 @@ export const contactSchema = z.object({
   title: z.string(),
   intro: rich,
   tekst: rich,
-  sfeerbeeld: imageRef.pick({ src: true, alt: true }).optional(),
+  sfeerbeeld: imageRef.optional(),
   contactpersoon: z.object({ naam: z.string(), rol: text }).optional(),
   /** Portret met quote van de oprichter. */
   bio: z.object({ kop: text, foto: imageRef.pick({ src: true, alt: true }).optional(), quote: richText.default([]) }).optional(),

@@ -84,10 +84,12 @@ export const columns = defineType({
   title: 'Beeld naast tekst',
   type: 'object',
   fields: [
+    defineField({ name: 'image', title: 'Beeld', description: 'Staand werkt het best (3:4). Op mobiel staat het beeld altijd boven de tekst.', type: 'beeld', validation: (r) => r.warning('Voeg een beeld toe, anders staat de tekst alleen.') }),
+    defineField({ name: 'beeldPositie', title: 'Beeld', type: 'string', options: { list: opties(['links', 'rechts']), layout: 'radio', direction: 'horizontal' }, initialValue: 'links' }),
     kop,
-    tekst(),
-    defineField({ name: 'image', title: 'Beeld', type: 'beeld', validation: (r) => r.required() }),
-    defineField({ name: 'beeldPositie', title: 'Beeld', type: 'string', options: { list: opties(['links', 'rechts']), layout: 'radio', direction: 'horizontal' }, initialValue: 'rechts' }),
+    defineField({ name: 'intro', title: 'Intro', description: 'Groter dan de tekst eronder. Eén alinea.', type: 'richText' }),
+    tekst('Tekst', false),
+    defineField({ name: 'kolommen', title: 'Tekst in twee kolommen', description: 'Elke alinea een eigen kolom. Op mobiel onder elkaar.', type: 'boolean', initialValue: false }),
   ],
   preview: { select: { title: 'kop', media: 'image' }, prepare: ({ title, media }) => ({ title: title || 'Beeld naast tekst', subtitle: 'Beeld naast tekst', media }) },
 });
@@ -242,6 +244,7 @@ export const list = defineType({
   fields: [
     defineField({ name: 'soort', title: 'Soort', type: 'string', options: { list: opties(['pers', 'awards']), layout: 'radio', direction: 'horizontal' }, validation: (r) => r.required() }),
     kop,
+    defineField({ name: 'intro', title: 'Intro', description: 'Korte tekst onder de kop, naast de lijst.', type: 'richText' }),
     defineField({ name: 'items', title: 'Items', type: 'array', of: [{ type: 'listItem' }] }),
     defineField({
       name: 'toonUit',
@@ -276,7 +279,23 @@ export const services = defineType({
   fields: [
     kop,
     defineField({ name: 'anker', title: 'Anker', description: 'Bv. diensten → /over#diensten', type: 'string' }),
-    defineField({ name: 'vormen', title: 'Tegels in de projectvormen', type: 'boolean', initialValue: false }),
+    defineField({
+      name: 'weergave',
+      title: 'Weergave',
+      description:
+        'Raster: tegels naast elkaar. Beelden: een strook met per dienst een beeld. Vormen: donkere vormen over een achtergrondbeeld. Beelden en vormen schuiven mee met het scrollen (desktop) of zijn te swipen (mobiel).',
+      type: 'string',
+      options: { list: opties(['raster', 'beelden', 'vormen']), layout: 'radio', direction: 'horizontal' },
+      initialValue: 'raster',
+    }),
+    defineField({ name: 'vormen', title: 'Tegels in de projectvormen', type: 'boolean', initialValue: false, hidden: ({ parent }) => (parent?.weergave ?? 'raster') !== 'raster' }),
+    defineField({
+      name: 'achtergrond',
+      title: 'Achtergrondbeeld',
+      description: 'Liggend en breed (bv. 3:2). De vormen schuiven eroverheen.',
+      type: 'beeld',
+      hidden: ({ parent }) => parent?.weergave !== 'vormen',
+    }),
     defineField({
       name: 'items',
       title: 'Items',
@@ -288,8 +307,9 @@ export const services = defineType({
           fields: [
             defineField({ name: 'titel', title: 'Titel', type: 'string', validation: (r) => r.required() }),
             defineField({ name: 'tekst', title: 'Tekst', type: 'richText' }),
+            defineField({ name: 'beeld', title: 'Beeld', description: 'Voor de weergave Beelden (staand, 3:4).', type: 'beeld' }),
           ],
-          preview: { select: { title: 'titel' } },
+          preview: { select: { title: 'titel', media: 'beeld' } },
         }),
       ],
     }),

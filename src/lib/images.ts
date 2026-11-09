@@ -13,7 +13,7 @@ export function projectBeelden(p: Pick<Project, 'hero' | 'blocks'>, max = 6): Sa
   for (const b of p.blocks) {
     if (b.type === 'image') beelden.push(b.src);
     else if (b.type === 'gallery') beelden.push(...b.images.map((i) => i.src));
-    else if (b.type === 'columns') beelden.push(b.image.src);
+    else if (b.type === 'columns' && b.image) beelden.push(b.image.src);
     else if (b.type === 'beforeAfter') beelden.push(b.voor.src, b.na.src);
   }
   const gezien = new Set<string>();

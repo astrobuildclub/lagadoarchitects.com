@@ -42,10 +42,24 @@ function filterAlsRecord(blocks: unknown) {
   }
 }
 
+/**
+ * Beeldbouwstenen zonder (volledig) beeld weglaten in plaats van de hele pagina te laten vallen: een net
+ * toegevoegd blok in de Studio, of een upload die nog bezig is of mislukte. Lege blokken renderen niets.
+ */
+function zonderLegeBeeldblokken(blocks: unknown) {
+  if (!Array.isArray(blocks)) return blocks;
+  return (blocks as Record<string, unknown>[]).filter((b) => {
+    if (b.type === 'image') return 'src' in b;
+    if (b.type === 'beforeAfter') return (['voor', 'na'] as const).every((k) => (b[k] as { src?: unknown } | undefined)?.src);
+    return true;
+  });
+}
+
 export function parse<S extends z.ZodType>(schema: S, raw: unknown, wat: string): z.infer<S> {
   const data = normalize(raw) as Record<string, unknown> | undefined;
   if (!data) throw new Error(`${wat} ontbreekt in Sanity`);
   filterAlsRecord(data.blocks);
+  if (data.blocks) data.blocks = zonderLegeBeeldblokken(data.blocks);
   const res = schema.safeParse(data);
   if (!res.success) throw new Error(`${wat} klopt niet met het contentmodel:\n${res.error.message}`);
   return res.data;

@@ -17,6 +17,9 @@ const ratio = video ? await videoRatio(video, stegaClean(block.verhouding)) : '1
 const [rb, rh] = ratio.split(':');
 // Eigen posterbeeld; leeg = iframemanager gebruikt thumbnailUrl uit consent.ts (via onze eigen server).
 const poster = block.poster ? imageUrl(block.poster, 1600) : undefined;
+// iframemanager 1.3.0 zet data-title als HTML in de facade (insertAdjacentHTML): zonder < en > kan er geen
+// element ontstaan. Niet als entiteiten escapen: dezelfde waarde wordt ook het title-attribuut van de iframe.
+const titel = stegaClean(block.titel).replace(/[<>]/g, '').trim();
 ---
 
 {
@@ -26,7 +29,7 @@ const poster = block.poster ? imageUrl(block.poster, 1600) : undefined;
         class="video__frame"
         data-service={video.service}
         data-id={video.id}
-        data-title={stegaClean(block.titel).trim()}
+        data-title={titel}
         data-thumbnail={poster}
         data-ratio={ratio}
         data-autoscale
