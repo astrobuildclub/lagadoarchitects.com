@@ -1,8 +1,9 @@
 ---
-// Compacte footer (Figma 449:6819): boven het woordmerk met payoff, daaronder vier kolommen uit de
+// Footer: vier kolommen uit de
 // site-instellingen in Sanity (Footer → Kolommen). De eerste is twee keer zo breed (herkomst van de naam).
+// Onderaan het kinetische woordmerk over de volle breedte (zwart-wit).
 // Een link naar #cookies wordt de knop Cookie-instellingen (richtext/Link.astro).
-import Logo from './Logo.astro';
+import Wordmark from './brand/Wordmark.astro';
 import RichText from './RichText.astro';
 import { heeftTekst } from '../lib/richtext';
 import type { Settings } from '../lib/schema';
@@ -16,15 +17,6 @@ const kolommen = settings.footer.kolommen.filter((k) => heeftTekst(k.tekst));
 
 <footer class="site-footer">
   <div class="wrapper wrapper--full site-footer__inner">
-    <div class="site-footer__merk">
-      <p class="site-footer__logo">
-        <Logo class="site-footer__wordmark" />
-        <span aria-hidden="true">architects</span>
-        <span class="visually-hidden">{settings.siteNaam}</span>
-      </p>
-      <p>{settings.payoff}</p>
-    </div>
-
     <div class="site-footer__grid">
       {
         kolommen.map((k, i) => (
@@ -34,6 +26,8 @@ const kolommen = settings.footer.kolommen.filter((k) => heeftTekst(k.tekst));
         ))
       }
     </div>
+
+    <Wordmark mono class="site-footer__wordmark" label={settings.siteNaam} />
   </div>
 </footer>
 
@@ -50,21 +44,10 @@ const kolommen = settings.footer.kolommen.filter((k) => heeftTekst(k.tekst));
   }
   .site-footer__inner {
     display: grid;
-    gap: var(--space-m);
-  }
-  .site-footer__merk {
-    display: grid;
-    gap: 2px;
-  }
-  .site-footer__logo {
-    display: flex;
-    align-items: baseline;
-    gap: 0.25rem;
-    font-weight: 400;
+    gap: var(--space-2xl);
   }
   .site-footer :global(.site-footer__wordmark) {
-    block-size: 1rem;
-    inline-size: auto;
+    inline-size: 100%;
   }
   .site-footer__grid {
     display: grid;

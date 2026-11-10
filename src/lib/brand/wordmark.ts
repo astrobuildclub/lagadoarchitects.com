@@ -4,7 +4,7 @@
  * hoekpunten op de rasterpunten. De eerste stand volgt het blokkenalfabet uit Figma; de andere standen zijn
  * ingrepen: een hoek schuin of afgerond, een gat dat hoger, lager of scheef schuift.
  */
-import { paden, type Vorm } from './raster';
+import { animatie, paden, type Stap, type Vorm } from './raster';
 
 export interface Stand {
   id: string;
@@ -20,36 +20,58 @@ export interface Letter {
   teken: string;
   /** x-positie in het losse woordmerk (viewBox 0 0 70 10): één blok (2) tussen de letters. */
   x: number;
+  /** Duur van één lus in seconden (voor alle letters gelijk: DUUR). */
   duur: number;
+  /** Start in de lus (negatief = al onderweg), zodat de letters niet tegelijk bewegen. */
   begin: number;
   standen: Stand[];
   /** Paar voor de hover-variant: [van, naar] als index in `standen`. */
   hover: [number, number];
+  /** De lus: welke stand, met welke ease en hoe lang. Zie Stap in raster.ts. */
+  stappen: Stap[];
+  /** Uitgerekende SMIL-tijdlijn (calcMode linear). */
+  anim: { keyTimes: string; values: string };
 }
 
-type Opzet = Omit<Letter, 'x' | 'standen'> & { standen: { id: string; label: string; vorm: Vorm }[] };
+/** Eén lus duurt voor elke letter even lang, zodat de onderlinge verschuiving blijft staan. */
+export const DUUR = 6;
+
+type Opzet = Omit<Letter, 'x' | 'standen' | 'duur' | 'anim'> & { standen: { id: string; label: string; vorm: Vorm }[] };
+
+/** Stap-afkorting: stand, morph (s), ease, vast (s). */
+const st = (stand: number, morph: number, ease: Stap['ease'], vast: number): Stap => ({ stand, morph, ease, vast });
 
 // Contouren in blokken (0–5). Zie raster.ts voor de notatie: "0,0s" schuin, "0,0r" afgerond, "2,1r.5" half blok.
 const OPZET: Opzet[] = [
   {
     id: 'gL',
     teken: 'L',
-    duur: 6,
     begin: 0,
-    hover: [0, 1],
+    hover: [0, 2],
+    // De treden schieten trapsgewijs omhoog en zakken daarna in, de bovenste eerst, tot een L die even nawipt.
+    stappen: [
+      st(0, 0.35, 'snap', 0.8),
+      st(1, 0.22, 'uit', 0.06),
+      st(2, 0.22, 'uit', 1),
+      st(1, 0.2, 'val', 0.02),
+      st(0, 0.3, 'veer', 1),
+      st(3, 0.35, 'snap', 1),
+    ],
     standen: [
-      // Tien hoekpunten in elke stand; in de rechte L staan er een paar dubbel, die worden de treden.
-      { id: 'L1', label: 'L recht', vorm: ['0,0 2,0 2,3 2,3 3,3 3,3 4,3 5,3 5,5 0,5'] },
-      { id: 'L2', label: 'L trap', vorm: ['0,0 2,0 2,2 3,2 3,3 4,3 4,4 5,4 5,5 0,5'] },
-      { id: 'L3', label: 'L schuin', vorm: ['0,0s 2,0 2,3 2,3 3,3 3,3 4,3 5,3s 5,5 0,5'] },
+      // Tien hoekpunten in elke stand: per kolom rechts van de stam een bovenkant (2,a 3,a 3,b 4,b 4,c 5,c).
+      // In de rechte L liggen die op één lijn; daaruit groeien de treden.
+      { id: 'L1', label: 'L recht', vorm: ['0,0 2,0 2,3 3,3 3,3 4,3 4,3 5,3 5,5 0,5'] },
+      { id: 'L2', label: 'L halve trap', vorm: ['0,0 2,0 2,2 3,2 3,3 4,3 4,3 5,3 5,5 0,5'] },
+      { id: 'L3', label: 'L grote trap', vorm: ['0,0 2,0 2,1 3,1 3,2 4,2 4,3 5,3 5,5 0,5'] },
+      { id: 'L4', label: 'L schuin', vorm: ['0,0s 2,0 2,3 3,3 3,3 4,3 4,3 5,3s 5,5 0,5'] },
     ],
   },
   {
     id: 'gA',
     teken: 'A',
-    duur: 8,
     begin: -0.35,
     hover: [0, 1],
+    stappen: [st(0, 0.35, 'snap', 1.4), st(1, 0.35, 'veer', 1.4), st(2, 0.4, 'snap', 1.4)],
     standen: [
       { id: 'A1r', label: 'A recht', vorm: ['0,0 5,0 5,5 3,5 3,4 2,4 2,5 0,5', '2,1 3,1 3,3 2,3'] },
       { id: 'A1s', label: 'A met scheef gat', vorm: ['0,0 5,0 5,5 3,5 3,4 2,4 2,5 0,5', '2,2 3,1 3,3 2,3'] },
@@ -59,9 +81,9 @@ const OPZET: Opzet[] = [
   {
     id: 'gG',
     teken: 'G',
-    duur: 8,
     begin: -0.7,
     hover: [0, 1],
+    stappen: [st(0, 0.35, 'snap', 1.4), st(1, 0.35, 'snap', 1.4), st(2, 0.4, 'uit', 1.4)],
     standen: [
       { id: 'Gr', label: 'G recht', vorm: ['0,0 5,0 5,1 2,1 2,4 4,4 4,3 3,3 3,2 5,2 5,5 0,5'] },
       { id: 'Gs', label: 'G schuin', vorm: ['0,0s 5,0 5,1 2,1 2,4 4,4 4,3 3,3 3,2 5,2 5,5s 0,5'] },
@@ -71,9 +93,9 @@ const OPZET: Opzet[] = [
   {
     id: 'gA2',
     teken: 'A',
-    duur: 8,
-    begin: -2.9,
+    begin: -2.2,
     hover: [0, 1],
+    stappen: [st(0, 0.35, 'snap', 1.4), st(1, 0.35, 'veer', 1.4), st(2, 0.4, 'uit', 1.4)],
     standen: [
       { id: 'A2c', label: 'A afgeschuind, gat hoog', vorm: ['0,0s 5,0s 5,5 3,5 3,3 2,3 2,5 0,5', '2,1 3,1 3,2 2,2'] },
       { id: 'A2s', label: 'A met scheef gat', vorm: ['0,0 5,0 5,5 3,5 3,3 2,3 2,5 0,5', '2,2 3,1 3,2 2,2'] },
@@ -83,9 +105,9 @@ const OPZET: Opzet[] = [
   {
     id: 'gD',
     teken: 'D',
-    duur: 8,
-    begin: -1.4,
+    begin: -1.05,
     hover: [0, 1],
+    stappen: [st(0, 0.3, 'snap', 0.9), st(1, 0.3, 'snap', 0.9), st(2, 0.35, 'uit', 0.9), st(3, 0.35, 'veer', 0.9)],
     standen: [
       { id: 'Dr', label: 'D recht', vorm: ['0,0 4,0 4,1 5,1 5,4 4,4 4,5 0,5', '2,1 3,1 3,4 2,4'] },
       { id: 'Ds', label: 'D schuin, gat scheef', vorm: ['0,0 4,0 5,1 5,1 5,4 5,4 4,5 0,5', '2,1 3,2 3,3 2,4'] },
@@ -96,9 +118,9 @@ const OPZET: Opzet[] = [
   {
     id: 'gO',
     teken: 'O',
-    duur: 8,
-    begin: -1.75,
+    begin: -1.4,
     hover: [0, 1],
+    stappen: [st(0, 0.3, 'snap', 0.9), st(1, 0.3, 'snap', 0.9), st(2, 0.35, 'uit', 0.9), st(3, 0.35, 'veer', 0.9)],
     standen: [
       { id: 'Or', label: 'O recht', vorm: ['0,0 5,0 5,5 0,5', '2,1 3,1 3,4 2,4'] },
       { id: 'Os', label: 'O schuin, gat scheef', vorm: ['0,0s 5,0 5,5s 0,5', '2,2 3,1 3,3 2,4'] },
@@ -109,14 +131,16 @@ const OPZET: Opzet[] = [
 ];
 
 export const LETTERS: Letter[] = OPZET.map((l, i) => {
-  const d = paden(
-    l.standen.map((s) => s.vorm),
-    l.id,
-  );
-  return { ...l, x: i * 12, standen: l.standen.map((s, n) => ({ ...s, d: d[n] })) };
+  const vormen = l.standen.map((s) => s.vorm);
+  const d = paden(vormen, l.id);
+  // De rest van de lus gaat naar de eerste stand, zodat elke letter precies DUUR seconden duurt.
+  const totaal = l.stappen.reduce((t, s) => t + s.morph + s.vast, 0);
+  if (totaal > DUUR) throw new Error(`${l.id}: stappen duren ${totaal.toFixed(2)} s, meer dan ${DUUR} s`);
+  const stappen = l.stappen.map((s, n) => (n === 0 ? { ...s, vast: +(s.vast + DUUR - totaal).toFixed(3) } : s));
+  const { keyTimes, values } = animatie(vormen, stappen, l.id);
+  return { ...l, stappen, duur: DUUR, x: i * 12, standen: l.standen.map((s, n) => ({ ...s, d: d[n] })), anim: { keyTimes, values } };
 });
 
-/** Schetsvormen van vóór het raster: statisch, eigen opbouw, niet in de animatie. Index = kolom in de matrix. */
 /** Schetsvormen: statisch, andere puntopbouw, niet in de animatie. Index = kolom in de matrix. */
 export const SCHETSEN: (Stand | null)[] = [
   null,
@@ -126,32 +150,6 @@ export const SCHETSEN: (Stand | null)[] = [
   { id: 'Dx', label: 'D deur', d: 'M0 0 L10 0 L10 10 L8 10 L8 5 Q8 3 6 3 L5.5 3 L5.5 10 L0 10 Z M2.5 2 L3.7 2 L3.7 8.5 L2.5 8.5 Z' },
   { id: 'Ox', label: 'O poort', d: 'M0 0 L10 0 L10 10 L0 10 Z M2 8 L2 6 Q2 2 5 2 L8 2 L8 8 Z' },
 ];
-
-/** Overgang: snel weg, rustig aan (keySplines voor SMIL, cubic-bezier voor CSS). */
-export const EASE = '0.7 0 0.3 1';
-
-/**
- * keyTimes en values voor een lus door alle standen: elke stand wordt kort vastgehouden en dan gemorpht.
- * Drie standen: 0;0.1;0.33;0.43;0.67;0.77;1 — vier: 0;0.08;0.25;0.33;0.5;0.58;0.75;0.83;1.
- */
-export function tijdlijn(standen: Stand[]) {
-  const n = standen.length;
-  const vasthouden = n === 3 ? 0.1 : 0.08;
-  const keyTimes: number[] = [];
-  const values: string[] = [];
-  standen.forEach((s, i) => {
-    const t = i / n;
-    keyTimes.push(+t.toFixed(2), +(t + vasthouden).toFixed(2));
-    values.push(s.d, s.d);
-  });
-  keyTimes.push(1);
-  values.push(standen[0].d);
-  return {
-    keyTimes: keyTimes.join(';'),
-    values: values.join(';'),
-    keySplines: Array(keyTimes.length - 1).fill(EASE).join(';'),
-  };
-}
 
 /** Losse woordmerk: viewBox 0 0 70 10. Tegelversie: 0 0 84 14, tegels van 14, letter op (2, 2). */
 export const WOORD_BREEDTE = 70;

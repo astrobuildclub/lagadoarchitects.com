@@ -1,8 +1,9 @@
 ---
 // Defs van het kinetische woordmerk: één keer per pagina renderen. Elke stand is een los pad (#wm-L1 …),
-// elke letter een geanimeerde glyph (#wm-gL …) met SMIL: geen JavaScript nodig voor de animatie.
+// elke letter een geanimeerde glyph (#wm-gL …) met SMIL: geen JavaScript nodig voor de animatie. De frames
+// zijn vooraf uitgerekend (raster.ts, animatie()), daarom calcMode linear en geen keySplines.
 // Kleur via --g op de <use> of een ouder; die erft door in de schaduwboom van de <use>.
-import { LETTERS, SCHETSEN, tijdlijn } from '../../lib/brand/wordmark';
+import { LETTERS, SCHETSEN } from '../../lib/brand/wordmark';
 
 ---
 
@@ -15,25 +16,21 @@ import { LETTERS, SCHETSEN, tijdlijn } from '../../lib/brand/wordmark';
     }
     {SCHETSEN.filter((s) => s !== null).map((s) => <path id={`wm-${s.id}`} class="wm-gp" d={s.d} fill-rule="evenodd" />)}
     {
-      LETTERS.map((l) => {
-        const t = tijdlijn(l.standen);
-        return (
-          <g id={`wm-${l.id}`}>
-            <path class="wm-gp" d={l.standen[0].d} fill-rule="evenodd">
-              <animate
-                attributeName="d"
-                dur={`${l.duur}s`}
-                begin={`${l.begin}s`}
-                repeatCount="indefinite"
-                calcMode="spline"
-                keyTimes={t.keyTimes}
-                keySplines={t.keySplines}
-                values={t.values}
-              />
-            </path>
-          </g>
-        );
-      })
+      LETTERS.map((l) => (
+        <g id={`wm-${l.id}`}>
+          <path class="wm-gp" d={l.standen[l.stappen[0].stand].d} fill-rule="evenodd">
+            <animate
+              attributeName="d"
+              dur={`${l.duur}s`}
+              begin={`${l.begin}s`}
+              repeatCount="indefinite"
+              calcMode="linear"
+              keyTimes={l.anim.keyTimes}
+              values={l.anim.values}
+            />
+          </path>
+        </g>
+      ))
     }
   </defs>
 </svg>

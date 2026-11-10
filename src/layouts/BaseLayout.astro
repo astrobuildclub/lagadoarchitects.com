@@ -4,6 +4,7 @@ import '../styles/index.css';
 import CookieConsent from '../components/CookieConsent.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import WordmarkDefs from '../components/brand/WordmarkDefs.astro';
 import Interlude from '../components/Interlude.astro';
 import SiteMeta from '../components/SiteMeta.astro';
 import { getContact, getSettings } from '../lib/content';
@@ -85,6 +86,7 @@ const stats = settings.analytics;
     <!-- Paginatransities (Interlude, zie TRANSITIONS.md §7): direct kind van <body>. -->
     <Interlude />
     <a class="skip-link" href="#inhoud">Naar de inhoud</a>
+    <WordmarkDefs />
     <Header settings={settings} contact={contact} />
     <main id="inhoud" tabindex="-1">
       <slot />

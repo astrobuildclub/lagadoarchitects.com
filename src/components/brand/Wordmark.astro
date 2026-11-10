@@ -15,11 +15,13 @@ interface Props {
   href?: string;
   /** Omkeren: letter in de achtergrondkleur (preloader op een vlak). */
   invert?: boolean;
+  /** Verborgen voor hulptechnologie, als de naam al als tekst ernaast staat (header, footer). */
+  decoratief?: boolean;
   class?: string;
   style?: string;
 }
 
-const { variant = 'animated', mono = false, label = 'LAGADO', href = '/', invert = false, class: className, style } = Astro.props;
+const { variant = 'animated', mono = false, label = 'LAGADO', href = '/', invert = false, decoratief = false, class: className, style } = Astro.props;
 
 const kleur = (k: Kleur) => `var(--wm-${k})`;
 const letterStijl = (i: number) => (mono ? undefined : `--g-licht: ${kleur(LETTERKLEUR_LICHT[i])}; --g-donker: ${kleur(LETTERKLEUR_DONKER[i])}`);
@@ -32,8 +34,10 @@ const tegelStijl = (i: number) => `--tegel: ${kleur(TEGELS[i][0])}; --letter: ${
       class:list={['wm', { 'wm--mono': mono, 'wm--inv': invert }, className]}
       style={style}
       viewBox={`0 0 ${WOORD_BREEDTE} 10`}
-      role="img"
-      aria-label={label}
+      role={decoratief ? undefined : 'img'}
+      aria-label={decoratief ? undefined : label}
+      aria-hidden={decoratief ? 'true' : undefined}
+      focusable="false"
     >
       {variant === 'animated' && (
         <g class="wm-anim">

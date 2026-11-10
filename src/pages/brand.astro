@@ -54,6 +54,17 @@ const legenda = [
 ];
 const alfabet = Object.entries(ALFABET).map(([teken, bitmap]) => ({ teken, d: traceer(bitmap) }));
 // Rasterpunten (6 × 6) als stippen, zoals op het stippenpapier van de schetsen.
+// Notatie onder elke stand: hoekpunten in kolommen van gelijke breedte (per letter), gaten op een nieuwe regel.
+const notatie = (vorm: string[], breedte: number) => {
+  const perRegel = breedte <= 4 ? 4 : 3;
+  return vorm
+    .flatMap((contour) => {
+      const p = contour.trim().split(/\s+/).map((t) => t.padEnd(breedte));
+      return Array.from({ length: Math.ceil(p.length / perRegel) }, (_, i) => p.slice(i * perRegel, (i + 1) * perRegel).join(' ').trimEnd());
+    })
+    .join('\n');
+};
+const breedtes = LETTERS.map((l) => Math.max(...l.standen.flatMap((s) => (s.vorm ?? []).join(' ').split(/\s+/).map((t) => t.length))));
 const punten = Array.from({ length: 36 }, (_, i) => [(i % 6) * 2, Math.floor(i / 6) * 2]);
 ---
 
@@ -68,7 +79,7 @@ const punten = Array.from({ length: 36 }, (_, i) => [(i % 6) * 2, Math.floor(i /
     <div class="balk__knoppen">
       <button type="button" class="toggle" data-brand="thema" aria-pressed="false">Donker</button>
       <button type="button" class="toggle" data-brand="kleur" aria-pressed="false">Kleur</button>
-      <button type="button" class="toggle" data-brand="pauze" aria-pressed="false">Animatie pauzeren</button>
+      <button type="button" class="toggle" data-brand="pauze">Animatie pauzeren</button>
     </div>
   </header>
 
@@ -143,7 +154,7 @@ const punten = Array.from({ length: 36 }, (_, i) => [(i % 6) * 2, Math.floor(i /
             {
               Array.from({ length: rijen }, (_, r) => (
                 <>
-                  <span class="label">{r + 1}</span>
+                  <span class="label rij">{r + 1}</span>
                   {LETTERS.map((l, i) => {
                     const s = l.standen[r];
                     return s ? (
@@ -154,7 +165,7 @@ const punten = Array.from({ length: 36 }, (_, i) => [(i % 6) * 2, Math.floor(i /
                         </svg>
                         <figcaption>
                           {s.id}
-                          {s.vorm && <pre class="notatie">{s.vorm.join('\n')}</pre>}
+                          {s.vorm && <pre class="notatie">{notatie(s.vorm, breedtes[i])}</pre>}
                         </figcaption>
                       </figure>
                     ) : (
@@ -164,7 +175,7 @@ const punten = Array.from({ length: 36 }, (_, i) => [(i % 6) * 2, Math.floor(i /
                 </>
               ))
             }
-            <span class="label">Schets<br /><span class="meta">oud</span></span>
+            <span class="label rij">Schets<br /><span class="meta">oud</span></span>
             {
               SCHETSEN.map((s, i) =>
                 s ? (
@@ -516,7 +527,7 @@ const punten = Array.from({ length: 36 }, (_, i) => [(i % 6) * 2, Math.floor(i /
         </div>
         <div>
           <h3>Woordmerk</h3>
-          <p class="meta">SMIL-morph, <code>keySplines="0.7 0 0.3 1"</code>. Standen worden kort vastgehouden en dan gemorpht.</p>
+          <p class="meta">SMIL-morph met vooraf uitgerekende frames (elke ~30 ms), zodat hoeken en gaten onderweg kloppen. Korte morphs, lange rust, per overgang een eigen ease: <code>snap</code> (buitenvorm), <code>uit</code> (opbouwen, afronden), <code>val</code> (inzakken), <code>veer</code> (gaten, landing; schiet iets door).</p>
           <p class="noot muted">Bij reduced motion of pauze staat het woordmerk stil in de eerste stand.</p>
         </div>
       </div>
@@ -525,14 +536,14 @@ const punten = Array.from({ length: 36 }, (_, i) => [(i % 6) * 2, Math.floor(i /
         <table class="tabel">
           <caption class="label">Timing per letter</caption>
           <thead>
-            <tr><th scope="col">Letter</th><th scope="col">Standen</th><th scope="col">Duur</th><th scope="col">Begin</th></tr>
+            <tr><th scope="col">Letter</th><th scope="col">Lus (stand · ease · morph)</th><th scope="col">Duur</th><th scope="col">Begin</th></tr>
           </thead>
           <tbody>
             {
               LETTERS.map((l) => (
                 <tr>
                   <th scope="row">{l.teken}</th>
-                  <td>{l.standen.map((s) => s.id).join(' → ')}</td>
+                  <td>{[...l.stappen.slice(1), l.stappen[0]].map((s) => `${l.standen[s.stand].id} · ${s.ease} · ${String(s.morph).replace('.', ',')}`).join(' → ')}</td>
                   <td>{l.duur} s</td>
                   <td>{l.begin.toString().replace('.', ',').replace('-', '−')} s</td>
                 </tr>
@@ -562,7 +573,10 @@ const punten = Array.from({ length: 36 }, (_, i) => [(i % 6) * 2, Math.floor(i /
   function sync() {
     knop('thema').setAttribute('aria-pressed', String(isDonker()));
     knop('kleur').setAttribute('aria-pressed', String('kleur' in root.dataset));
-    knop('pauze').setAttribute('aria-pressed', String('wmPauze' in root.dataset));
+    // Pauzeknop: de tekst zegt wat de knop doet (geen aria-pressed, dan zou de naam vast moeten blijven).
+    const gepauzeerd = 'wmPauze' in root.dataset;
+    knop('pauze').textContent = gepauzeerd ? 'Animatie afspelen' : 'Animatie pauzeren';
+    knop('pauze').toggleAttribute('data-actief', gepauzeerd);
     meet();
   }
 
@@ -680,7 +694,8 @@ const punten = Array.from({ length: 36 }, (_, i) => [(i % 6) * 2, Math.floor(i /
     transition: background var(--duration) var(--ease), color var(--duration) var(--ease);
   }
   .toggle:hover,
-  .toggle[aria-pressed='true'] {
+  .toggle[aria-pressed='true'],
+  .toggle[data-actief] {
     background: var(--color-fg);
     color: var(--color-bg);
   }
@@ -744,15 +759,20 @@ const punten = Array.from({ length: 36 }, (_, i) => [(i % 6) * 2, Math.floor(i /
     overflow-x: auto;
   }
   .matrix {
-    min-inline-size: 34rem;
+    /* Breed genoeg voor leesbare notatie; smaller scrollt de matrix horizontaal. */
+    min-inline-size: 64rem;
     display: grid;
     grid-template-columns: 4.5rem repeat(6, minmax(0, 1fr));
-    gap: var(--space-s);
-    align-items: center;
+    gap: var(--space-m) var(--space-s);
+    align-items: start;
+  }
+  .rij {
+    padding-block-start: var(--space-l);
   }
   .cel {
     display: grid;
     gap: var(--space-3xs);
+    container-type: inline-size;
   }
   /* Rasterpunten over de letters: laat zien dat elk hoekpunt op het raster ligt. */
   .punten {
@@ -762,11 +782,13 @@ const punten = Array.from({ length: 36 }, (_, i) => [(i % 6) * 2, Math.floor(i /
   .notatie {
     margin-block-start: var(--space-3xs);
     font-family: var(--font-mono);
-    font-size: var(--step--2);
-    line-height: 1.3;
+    /* Monospace in kolommen: ±20 tekens per regel, krimpt mee met de cel zodat niets terugloopt. */
+    font-size: min(var(--step--2), 8cqi);
+    line-height: 1.35;
+    letter-spacing: 0;
     color: var(--color-muted);
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
+    white-space: pre;
+    overflow-x: auto;
   }
   .legenda {
     list-style: none;

@@ -67,7 +67,7 @@ Gebruik `--vorm-radius` en `--vorm-clip` op het vlak; geen eigen `border-radius`
 
 | Letter | Standen |
 |---|---|
-| L | recht → trap → schuin. Rechtsboven blijft altijd leeg. |
+| L | recht → kleine trap → grote trap → kleine trap → schuin: een trap die doorloopt. Rechtsboven blijft altijd leeg. |
 | A (1) | recht → scheef gat → afgerond met rond gat |
 | G | recht → schuin → afgerond |
 | A (2) | afgeschuind → scheef gat → afgerond. Ander ritme dan de eerste A: korter gat, langere benen. |
@@ -104,8 +104,9 @@ Gebruik `--vorm-radius` en `--vorm-clip` op het vlak; geen eigen `border-radius`
 
 ### Beweging
 
-- SMIL-morph op het `d`-attribuut, geen JavaScript. Elke stand wordt kort vastgehouden en dan gemorpht met `keySplines="0.7 0 0.3 1"`.
-- Duur 8 s per letter, de L 6 s. Ritme via een negatieve `begin`: L 0, A −0,35, G −0,7, A −2,9, D −1,4, O −1,75 s.
+- SMIL-morph op het `d`-attribuut, geen JavaScript. De frames worden vooraf uitgerekend (`animatie()` in `raster.ts`, ongeveer elke 30 ms, `calcMode="linear"`): per hoekpunt schuiven positie en afronding samen, zodat gaten en hoeken onderweg geen deukjes krijgen.
+- Snappy: korte morphs (0,2–0,4 s), lange rust. Per overgang een eigen ease: `snap` (0.85 0 0.15 1) voor de buitenvorm, `uit` (0.16 1 0.3 1) voor opbouwen en afronden, `val` (0.55 0 1 0.45) voor inzakken, `veer` (0.34 1.56 0.64 1) voor gaten en landingen. De veer schiet iets door, wat met keySplines niet kan.
+- Elke lus duurt 6 s (`DUUR`), zodat de letters onderling verschoven blijven. De L: treden schieten trapsgewijs omhoog, zakken in (bovenste eerst) tot een L die even nawipt, daarna schuin. Ritme via een negatieve `begin`: L 0, A −0,35, G −0,7, A −2,2, D −1,05, O −1,4 s.
 - Morphen werkt alleen als elke stand van een letter evenveel contouren en hoekpunten heeft. `paden()` controleert dat en geeft anders een fout. Dubbele punten zijn toegestaan om het aantal gelijk te houden.
 
 ### Toegankelijkheid
@@ -179,7 +180,7 @@ Koppen: `--leading-tight` (1,1), letterspatiëring −0,03ch.
 ## 8. Beweging
 
 - Interface: `--duration` 200 ms, `--ease` `cubic-bezier(0.2, 0, 0, 1)`. Bij reduced motion wordt `--duration` 0.
-- Woordmerk en hover: `cubic-bezier(0.7, 0, 0.3, 1)`: snel weg, rustig aan.
+- Woordmerk: eases `snap`, `uit`, `val` en `veer` (zie §4). Hover: `cubic-bezier(0.7, 0, 0.3, 1)`: snel weg, rustig aan.
 - Paginatransities: Interlude met `curtain-lagado` (header en footer drijven mee); kleur via `--interlude-color`. Zie `~/Code/_standards/TRANSITIONS.md` §7. Geen `transition:name` of `transition:animate` op elementen.
 - Woorden die inschuiven: `data-words-in` (`src/scripts/words-in.ts`), alleen zonder reduced motion.
 
@@ -210,7 +211,7 @@ Koppen: `--leading-tight` (1,1), letterspatiëring −0,03ch.
 
 **Open**
 
-- Alle standen op het raster zijn nieuw en nog niet beoordeeld (vooral de L-trap en de schuine L).
+- Alle standen op het raster zijn nieuw en nog niet beoordeeld (vooral de lopende L-trap en de schuine L).
 - De D-vleugel past niet op het raster; vervangen door een D met hoog gat. Akkoord?
 - Gaten zijn één blok breed, een rond gat heeft een straal van een half blok. Genoeg, of moet het raster fijner (10 × 10)?
 - Schetsvormen (gevel-G, deur-D, poort-O): naar het raster vertalen of laten vallen.

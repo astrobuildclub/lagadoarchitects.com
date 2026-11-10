@@ -1,10 +1,10 @@
 ---
-// Kopbalk (Figma 462:9082): woordmerk met "architects" links; rechts de menulinks als tekst in even
+// Kopbalk (Figma 462:9082): kinetisch woordmerk (brand/Wordmark, zwart-wit) met "architects" links; rechts de menulinks als tekst in even
 // brede kolommen en de themaknop ernaast. Mobiel (Figma 462:9091, 462:9522): "menu" en de themaknop;
 // "menu" opent een overlay over het hele scherm met de links onder elkaar en onderin adres en
 // bedrijfsgegevens, en wordt dan "sluit". Zonder JS staan de links gewoon in de balk.
 import type { Contact, Settings } from '../lib/schema';
-import Logo from './Logo.astro';
+import Wordmark from './brand/Wordmark.astro';
 import ThemeToggle from './ThemeToggle.astro';
 import { cleanPath } from '../lib/url';
 
@@ -21,7 +21,7 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
 <header class="site-header">
   <div class="wrapper wrapper--full site-header__inner">
     <a class="site-header__logo" href="/">
-      <Logo class="site-header__wordmark" />
+      <Wordmark mono decoratief class="site-header__wordmark" />
       <span class="site-header__toevoeging" aria-hidden="true">architects</span>
       <span class="visually-hidden">{settings.siteNaam}</span>
     </a>
@@ -133,9 +133,10 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
     text-decoration: none;
   }
   .site-header__logo :global(.site-header__wordmark) {
-    /* Hoogte bepaalt de maat; breedte volgt de viewBox (140 × 28). */
+    /* Kinetisch woordmerk, zwart-wit. Hoogte bepaalt de maat; breedte volgt de viewBox (70 × 10). */
     block-size: 0.875rem;
     inline-size: auto;
+    aspect-ratio: 7;
   }
   .site-header__toevoeging {
     font-size: var(--step--1);
