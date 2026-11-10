@@ -8,7 +8,7 @@ export const HOME_ID = 'page-home';
 const isHome = (doc: { _id?: string } | undefined) => (doc?._id ?? '').replace(/^drafts\./, '') === HOME_ID;
 
 /** URL's die al een eigen route hebben (src/pages/). Een pagina mag daar niet op landen. */
-const GERESERVEERD = new Set(['projecten', 'contact', 'admin', 'api', '404', 'robots.txt', 'sitemap-index.xml']);
+const GERESERVEERD = new Set(['projecten', 'contact', 'admin', 'api', '404', 'robots.txt', 'sitemap-index.xml', 'brand']);
 
 const seoGroups = [
   { name: 'content', title: 'Content', default: true },

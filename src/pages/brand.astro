@@ -1,0 +1,1104 @@
+---
+// Brandpagina: logoverkenningen en een weergave van het design system (tokens uit src/styles/tokens.scss).
+// Los van Sanity en van de site-layout; niet geïndexeerd. Waarden in px meet de pagina zelf in de browser,
+// zodat ze altijd kloppen met de tokens en de huidige schermbreedte.
+import Logo from '../components/Logo.astro';
+import Wordmark from '../components/brand/Wordmark.astro';
+import WordmarkDefs from '../components/brand/WordmarkDefs.astro';
+import BrandLayout from '../layouts/BrandLayout.astro';
+import { ALFABET, pad, traceer } from '../lib/brand/raster';
+import { LETTERKLEUR_DONKER, LETTERKLEUR_LICHT, LETTERS, PALET, SCHETSEN, TEGELS, contrast } from '../lib/brand/wordmark';
+
+export const prerender = true;
+
+const rijen = Math.max(...LETTERS.map((l) => l.standen.length));
+const letterStijl = (i: number) => `--g-licht: var(--wm-${LETTERKLEUR_LICHT[i]}); --g-donker: var(--wm-${LETTERKLEUR_DONKER[i]})`;
+
+const siteKleuren = [
+  { token: '--color-bg', rol: 'Achtergrond' },
+  { token: '--color-surface', rol: 'Vlak' },
+  { token: '--color-fg', rol: 'Tekst' },
+  { token: '--color-muted', rol: 'Tekst, gedempt' },
+  { token: '--color-line', rol: 'Lijn' },
+  { token: '--color-accent', rol: 'Accent' },
+  { token: '--color-on-accent', rol: 'Op accent' },
+  { token: '--color-ink', rol: 'Inkt (header, footer)' },
+  { token: '--color-on-ink', rol: 'Op inkt' },
+];
+
+const palet = Object.entries(PALET).map(([sleutel, k]) => {
+  const c = contrast(k.hex);
+  return { sleutel, ...k, ...c, tekst: c.zwart >= c.wit ? 'zwart' : 'wit' };
+});
+const aa = (r: number) => (r >= 4.5 ? 'AA' : r >= 3 ? 'AA groot' : '—');
+
+const typeStappen = [8, 7, 6, 5, 4, 3, 2, 1, 0, -1, -2, -3];
+const ruimte = ['4xs', '3xs', '2xs', 'xs', 's', 'm', 'l', 'xl', '2xl', '3xl', '4xl', '5xl'];
+const ruimteParen = ['s-m', 'm-l', 'l-xl', 'xl-2xl', 's-l', 'm-xl', 'l-2xl', 'xl-3xl', 's-3xl'];
+const layoutTokens = [
+  { token: '--gutter', rol: 'Zijruimte van header, raster en footer' },
+  { token: '--content-width', rol: 'Tekstkolom' },
+  { token: '--popout-width', rol: 'Uitbreking popout (per kant)' },
+  { token: '--feature-width', rol: 'Uitbreking feature (per kant)' },
+  { token: '--tile-gap', rol: 'Ruimte tussen projecttegels' },
+];
+const formaten = [448, 280, 168, 112, 84];
+
+// Legenda van het raster: voorbeeldvormen in dezelfde notatie als de letters (viewBox 0 0 10 10).
+const legenda = [
+  { vorm: ['0,0 5,0 5,5 0,5'], naam: 'Recht', code: '0,0', uitleg: 'Hoekpunten op de rasterpunten, 0 tot en met 5. De basis volgt het blokkenalfabet uit Figma.' },
+  { vorm: ['0,0s 5,0 5,5s 0,5'], naam: 'Schuin', code: '0,0s', uitleg: 'De hoek wordt één blok afgesneden. Met .5 een half blok.' },
+  { vorm: ['0,0r 5,0r 5,5 0,5'], naam: 'Afgerond', code: '0,0r', uitleg: 'Afgeronde hoek met een straal van één blok. Nooit helemaal rond.' },
+  { vorm: ['0,0 5,0 5,5 0,5', '2,1r.5 3,1r.5 3,4 2,4'], naam: 'Gat', code: '2,1r.5', uitleg: 'Tweede contour is een gat. Met r.5 op de bovenhoeken wordt het halfrond.' },
+  { vorm: ['0,0 5,0 5,5 0,5', '2,2 3,1 3,4 2,4'], naam: 'Beweging', code: '2,2 3,1', uitleg: 'Een hoekpunt schuift naar een ander rasterpunt: het gat wordt hoger, lager of scheef.' },
+];
+const alfabet = Object.entries(ALFABET).map(([teken, bitmap]) => ({ teken, d: traceer(bitmap) }));
+// Rasterpunten (6 × 6) als stippen, zoals op het stippenpapier van de schetsen.
+const punten = Array.from({ length: 36 }, (_, i) => [(i % 6) * 2, Math.floor(i / 6) * 2]);
+---
+
+<BrandLayout title="LAGADO brand" description="Woordmerk, kleur, typografie, ruimte en vorm van LAGADO architects. Werkdocument.">
+  <WordmarkDefs />
+
+  <header class="balk wrapper--full">
+    <a class="balk__home" href="#top" aria-label="LAGADO brand, naar boven">
+      <Wordmark variant="static" mono label="LAGADO" style="inline-size: 112px" />
+      <span class="label">Brand</span>
+    </a>
+    <div class="balk__knoppen">
+      <button type="button" class="toggle" data-brand="thema" aria-pressed="false">Donker</button>
+      <button type="button" class="toggle" data-brand="kleur" aria-pressed="false">Kleur</button>
+      <button type="button" class="toggle" data-brand="pauze" aria-pressed="false">Animatie pauzeren</button>
+    </div>
+  </header>
+
+  <main id="inhoud" tabindex="-1">
+    <div class="wrapper intro" id="top">
+      <p class="label muted">Werkdocument · niet openbaar</p>
+      <h1>LAGADO brand</h1>
+      <p class="lead">
+        Woordmerk, kleur, typografie, ruimte en vorm op één plek. De tokens komen rechtstreeks uit de site; de maten in pixels meet deze pagina
+        zelf, bij de huidige schermbreedte. Het kinetische woordmerk is een verkenning en nog niet goedgekeurd.
+      </p>
+      <nav aria-label="Op deze pagina" class="inhoud">
+        <a href="#woordmerk">Woordmerk</a>
+        <a href="#kleur">Kleur</a>
+        <a href="#typografie">Typografie</a>
+        <a href="#ruimte">Ruimte</a>
+        <a href="#vorm">Vorm</a>
+        <a href="#beweging">Beweging</a>
+      </nav>
+    </div>
+
+    <!-- ───────────── Woordmerk ───────────── -->
+    <section id="woordmerk" class="wrapper sectie" aria-labelledby="h-woordmerk">
+      <h2 id="h-woordmerk">Woordmerk</h2>
+      <p class="noot">
+        Zes letters op een raster van 5 × 5 blokken, gebaseerd op potloodschetsen op stippenpapier en op de ingrepen uit het werk van Lagado: recht,
+        schuin en licht afgerond. Elke letter is één vorm met de hoekpunten op het raster; de basis volgt het blokkenalfabet uit Figma en elke andere stand is een ingreep op die vorm. De buitenvormen blijven rustig; de beweging zit in de gaten, die hoger, lager en scheef schuiven, en in de L, waar
+        de treden door de hoek lopen terwijl rechtsboven altijd open blijft.
+      </p>
+
+      <div class="blok">
+        <h3 class="label">00 — Raster en ingrepen</h3>
+        <ul class="legenda" role="list">
+          {
+            legenda.map((l) => (
+              <li>
+                <svg class="legenda__vorm" viewBox="0 0 10 10" aria-hidden="true">
+                  <path d={pad(l.vorm)} fill-rule="evenodd" />
+                  <g class="punten">{punten.map(([x, y]) => <circle cx={x} cy={y} r="0.18" />)}</g>
+                </svg>
+                <span>
+                  <strong>{l.naam}</strong>
+                  <code>{l.code}</code>
+                  <span class="meta">{l.uitleg}</span>
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="noot muted">
+          Een stand is een lijst contouren in <code>src/lib/brand/wordmark.ts</code> (eerst de buitenvorm, dan de gaten); <code>raster.ts</code> maakt er paden van. Alle standen van een
+          letter hebben zo dezelfde opbouw en kunnen naar elkaar morphen.
+        </p>
+      </div>
+
+      <div class="blok">
+        <h3 class="label">01 — Hoofdversie, tegels</h3>
+        <Wordmark variant="tiles" />
+      </div>
+
+      <div class="blok">
+        <h3 class="label">02 — Losse letters</h3>
+        <Wordmark variant="animated" />
+      </div>
+
+      <div class="blok">
+        <h3 class="label">03 — Alle standen</h3>
+        <div class="matrix-scroll" role="region" aria-label="Alle standen per letter" tabindex="0">
+          <div class="matrix">
+            <span></span>
+            {LETTERS.map((l) => <span class="label">{l.teken}</span>)}
+            {
+              Array.from({ length: rijen }, (_, r) => (
+                <>
+                  <span class="label">{r + 1}</span>
+                  {LETTERS.map((l, i) => {
+                    const s = l.standen[r];
+                    return s ? (
+                      <figure class="cel">
+                        <svg class="wm" viewBox="0 0 10 10" role="img" aria-label={s.label}>
+                          <use href={`#wm-${s.id}`} class="wm-l" style={letterStijl(i)} />
+                          <g class="punten">{punten.map(([x, y]) => <circle cx={x} cy={y} r="0.12" />)}</g>
+                        </svg>
+                        <figcaption>
+                          {s.id}
+                          {s.vorm && <pre class="notatie">{s.vorm.join('\n')}</pre>}
+                        </figcaption>
+                      </figure>
+                    ) : (
+                      <span />
+                    );
+                  })}
+                </>
+              ))
+            }
+            <span class="label">Schets<br /><span class="meta">oud</span></span>
+            {
+              SCHETSEN.map((s, i) =>
+                s ? (
+                  <figure class="cel">
+                    <svg class="wm" viewBox="0 0 10 10" role="img" aria-label={s.label}>
+                      <use href={`#wm-${s.id}`} class="wm-l" style={letterStijl(i)} />
+                    </svg>
+                    <figcaption>{s.id}</figcaption>
+                  </figure>
+                ) : (
+                  <span />
+                ),
+              )
+            }
+          </div>
+        </div>
+        <p class="noot muted">De rij Schets (gevel, deur, poort) komt uit de eerste verkenning, van vóór het blokraster. Die vormen staan nog niet op het raster en zitten niet in de animatie.</p>
+      </div>
+
+      <div class="blok">
+        <h3 class="label">04 — Hover, letters rollen na elkaar door</h3>
+        <Wordmark variant="hover" href="#woordmerk" />
+        <p class="noot muted">Stilstaand logo. Bij hover of focus rolt elke letter met 70 ms vertraging naar zijn tweede stand, en terug bij loslaten.</p>
+      </div>
+
+      <div class="blok">
+        <h3 class="label">05 — Formaten</h3>
+        <div class="formaten">
+          {
+            formaten.map((px) => (
+              <div class="formaat">
+                <span class="meta">
+                  {px} px{px <= 112 && ' · altijd één kleur'}
+                  {px === 84 && ' · kleinste maat'}
+                </span>
+                <Wordmark variant="animated" mono={px <= 112} style={`inline-size: ${px}px`} />
+              </div>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="blok">
+        <h3 class="label">06 — In de header</h3>
+        <div class="demo-header">
+          <Wordmark variant="animated" mono style="inline-size: 112px" />
+          <ul class="demo-nav" aria-label="Voorbeeldnavigatie">
+            <li>Projecten</li>
+            <li>Studio</li>
+            <li>Contact</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="blok">
+        <h3 class="label">07 — Preloader</h3>
+        <div class="preloader">
+          <Wordmark variant="animated" mono invert label="LAGADO, laden" style="inline-size: min(26rem, 80%)" />
+          <div class="preloader__spoor"><div class="preloader__balk"></div></div>
+        </div>
+      </div>
+
+      <div class="blok">
+        <h3 class="label">08 — Huidig woordmerk op de site</h3>
+        <div class="huidig">
+          <Logo class="huidig__logo" />
+          <span class="visually-hidden">LAGADO</span>
+        </div>
+        <p class="noot muted">Ter vergelijking: <code>src/components/Logo.astro</code>, de voorlopige versie uit Figma.</p>
+      </div>
+
+      <div class="blok">
+        <h3 class="label">09 — Alfabet uit Figma, 5 × 5</h3>
+        <ul class="alfabet" role="list">
+          {
+            alfabet.map((a) => (
+              <li>
+                <svg class="wm" viewBox="0 0 10 10" role="img" aria-label={a.teken}>
+                  <path class="wm-gp" d={a.d} />
+                  <g class="punten">{punten.map(([x, y]) => <circle cx={x} cy={y} r="0.15" />)}</g>
+                </svg>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="noot muted">De basisstanden van LAGADO komen hieruit. Met dezelfde ingrepen kan elke letter bewegen, bijvoorbeeld voor koppen of de 404-pagina.</p>
+      </div>
+
+      <div class="blok kolommen">
+        <div>
+          <h3>Vastgestelde regels</h3>
+          <ul class="lijst">
+            <li>Elke letter is één vorm op een raster van 5 × 5: hoekpunten op de rasterpunten. Standen ontstaan door ingrepen op die vorm.</li>
+            <li>Buitenvormen blijven rustig. De beweging zit vooral in de gaten: hoger, lager, scheef.</li>
+            <li>Niets wordt helemaal rond. Alleen afgeronde hoeken.</li>
+            <li>De L blijft altijd een L: rechtsboven is altijd leeg.</li>
+            <li>Als de bovenkant van de A afgerond is, is het gat ook afgerond.</li>
+            <li>De twee A's hebben verschillende standen en een ander ritme.</li>
+            <li>Geen isometrische of perspectiefversie.</li>
+            <li>Kleinste maten en de header zijn altijd één kleur.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Open punten</h3>
+          <ul class="lijst">
+            <li>Alle standen zijn opnieuw op 5 × 5 gezet en nog niet beoordeeld. De L-trap en de schuine L zijn nieuw.</li>
+            <li>De D-vleugel past niet op het raster; die is vervangen door een D met hoog gat.</li>
+            <li>Gaten zijn één blok breed; een rond gat heeft een straal van een half blok. Is dat genoeg, of moet het raster fijner (10 × 10)?</li>
+            <li>De schetsvormen (gevel-G, deur-D, poort-O) nog naar het raster vertalen, of laten vallen.</li>
+            <li>Zwarte tegels in donker met kleur: nu met een lijn in <code>--color-line</code>. Beoordelen.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────── Kleur ───────────── -->
+    <section id="kleur" class="wrapper sectie" aria-labelledby="h-kleur">
+      <h2 id="h-kleur">Kleur</h2>
+
+      <div class="blok">
+        <h3 class="label">Site-tokens</h3>
+        <p class="noot muted">OKLCH, licht en donker via <code>data-theme</code> of <code>prefers-color-scheme</code>. Wissel het thema bovenaan om beide te zien.</p>
+        <ul class="swatches" role="list">
+          {
+            siteKleuren.map((k) => (
+              <li class="swatch">
+                <span class="swatch__vlak" style={`background: var(${k.token})`} />
+                <span class="swatch__naam">{k.rol}</span>
+                <code>{k.token}</code>
+                <code class="meta" data-var={k.token} />
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="blok">
+        <h3 class="label">Palet woordmerk (verkenning)</h3>
+        <p class="noot muted">Geel en roze halen op wit geen tekstcontrast: daar alleen decoratief gebruiken.</p>
+        <ul class="palet" role="list">
+          {
+            palet.map((k) => (
+              <li class="palet__kleur" style={`background: var(--wm-${k.sleutel}); color: var(--wm-${k.tekst})`}>
+                <strong>{k.naam}</strong>
+                <code>{k.oklch}</code>
+                <code>{k.hex}</code>
+                <span class="meta">
+                  op wit {k.wit.toFixed(2)} ({aa(k.wit)}) · op zwart {k.zwart.toFixed(2)} ({aa(k.zwart)})
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="blok">
+        <h3 class="label">Tegelcombinaties</h3>
+        <ul class="combis" role="list">
+          {
+            TEGELS.map(([tegel, letter], i) => (
+              <li>
+                <svg class="combi" viewBox="0 0 14 14" role="img" aria-label={`${LETTERS[i].teken}: ${letter} op ${tegel}`}>
+                  <rect width="14" height="14" style={`fill: var(--wm-${tegel})`} />
+                  <use href={`#wm-${LETTERS[i].standen[0].id}`} transform="translate(2 2)" style={`--g: var(--wm-${letter})`} />
+                </svg>
+                <span class="meta">
+                  {letter} op {tegel}
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </section>
+
+    <!-- ───────────── Typografie ───────────── -->
+    <section id="typografie" class="wrapper sectie" aria-labelledby="h-typografie">
+      <h2 id="h-typografie">Typografie</h2>
+
+      <div class="blok kolommen">
+        <div class="font">
+          <p class="font__voorbeeld">Aa</p>
+          <h3>ABC Areal</h3>
+          <p class="meta"><code>--font-sans</code> · variabel: wght 400–700, slnt −12–0, DRKM 0–1</p>
+        </div>
+        <div class="font font--mono">
+          <p class="font__voorbeeld">Aa</p>
+          <h3>ABC Areal Mono</h3>
+          <p class="meta"><code>--font-mono</code> · zelfde assen</p>
+        </div>
+      </div>
+
+      <div class="blok">
+        <h3 class="label">Assen</h3>
+        <div class="assen">
+          <p style="font-weight: 400">Gewicht 400</p>
+          <p style="font-weight: 500">Gewicht 500</p>
+          <p style="font-weight: 600">Gewicht 600</p>
+          <p style="font-weight: 700">Gewicht 700</p>
+          <p style="font-style: oblique 12deg">Schuin 12°</p>
+          <p style="font-variation-settings: 'DRKM' 0">DRKM 0</p>
+          <p style="font-variation-settings: 'DRKM' 1">DRKM 1, voor licht op donker</p>
+        </div>
+      </div>
+
+      <div class="blok">
+        <h3 class="label">Schaal (Utopia, 16→18 px, 1.2→1.333)</h3>
+        <ol class="schaal" role="list">
+          {
+            typeStappen.map((s) => (
+              <li class="schaal__rij">
+                <span class="meta">
+                  <code>--step-{s}</code> · <span data-meet="font" data-doel={`#stap-${s}`} />
+                </span>
+                <span class="schaal__voorbeeld" id={`stap-${s}`} style={`font-size: var(--step-${s})`}>
+                  Ruimte voor wonen en werken
+                </span>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+
+      <div class="blok proef">
+        <h3 class="label">Koppen en lopende tekst</h3>
+        <p class="kop1">Huis aan de dijk</p>
+        <p class="kop2">Een verbouwing in drie lagen</p>
+        <p class="kop3">Licht, lucht en ruimte</p>
+        <p class="prose">
+          Lopende tekst staat op <code>--step-0</code> met regelafstand <code>--leading-normal</code> en een maximale breedte van <code>--measure</code>.
+          Koppen gebruiken <code>--leading-tight</code>, gewicht 600 en een iets krappere letterspatiëring. <em>Cursief is de slant-as</em>, geen
+          gesynthetiseerde schuine letter.
+        </p>
+      </div>
+    </section>
+
+    <!-- ───────────── Ruimte ───────────── -->
+    <section id="ruimte" class="wrapper sectie" aria-labelledby="h-ruimte">
+      <h2 id="h-ruimte">Ruimte</h2>
+      <p class="noot muted">Utopia-ruimteschaal, vloeiend tussen 360 en 2560 px schermbreedte. Paren (bijv. <code>s-l</code>) groeien sterker mee.</p>
+
+      <div class="blok">
+        <h3 class="label">Stappen</h3>
+        <ol class="ruimte" role="list">
+          {
+            ruimte.map((r) => (
+              <li class="ruimte__rij">
+                <code>--space-{r}</code>
+                <span class="ruimte__balk" style={`inline-size: var(--space-${r})`} />
+                <span class="meta" data-meet="breedte" />
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+
+      <div class="blok">
+        <h3 class="label">Paren</h3>
+        <ol class="ruimte" role="list">
+          {
+            ruimteParen.map((r) => (
+              <li class="ruimte__rij">
+                <code>--space-{r}</code>
+                <span class="ruimte__balk ruimte__balk--paar" style={`inline-size: var(--space-${r})`} />
+                <span class="meta" data-meet="breedte" />
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+
+      <div class="blok">
+        <h3 class="label">Layout</h3>
+        <ol class="ruimte" role="list">
+          {
+            layoutTokens.map((t) => (
+              <li class="ruimte__rij">
+                <span>
+                  <code>{t.token}</code>
+                  <span class="meta"> · {t.rol}</span>
+                </span>
+                <span class="ruimte__balk ruimte__balk--layout" style={`inline-size: min(var(${t.token}), 100%)`} />
+                <span class="meta" data-meet="breedte" />
+              </li>
+            ))
+          }
+        </ol>
+        <p class="noot muted">
+          Breakout-grid (<code>layout.css</code>): full ┃ feature ┃ popout ┃ content ┃ popout ┃ feature ┃ full. Paginabegin: <code>--page-top</code> = 30svh.
+        </p>
+      </div>
+    </section>
+
+    <!-- ───────────── Vorm ───────────── -->
+    <section id="vorm" class="wrapper sectie" aria-labelledby="h-vorm">
+      <h2 id="h-vorm">Vorm</h2>
+      <p class="noot muted">
+        Dezelfde drie ingrepen als in het woordmerk: recht, schuin en afgerond. Op een element met <code>data-vorm</code> of <code>data-kaartvorm</code>
+        (<code>vorm.css</code>).
+      </p>
+
+      <div class="blok">
+        <h3 class="label">data-vorm</h3>
+        <ul class="vormen" role="list">
+          {
+            ['recht', 'rond', 'schuin'].map((v) => (
+              <li data-vorm={v}>
+                <span class="vorm" />
+                <code>{v}</code>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="blok">
+        <h3 class="label">data-kaartvorm (homeraster)</h3>
+        <ul class="vormen" role="list">
+          {
+            ['ovaal', 'afgerond', 'zacht', 'recht', 'schuin'].map((v) => (
+              <li data-vorm data-kaartvorm={v}>
+                <span class="vorm vorm--kaart" />
+                <code>{v}</code>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="blok">
+        <h3 class="label">Lijnen en knoppen</h3>
+        <div class="knoppen">
+          <a class="button" href="#vorm">Knop</a>
+          <span class="meta"><code>--radius</code>: <span data-var="--radius"></span> · <code>--border-width</code>: <span data-var="--border-width"></span></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────── Beweging ───────────── -->
+    <section id="beweging" class="wrapper sectie" aria-labelledby="h-beweging">
+      <h2 id="h-beweging">Beweging</h2>
+
+      <div class="blok kolommen">
+        <div>
+          <h3>Interface</h3>
+          <p class="meta"><code>--duration</code>: <span data-var="--duration"></span></p>
+          <p class="meta"><code>--ease</code>: <span data-var="--ease"></span></p>
+          <p class="noot muted">Bij <code>prefers-reduced-motion</code> wordt <code>--duration</code> 0 ms.</p>
+        </div>
+        <div>
+          <h3>Woordmerk</h3>
+          <p class="meta">SMIL-morph, <code>keySplines="0.7 0 0.3 1"</code>. Standen worden kort vastgehouden en dan gemorpht.</p>
+          <p class="noot muted">Bij reduced motion of pauze staat het woordmerk stil in de eerste stand.</p>
+        </div>
+      </div>
+
+      <div class="blok">
+        <table class="tabel">
+          <caption class="label">Timing per letter</caption>
+          <thead>
+            <tr><th scope="col">Letter</th><th scope="col">Standen</th><th scope="col">Duur</th><th scope="col">Begin</th></tr>
+          </thead>
+          <tbody>
+            {
+              LETTERS.map((l) => (
+                <tr>
+                  <th scope="row">{l.teken}</th>
+                  <td>{l.standen.map((s) => s.id).join(' → ')}</td>
+                  <td>{l.duur} s</td>
+                  <td>{l.begin.toString().replace('.', ',').replace('-', '−')} s</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</BrandLayout>
+
+<script>
+  const root = document.documentElement;
+  const donkerSysteem = matchMedia('(prefers-color-scheme: dark)');
+  const isDonker = () => (root.dataset.theme ? root.dataset.theme === 'dark' : donkerSysteem.matches);
+
+  const bewaar = (k: string, v: string | null) => {
+    try {
+      if (v === null) localStorage.removeItem(k);
+      else localStorage.setItem(k, v);
+    } catch {}
+  };
+
+  const knop = (naam: string) => document.querySelector<HTMLButtonElement>(`[data-brand="${naam}"]`)!;
+
+  function sync() {
+    knop('thema').setAttribute('aria-pressed', String(isDonker()));
+    knop('kleur').setAttribute('aria-pressed', String('kleur' in root.dataset));
+    knop('pauze').setAttribute('aria-pressed', String('wmPauze' in root.dataset));
+    meet();
+  }
+
+  knop('thema').addEventListener('click', () => {
+    const volgende = isDonker() ? 'light' : 'dark';
+    // Terug naar de systeemstand als die gelijk is aan de keuze: dan volgt de site het systeem weer.
+    const systeem = donkerSysteem.matches ? 'dark' : 'light';
+    if (volgende === systeem) {
+      delete root.dataset.theme;
+      bewaar('theme', null);
+    } else {
+      root.dataset.theme = volgende;
+      bewaar('theme', volgende);
+    }
+    sync();
+  });
+
+  knop('kleur').addEventListener('click', () => {
+    if ('kleur' in root.dataset) delete root.dataset.kleur;
+    else root.dataset.kleur = '';
+    bewaar('brand-kleur', 'kleur' in root.dataset ? '1' : null);
+    sync();
+  });
+
+  knop('pauze').addEventListener('click', () => {
+    if ('wmPauze' in root.dataset) delete root.dataset.wmPauze;
+    else root.dataset.wmPauze = '';
+    bewaar('brand-pauze', 'wmPauze' in root.dataset ? '1' : null);
+    sync();
+  });
+
+  donkerSysteem.addEventListener('change', sync);
+
+  /** Tokenwaarden en gemeten maten invullen (bij laden, resize en themawissel). */
+  function meet() {
+    const stijl = getComputedStyle(root);
+    document.querySelectorAll<HTMLElement>('[data-var]').forEach((el) => {
+      el.textContent = stijl.getPropertyValue(el.dataset.var!).trim();
+    });
+    document.querySelectorAll<HTMLElement>('[data-meet="font"]').forEach((el) => {
+      const doel = document.querySelector(el.dataset.doel!);
+      if (doel) el.textContent = `${parseFloat(getComputedStyle(doel).fontSize).toFixed(1)} px`;
+    });
+    document.querySelectorAll<HTMLElement>('[data-meet="breedte"]').forEach((el) => {
+      const balk = el.previousElementSibling as HTMLElement | null;
+      if (balk) el.textContent = `${balk.getBoundingClientRect().width.toFixed(1)} px`;
+    });
+  }
+
+  let frame = 0;
+  addEventListener('resize', () => {
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(meet);
+  });
+  document.fonts?.ready.then(meet);
+  sync();
+</script>
+
+<style>
+  .label {
+    font-size: var(--step--1);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .meta {
+    font-size: var(--step--1);
+    color: var(--color-muted);
+  }
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+  .noot {
+    max-inline-size: var(--measure);
+  }
+
+  /* Balk bovenaan */
+  .balk {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 5;
+    margin-inline: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-xs) var(--space-m);
+    padding-block: var(--space-xs);
+    background: var(--color-bg);
+    border-block-end: var(--border-width) solid var(--color-line);
+  }
+  .balk__home {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-s);
+    text-decoration: none;
+  }
+  .balk__knoppen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+  }
+  .toggle {
+    min-block-size: 44px;
+    padding-inline: var(--space-s);
+    border: var(--border-width) solid var(--color-fg);
+    border-radius: 100vmax;
+    background: transparent;
+    color: var(--color-fg);
+    font: inherit;
+    font-size: var(--step--1);
+    font-weight: 500;
+    cursor: pointer;
+    transition: background var(--duration) var(--ease), color var(--duration) var(--ease);
+  }
+  .toggle:hover,
+  .toggle[aria-pressed='true'] {
+    background: var(--color-fg);
+    color: var(--color-bg);
+  }
+
+  /* Intro */
+  .intro {
+    padding-block: var(--space-2xl-3xl) var(--space-xl);
+    display: grid;
+    gap: var(--space-s);
+  }
+  .intro h1 {
+    font-size: var(--step-6);
+  }
+  .lead {
+    font-size: var(--step-1);
+    max-inline-size: 40ch;
+    line-height: 1.35;
+  }
+  .inhoud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-m);
+    margin-block-start: var(--space-s);
+  }
+  .inhoud a {
+    min-block-size: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Secties */
+  .sectie {
+    padding-block: var(--space-xl-2xl);
+    border-block-start: var(--border-width) solid var(--color-fg);
+    display: grid;
+    gap: var(--space-l);
+  }
+  .sectie > h2 {
+    font-size: var(--step-4);
+  }
+  .blok {
+    display: grid;
+    gap: var(--space-s);
+    min-inline-size: 0;
+  }
+  .kolommen {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-l);
+    align-items: start;
+  }
+  .lijst {
+    padding-inline-start: 1.2em;
+    display: grid;
+    gap: var(--space-3xs);
+    max-inline-size: var(--measure);
+    margin-block-start: var(--space-2xs);
+  }
+
+  /* Matrix */
+  .matrix-scroll {
+    overflow-x: auto;
+  }
+  .matrix {
+    min-inline-size: 34rem;
+    display: grid;
+    grid-template-columns: 4.5rem repeat(6, minmax(0, 1fr));
+    gap: var(--space-s);
+    align-items: center;
+  }
+  .cel {
+    display: grid;
+    gap: var(--space-3xs);
+  }
+  /* Rasterpunten over de letters: laat zien dat elk hoekpunt op het raster ligt. */
+  .punten {
+    fill: var(--color-muted);
+    opacity: 0.7;
+  }
+  .notatie {
+    margin-block-start: var(--space-3xs);
+    font-family: var(--font-mono);
+    font-size: var(--step--2);
+    line-height: 1.3;
+    color: var(--color-muted);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .legenda {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-m) var(--space-l);
+  }
+  .legenda li {
+    display: grid;
+    grid-template-columns: 3rem 1fr;
+    gap: var(--space-s);
+    align-items: start;
+  }
+  .legenda li > span {
+    display: grid;
+    gap: var(--space-4xs);
+  }
+  .legenda__vorm {
+    inline-size: 3rem;
+    block-size: 3rem;
+    overflow: visible;
+    fill: var(--color-fg);
+  }
+  .legenda code {
+    font-size: var(--step--1);
+  }
+  .alfabet {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(4rem, 1fr));
+    gap: var(--space-s);
+  }
+  .alfabet .wm {
+    inline-size: 100%;
+  }
+  .cel .wm {
+    inline-size: 100%;
+    max-inline-size: 8rem;
+  }
+  .cel figcaption {
+    margin: 0;
+    font-family: var(--font-mono);
+  }
+
+  /* Formaten */
+  .formaten {
+    display: grid;
+    gap: var(--space-l);
+  }
+  .formaat {
+    display: grid;
+    gap: var(--space-2xs);
+    justify-items: start;
+  }
+
+  /* Header-demo */
+  .demo-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2xs) var(--space-l);
+    padding: var(--space-s) var(--space-m);
+    border: var(--border-width) solid var(--color-fg);
+  }
+  .demo-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-m);
+    list-style: none;
+    padding: 0;
+    font-weight: 500;
+  }
+
+  /* Preloader */
+  .preloader {
+    aspect-ratio: 16 / 9;
+    min-block-size: 15rem;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: var(--space-m);
+    padding: var(--space-m);
+    background: var(--color-fg);
+  }
+  .preloader > :global(.wm) {
+    inline-size: min(26rem, 70vw);
+  }
+  .preloader__spoor {
+    inline-size: min(26rem, 70vw);
+    block-size: 3px;
+    background: color-mix(in oklch, var(--color-bg) 30%, transparent);
+  }
+  .preloader__balk {
+    block-size: 100%;
+    background: var(--color-bg);
+    transform-origin: left;
+    animation: laden 3.2s cubic-bezier(0.7, 0, 0.3, 1) infinite;
+  }
+  @keyframes laden {
+    0% {
+      transform: scaleX(0);
+    }
+    80%,
+    100% {
+      transform: scaleX(1);
+    }
+  }
+  :global(:root[data-wm-pauze]) .preloader__balk {
+    animation-play-state: paused;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .preloader__balk {
+      animation: none;
+    }
+  }
+
+  /* Huidig logo */
+  .huidig {
+    padding: var(--space-l) var(--space-m);
+    background: var(--color-surface);
+  }
+  .huidig :global(.huidig__logo) {
+    display: block;
+    inline-size: min(28rem, 100%);
+    block-size: auto;
+  }
+
+  /* Kleur */
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 11rem), 1fr));
+    gap: var(--space-m) var(--space-s);
+    list-style: none;
+    padding: 0;
+  }
+  .swatch {
+    display: grid;
+    gap: var(--space-4xs);
+    font-size: var(--step--1);
+  }
+  .swatch__vlak {
+    aspect-ratio: 3 / 2;
+    border: var(--border-width) solid color-mix(in oklch, var(--color-fg) 15%, transparent);
+    margin-block-end: var(--space-2xs);
+  }
+  .swatch__naam {
+    font-weight: 600;
+  }
+  .palet {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+    list-style: none;
+    padding: 0;
+  }
+  .palet__kleur {
+    display: grid;
+    align-content: end;
+    gap: var(--space-4xs);
+    min-block-size: 14rem;
+    padding: var(--space-s);
+    font-size: var(--step--1);
+  }
+  .palet__kleur strong {
+    font-size: var(--step-1);
+  }
+  .palet__kleur .meta {
+    color: inherit;
+  }
+  .combis {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 8rem), 1fr));
+    gap: var(--space-s);
+    list-style: none;
+    padding: 0;
+  }
+  .combis li {
+    display: grid;
+    gap: var(--space-2xs);
+  }
+  .combi {
+    inline-size: 100%;
+    block-size: auto;
+    display: block;
+  }
+  .combi use {
+    fill: var(--g);
+  }
+
+  /* Typografie */
+  .font {
+    display: grid;
+    gap: var(--space-3xs);
+  }
+  .font__voorbeeld {
+    font-size: var(--step-8);
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+  .font--mono {
+    font-family: var(--font-mono);
+  }
+  .assen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-l);
+    font-size: var(--step-2);
+  }
+  .schaal {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-s);
+  }
+  .schaal__rij {
+    display: grid;
+    gap: var(--space-4xs);
+    padding-block-end: var(--space-s);
+    border-block-end: var(--border-width) solid var(--color-line);
+    min-inline-size: 0;
+  }
+  .schaal__voorbeeld {
+    line-height: var(--leading-tight);
+    letter-spacing: -0.02em;
+    overflow-wrap: anywhere;
+  }
+  .proef {
+    max-inline-size: var(--measure);
+  }
+  .kop1,
+  .kop2,
+  .kop3 {
+    line-height: var(--leading-tight);
+    font-weight: 600;
+    letter-spacing: -0.03ch;
+  }
+  .kop1 {
+    font-size: var(--step-5);
+    letter-spacing: -0.03em;
+  }
+  .kop2 {
+    font-size: var(--step-3);
+  }
+  .kop3 {
+    font-size: var(--step-1);
+  }
+
+  /* Ruimte */
+  .ruimte {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2xs);
+  }
+  .ruimte__rij {
+    display: grid;
+    grid-template-columns: minmax(8rem, 14rem) minmax(0, 1fr) 5.5rem;
+    align-items: center;
+    gap: var(--space-s);
+  }
+  .ruimte__balk {
+    block-size: var(--space-s);
+    background: var(--color-accent);
+    max-inline-size: 100%;
+  }
+  .ruimte__balk--paar {
+    background: var(--color-fg);
+  }
+  .ruimte__balk--layout {
+    background: var(--color-muted);
+  }
+  .ruimte__rij .meta:last-child {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+  }
+  @media (width < 40rem) {
+    .ruimte__rij {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .ruimte__rij > :first-child {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* Vorm */
+  .vormen {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr));
+    gap: var(--space-m);
+    list-style: none;
+    padding: 0;
+  }
+  .vormen li {
+    display: grid;
+    gap: var(--space-2xs);
+  }
+  .vorm {
+    aspect-ratio: 1;
+    background: var(--color-fg);
+    border-radius: var(--vorm-radius);
+    clip-path: var(--vorm-clip);
+  }
+  .vorm--kaart {
+    aspect-ratio: 3 / 4;
+  }
+  .knoppen {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-m);
+  }
+
+  /* Tabel */
+  .tabel {
+    inline-size: 100%;
+    border-collapse: collapse;
+    font-size: var(--step--1);
+  }
+  .tabel caption {
+    text-align: start;
+    padding-block-end: var(--space-s);
+  }
+  .tabel :is(th, td) {
+    text-align: start;
+    padding: var(--space-2xs) var(--space-s) var(--space-2xs) 0;
+    border-block-end: var(--border-width) solid var(--color-line);
+    vertical-align: top;
+  }
+  .tabel td:first-of-type {
+    font-family: var(--font-mono);
+  }
+</style>

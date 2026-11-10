@@ -1,0 +1,81 @@
+---
+// Defs van het kinetische woordmerk: één keer per pagina renderen. Elke stand is een los pad (#wm-L1 …),
+// elke letter een geanimeerde glyph (#wm-gL …) met SMIL: geen JavaScript nodig voor de animatie.
+// Kleur via --g op de <use> of een ouder; die erft door in de schaduwboom van de <use>.
+import { LETTERS, SCHETSEN, tijdlijn } from '../../lib/brand/wordmark';
+
+---
+
+<svg class="wm-defs" width="0" height="0" aria-hidden="true" focusable="false">
+  <defs>
+    {
+      LETTERS.flatMap((l) =>
+        l.standen.map((s) => <path id={`wm-${s.id}`} class="wm-gp" d={s.d} fill-rule="evenodd" />),
+      )
+    }
+    {SCHETSEN.filter((s) => s !== null).map((s) => <path id={`wm-${s.id}`} class="wm-gp" d={s.d} fill-rule="evenodd" />)}
+    {
+      LETTERS.map((l) => {
+        const t = tijdlijn(l.standen);
+        return (
+          <g id={`wm-${l.id}`}>
+            <path class="wm-gp" d={l.standen[0].d} fill-rule="evenodd">
+              <animate
+                attributeName="d"
+                dur={`${l.duur}s`}
+                begin={`${l.begin}s`}
+                repeatCount="indefinite"
+                calcMode="spline"
+                keyTimes={t.keyTimes}
+                keySplines={t.keySplines}
+                values={t.values}
+              />
+            </path>
+          </g>
+        );
+      })
+    }
+  </defs>
+</svg>
+
+<style is:global>
+  .wm-defs {
+    position: absolute;
+    inline-size: 0;
+    block-size: 0;
+    overflow: hidden;
+  }
+  .wm-gp {
+    fill: var(--g, currentColor);
+  }
+
+  /* Stilstaande versie: bij reduced motion en als de animatie op pauze staat (WCAG 2.2.2). */
+  .wm-still {
+    display: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wm-anim {
+      display: none;
+    }
+    .wm-still {
+      display: inline;
+    }
+  }
+  :root[data-wm-pauze] .wm-anim {
+    display: none;
+  }
+  :root[data-wm-pauze] .wm-still {
+    display: inline;
+  }
+
+  /* Kleur. Zwart-wit volgt het thema; [data-kleur] op de wortel zet het palet aan. */
+  :root {
+    --wm-geel: oklch(88.58% 0.158 95.71);
+    --wm-rood: oklch(63.37% 0.2004 34.06);
+    --wm-groen: oklch(68.61% 0.1164 159.26);
+    --wm-roze: oklch(80.21% 0.1106 340.69);
+    --wm-blauw: oklch(51.51% 0.2539 272.56);
+    --wm-zwart: oklch(0% 0 0);
+    --wm-wit: oklch(100% 0 0);
+  }
+</style>

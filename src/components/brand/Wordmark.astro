@@ -1,0 +1,189 @@
+---
+// Kinetisch woordmerk LAGADO. Vereist <WordmarkDefs /> één keer op de pagina.
+// - animated: losse letters, morphen door hun standen (stil bij reduced motion of pauze)
+// - static:   losse letters in hun eerste stand
+// - tiles:    tegelversie, geanimeerd
+// - hover:    stilstaand; bij hover of focus rolt elke letter naar zijn tweede stand
+// mono: altijd één kleur (kleinste maten, header). Anders volgt de kleur [data-kleur] op de wortel.
+import { LETTERS, LETTERKLEUR_DONKER, LETTERKLEUR_LICHT, TEGEL, TEGELS, WOORD_BREEDTE, type Kleur } from '../../lib/brand/wordmark';
+
+interface Props {
+  variant?: 'animated' | 'static' | 'tiles' | 'hover';
+  mono?: boolean;
+  label?: string;
+  /** Alleen bij hover: link van het logo. */
+  href?: string;
+  /** Omkeren: letter in de achtergrondkleur (preloader op een vlak). */
+  invert?: boolean;
+  class?: string;
+  style?: string;
+}
+
+const { variant = 'animated', mono = false, label = 'LAGADO', href = '/', invert = false, class: className, style } = Astro.props;
+
+const kleur = (k: Kleur) => `var(--wm-${k})`;
+const letterStijl = (i: number) => (mono ? undefined : `--g-licht: ${kleur(LETTERKLEUR_LICHT[i])}; --g-donker: ${kleur(LETTERKLEUR_DONKER[i])}`);
+const tegelStijl = (i: number) => `--tegel: ${kleur(TEGELS[i][0])}; --letter: ${kleur(TEGELS[i][1])}`;
+---
+
+{
+  (variant === 'animated' || variant === 'static') && (
+    <svg
+      class:list={['wm', { 'wm--mono': mono, 'wm--inv': invert }, className]}
+      style={style}
+      viewBox={`0 0 ${WOORD_BREEDTE} 10`}
+      role="img"
+      aria-label={label}
+    >
+      {variant === 'animated' && (
+        <g class="wm-anim">
+          {LETTERS.map((l, i) => (
+            <use href={`#wm-${l.id}`} class="wm-l" style={letterStijl(i)} transform={l.x ? `translate(${l.x} 0)` : undefined} />
+          ))}
+        </g>
+      )}
+      <g class={variant === 'animated' ? 'wm-still' : undefined}>
+        {LETTERS.map((l, i) => (
+          <use href={`#wm-${l.standen[0].id}`} class="wm-l" style={letterStijl(i)} transform={l.x ? `translate(${l.x} 0)` : undefined} />
+        ))}
+      </g>
+    </svg>
+  )
+}
+
+{
+  variant === 'tiles' && (
+    <svg
+      class:list={['wm wm-tegels', { 'wm--mono': mono }, className]}
+      style={style}
+      viewBox={`0 0 ${TEGEL * LETTERS.length} ${TEGEL}`}
+      role="img"
+      aria-label={label}
+    >
+      {LETTERS.map((l, i) => (
+        <g style={tegelStijl(i)} data-even={i % 2 === 0 ? '' : undefined} data-zwart={TEGELS[i][0] === 'zwart' ? '' : undefined}>
+          <rect class="wm-tegel" x={i * TEGEL + 0.06} y="0.06" width={TEGEL - 0.12} height={TEGEL - 0.12} />
+          <g class="wm-tl" transform={`translate(${i * TEGEL + 2} 2)`}>
+            <use class="wm-anim" href={`#wm-${l.id}`} />
+            <use class="wm-still" href={`#wm-${l.standen[0].id}`} />
+          </g>
+        </g>
+      ))}
+    </svg>
+  )
+}
+
+{
+  variant === 'hover' && (
+    <a class:list={['wm-hover', className]} style={style} href={href} aria-label={label}>
+      {LETTERS.map((l, i) => (
+        <span class="wm-hl" style={`--i: ${i}`}>
+          {l.hover.map((stand, n) => (
+            <svg class:list={['wm', n === 0 ? 'wm-s1' : 'wm-s2', { 'wm--mono': mono }]} viewBox="0 0 10 10" aria-hidden="true">
+              <use href={`#wm-${l.standen[stand].id}`} class="wm-l" style={letterStijl(i)} />
+            </svg>
+          ))}
+        </span>
+      ))}
+    </a>
+  )
+}
+
+<style is:global>
+  .wm {
+    --g: var(--color-fg);
+    display: block;
+    max-inline-size: 100%;
+    block-size: auto;
+    overflow: visible;
+  }
+  .wm--inv {
+    --g: var(--color-bg);
+  }
+
+  /* Kleur per letter: licht en donker hebben elk een eigen reeks (geel en roze halen op wit geen contrast). */
+  :root[data-kleur] .wm:not(.wm--mono) .wm-l {
+    --g: var(--g-licht, var(--color-fg));
+  }
+  :root[data-kleur][data-theme='dark'] .wm:not(.wm--mono) .wm-l {
+    --g: var(--g-donker, var(--color-fg));
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-kleur]:not([data-theme='light']) .wm:not(.wm--mono) .wm-l {
+      --g: var(--g-donker, var(--color-fg));
+    }
+  }
+
+  /* Tegels. Zwart-wit: om en om gevuld en omlijnd. */
+  .wm-tegel {
+    stroke-width: 0.12;
+    stroke: var(--color-fg);
+    fill: var(--color-bg);
+  }
+  .wm-tegels [data-even] .wm-tegel {
+    fill: var(--color-fg);
+  }
+  .wm-tegels .wm-tl {
+    --g: var(--color-fg);
+  }
+  .wm-tegels [data-even] .wm-tl {
+    --g: var(--color-bg);
+  }
+  :root[data-kleur] .wm-tegels:not(.wm--mono) .wm-tegel {
+    fill: var(--tegel);
+    stroke: none;
+  }
+  :root[data-kleur] .wm-tegels:not(.wm--mono) .wm-tl {
+    --g: var(--letter);
+  }
+  /* Open punt uit de handover: zwarte tegels verdwijnen in donker. Een lijn in --color-line houdt ze zichtbaar. */
+  :root[data-kleur][data-theme='dark'] .wm-tegels:not(.wm--mono) [data-zwart] .wm-tegel {
+    stroke: var(--color-line);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-kleur]:not([data-theme='light']) .wm-tegels:not(.wm--mono) [data-zwart] .wm-tegel {
+      stroke: var(--color-line);
+    }
+  }
+
+  /* Hover: elke letter rolt verticaal naar zijn tweede stand, 70 ms na de vorige. */
+  .wm-hover {
+    display: flex;
+    gap: 2%;
+    inline-size: min(45rem, 100%);
+    color: inherit;
+    text-decoration: none;
+  }
+  .wm-hover:focus-visible {
+    outline-offset: 6px;
+  }
+  .wm-hl {
+    position: relative;
+    flex: 1;
+    aspect-ratio: 1;
+    overflow: hidden;
+  }
+  .wm-hl .wm {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    max-inline-size: none;
+    transition: transform 0.55s cubic-bezier(0.7, 0, 0.3, 1);
+    transition-delay: calc(var(--i) * 70ms);
+  }
+  .wm-hl .wm-s2 {
+    transform: translateY(102%);
+  }
+  .wm-hover:is(:hover, :focus-visible) .wm-s1 {
+    transform: translateY(-102%);
+  }
+  .wm-hover:is(:hover, :focus-visible) .wm-s2 {
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wm-hl .wm {
+      transition: none;
+    }
+  }
+</style>
