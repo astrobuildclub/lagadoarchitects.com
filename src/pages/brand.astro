@@ -77,6 +77,7 @@ const punten = Array.from({ length: 36 }, (_, i) => [(i % 6) * 2, Math.floor(i /
       <span class="label">Brand</span>
     </a>
     <div class="balk__knoppen">
+      <a class="toggle" href="/brand/editor">Editor</a>
       <button type="button" class="toggle" data-brand="thema" aria-pressed="false">Donker</button>
       <button type="button" class="toggle" data-brand="kleur" aria-pressed="false">Kleur</button>
       <button type="button" class="toggle" data-brand="pauze">Animatie pauzeren</button>
@@ -681,7 +682,10 @@ const punten = Array.from({ length: 36 }, (_, i) => [(i % 6) * 2, Math.floor(i /
     gap: var(--space-2xs);
   }
   .toggle {
+    display: inline-flex;
+    align-items: center;
     min-block-size: 44px;
+    text-decoration: none;
     padding-inline: var(--space-s);
     border: var(--border-width) solid var(--color-fg);
     border-radius: 100vmax;

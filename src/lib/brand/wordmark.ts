@@ -5,6 +5,7 @@
  * ingrepen: een hoek schuin of afgerond, een gat dat hoger, lager of scheef schuift.
  */
 import { animatie, paden, type Stap, type Vorm } from './raster';
+import data from './woordmerk.json';
 
 export interface Stand {
   id: string;
@@ -33,110 +34,29 @@ export interface Letter {
   anim: { keyTimes: string; values: string };
 }
 
-/** Eén lus duurt voor elke letter even lang, zodat de onderlinge verschuiving blijft staan. */
-export const DUUR = 6;
+/**
+ * De bron: letters, standen en de lus per letter staan in woordmerk.json. Die bewerk je met de editor op
+ * /brand/editor (export → dit bestand vervangen) of met de hand.
+ */
+export interface WoordmerkData {
+  /** Duur van één lus in seconden, voor elke letter gelijk zodat de onderlinge verschuiving blijft staan. */
+  duur: number;
+  letters: (Omit<Letter, 'x' | 'standen' | 'duur' | 'anim'> & { standen: { id: string; label: string; vorm: Vorm }[] })[];
+}
+export const DATA = data as WoordmerkData;
+export const DUUR = DATA.duur;
 
-type Opzet = Omit<Letter, 'x' | 'standen' | 'duur' | 'anim'> & { standen: { id: string; label: string; vorm: Vorm }[] };
+/** Vult de eerste stilstand aan tot de lus precies `duur` seconden is. */
+export function vulAan(stappen: Stap[], duur: number, naam = 'letter'): Stap[] {
+  const totaal = stappen.reduce((t, s) => t + s.morph + s.vast, 0);
+  if (totaal > duur + 1e-9) throw new Error(`${naam}: stappen duren ${totaal.toFixed(2)} s, meer dan ${duur} s`);
+  return stappen.map((s, n) => (n === 0 ? { ...s, vast: +(s.vast + duur - totaal).toFixed(3) } : s));
+}
 
-/** Stap-afkorting: stand, morph (s), ease, vast (s). */
-const st = (stand: number, morph: number, ease: Stap['ease'], vast: number): Stap => ({ stand, morph, ease, vast });
-
-// Contouren in blokken (0–5). Zie raster.ts voor de notatie: "0,0s" schuin, "0,0r" afgerond, "2,1r.5" half blok.
-const OPZET: Opzet[] = [
-  {
-    id: 'gL',
-    teken: 'L',
-    begin: 0,
-    hover: [0, 2],
-    // De treden schieten trapsgewijs omhoog en zakken daarna in, de bovenste eerst, tot een L die even nawipt.
-    stappen: [
-      st(0, 0.35, 'snap', 0.8),
-      st(1, 0.22, 'uit', 0.06),
-      st(2, 0.22, 'uit', 1),
-      st(1, 0.2, 'val', 0.02),
-      st(0, 0.3, 'veer', 1),
-      st(3, 0.35, 'snap', 1),
-    ],
-    standen: [
-      // Tien hoekpunten in elke stand: per kolom rechts van de stam een bovenkant (2,a 3,a 3,b 4,b 4,c 5,c).
-      // In de rechte L liggen die op één lijn; daaruit groeien de treden.
-      { id: 'L1', label: 'L recht', vorm: ['0,0 2,0 2,3 3,3 3,3 4,3 4,3 5,3 5,5 0,5'] },
-      { id: 'L2', label: 'L halve trap', vorm: ['0,0 2,0 2,2 3,2 3,3 4,3 4,3 5,3 5,5 0,5'] },
-      { id: 'L3', label: 'L grote trap', vorm: ['0,0 2,0 2,1 3,1 3,2 4,2 4,3 5,3 5,5 0,5'] },
-      { id: 'L4', label: 'L schuin', vorm: ['0,0s 2,0 2,3 3,3 3,3 4,3 4,3 5,3s 5,5 0,5'] },
-    ],
-  },
-  {
-    id: 'gA',
-    teken: 'A',
-    begin: -0.35,
-    hover: [0, 1],
-    stappen: [st(0, 0.35, 'snap', 1.4), st(1, 0.35, 'veer', 1.4), st(2, 0.4, 'snap', 1.4)],
-    standen: [
-      { id: 'A1r', label: 'A recht', vorm: ['0,0 5,0 5,5 3,5 3,4 2,4 2,5 0,5', '2,1 3,1 3,3 2,3'] },
-      { id: 'A1s', label: 'A met scheef gat', vorm: ['0,0 5,0 5,5 3,5 3,4 2,4 2,5 0,5', '2,2 3,1 3,3 2,3'] },
-      { id: 'A1o', label: 'A afgerond, gat rond', vorm: ['0,0r 5,0r 5,5 3,5 3,4 2,4 2,5 0,5', '2,1r.5 3,1r.5 3,3 2,3'] },
-    ],
-  },
-  {
-    id: 'gG',
-    teken: 'G',
-    begin: -0.7,
-    hover: [0, 1],
-    stappen: [st(0, 0.35, 'snap', 1.4), st(1, 0.35, 'snap', 1.4), st(2, 0.4, 'uit', 1.4)],
-    standen: [
-      { id: 'Gr', label: 'G recht', vorm: ['0,0 5,0 5,1 2,1 2,4 4,4 4,3 3,3 3,2 5,2 5,5 0,5'] },
-      { id: 'Gs', label: 'G schuin', vorm: ['0,0s 5,0 5,1 2,1 2,4 4,4 4,3 3,3 3,2 5,2 5,5s 0,5'] },
-      { id: 'Go', label: 'G afgerond', vorm: ['0,0r 5,0 5,1 2,1 2,4 4,4 4,3 3,3 3,2 5,2 5,5 0,5r'] },
-    ],
-  },
-  {
-    id: 'gA2',
-    teken: 'A',
-    begin: -2.2,
-    hover: [0, 1],
-    stappen: [st(0, 0.35, 'snap', 1.4), st(1, 0.35, 'veer', 1.4), st(2, 0.4, 'uit', 1.4)],
-    standen: [
-      { id: 'A2c', label: 'A afgeschuind, gat hoog', vorm: ['0,0s 5,0s 5,5 3,5 3,3 2,3 2,5 0,5', '2,1 3,1 3,2 2,2'] },
-      { id: 'A2s', label: 'A met scheef gat', vorm: ['0,0 5,0 5,5 3,5 3,3 2,3 2,5 0,5', '2,2 3,1 3,2 2,2'] },
-      { id: 'A2o', label: 'A afgerond, gat rond', vorm: ['0,0r 5,0r 5,5 3,5 3,3 2,3 2,5 0,5', '2,1r.5 3,1r.5 3,2 2,2'] },
-    ],
-  },
-  {
-    id: 'gD',
-    teken: 'D',
-    begin: -1.05,
-    hover: [0, 1],
-    stappen: [st(0, 0.3, 'snap', 0.9), st(1, 0.3, 'snap', 0.9), st(2, 0.35, 'uit', 0.9), st(3, 0.35, 'veer', 0.9)],
-    standen: [
-      { id: 'Dr', label: 'D recht', vorm: ['0,0 4,0 4,1 5,1 5,4 4,4 4,5 0,5', '2,1 3,1 3,4 2,4'] },
-      { id: 'Ds', label: 'D schuin, gat scheef', vorm: ['0,0 4,0 5,1 5,1 5,4 5,4 4,5 0,5', '2,1 3,2 3,3 2,4'] },
-      { id: 'Do', label: 'D afgerond, gat rond', vorm: ['0,0 4,0 5,0r 5,1 5,4 5,5r 4,5 0,5', '2,1r.5 3,1r.5 3,4r.5 2,4r.5'] },
-      { id: 'Dh', label: 'D met gat hoog', vorm: ['0,0 4,0 4,1 5,1 5,4 4,4 4,5 0,5', '2,1 3,1 3,3 2,3'] },
-    ],
-  },
-  {
-    id: 'gO',
-    teken: 'O',
-    begin: -1.4,
-    hover: [0, 1],
-    stappen: [st(0, 0.3, 'snap', 0.9), st(1, 0.3, 'snap', 0.9), st(2, 0.35, 'uit', 0.9), st(3, 0.35, 'veer', 0.9)],
-    standen: [
-      { id: 'Or', label: 'O recht', vorm: ['0,0 5,0 5,5 0,5', '2,1 3,1 3,4 2,4'] },
-      { id: 'Os', label: 'O schuin, gat scheef', vorm: ['0,0s 5,0 5,5s 0,5', '2,2 3,1 3,3 2,4'] },
-      { id: 'Oo', label: 'O afgerond, gat hoog', vorm: ['0,0r 5,0r 5,5r 0,5r', '2,1 3,1 3,3 2,3'] },
-      { id: 'Oo2', label: 'O afgerond, gat laag', vorm: ['0,0r 5,0r 5,5r 0,5r', '2,2 3,2 3,4 2,4'] },
-    ],
-  },
-];
-
-export const LETTERS: Letter[] = OPZET.map((l, i) => {
+export const LETTERS: Letter[] = DATA.letters.map((l, i) => {
   const vormen = l.standen.map((s) => s.vorm);
   const d = paden(vormen, l.id);
-  // De rest van de lus gaat naar de eerste stand, zodat elke letter precies DUUR seconden duurt.
-  const totaal = l.stappen.reduce((t, s) => t + s.morph + s.vast, 0);
-  if (totaal > DUUR) throw new Error(`${l.id}: stappen duren ${totaal.toFixed(2)} s, meer dan ${DUUR} s`);
-  const stappen = l.stappen.map((s, n) => (n === 0 ? { ...s, vast: +(s.vast + DUUR - totaal).toFixed(3) } : s));
+  const stappen = vulAan(l.stappen, DUUR, l.id);
   const { keyTimes, values } = animatie(vormen, stappen, l.id);
   return { ...l, stappen, duur: DUUR, x: i * 12, standen: l.standen.map((s, n) => ({ ...s, d: d[n] })), anim: { keyTimes, values } };
 });
