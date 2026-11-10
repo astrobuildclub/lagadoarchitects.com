@@ -7,10 +7,16 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 
 ## [Unreleased]
 
+### Gewijzigd
+- Header en footer gebruiken het kinetische woordmerk (zwart-wit) in plaats van het oude logo. In de footer staat het over de volle breedte onderaan; het blok met logo en payoff is vervallen. `WordmarkDefs` staat één keer in `BaseLayout`.
+
 ### Beveiliging
 - Videoblok: `<` en `>` worden uit de titel gehaald voordat die naar iframemanager gaat. iframemanager 1.3.0 (nieuwste versie) zet `data-title` als HTML in de pagina, waardoor een titel in de Studio script kon uitvoeren.
 
 ### Toegevoegd
+- Brandpagina op `/brand` (los van Sanity, geprerenderd, `noindex`): verkenning van het kinetische woordmerk (tegels, losse letters, alle standen, hover, formaten, header, preloader) en een weergave van de tokens (kleur, typografie, ruimte, vorm, beweging) met in de browser gemeten waarden. Schakelaars voor thema, kleur en pauze. Woordmerk in `src/lib/brand/wordmark.ts` (één bron) en `src/components/brand/`. `brand` staat in `GERESERVEERD`.
+- Woordmerk op een raster van 5 × 5 (`src/lib/brand/raster.ts`): elke letter is één vorm (buitencontour plus gaten) met hoekpunten op het raster; ingrepen per hoek (schuin, afgerond) en per hoekpunt (gat hoger, lager, scheef). Alle standen van een letter hebben dezelfde opbouw (`paden()` controleert dat) en morphen in elkaar over. Basis is het blokkenalfabet uit Figma (A–Z, ook op de brandpagina). De L is een trap: de treden schieten trapsgewijs omhoog en zakken weer in tot een L. De animatie rekent haar eigen frames uit (`animatie()`: geen deukjes meer in de gaten van de A en D) en gebruikt per overgang een eigen ease (`snap`, `uit`, `val`, `veer`), met korte morphs en een lus van 6 s. Op `/brand` staat de notatie per stand in monospace kolommen onder de letter.
+- `DESIGN.md`: merk, raster en vorm, woordmerk, kleur, typografie, ruimte, beweging, beeld, niet-doen en beslislog. Verwijzing in `AGENTS.md`.
 - Script `npm run dev:schoon` (server stoppen, Vite-cache legen, opnieuw starten) voor een zwarte Studio; uitleg in de README. De ClientRouter-modules worden nu vooraf gebundeld, zodat Vite niet halverwege opnieuw bundelt.
 - Iconen uit Tabler Icons (`@tabler/icons`, outline) via `<Icon naam="…">` (`src/components/Icon.astro`); alleen de geïmporteerde iconen komen in de bundel.
 - Dienstenblok: veld *Weergave* (Raster, Beelden, Vormen) en per dienst een *Beeld*; bij Vormen een *Achtergrondbeeld*. Beelden (Figma 537:2202) en Vormen (539:2357) zijn een carousel: swipen (scroll-snap), slepen met de muis (met een ronde volgcursor die licht naijlt, GSAP quickTo) of de pijlen naast de kop. Op desktop drie kolommen met tussenruimte space-m (Figma Grid/Gutter); kaarten buiten het raster staan links en rechts op 20% en worden zichtbaar als ze erin schuiven; klik op zo'n kaart schuift hem het raster in (`src/scripts/strook.ts`). Raster blijft de standaard.

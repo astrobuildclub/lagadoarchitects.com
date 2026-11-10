@@ -2,6 +2,7 @@
 
 Instructies voor AI-agents (Claude Code, Cursor, Codex) en ontwikkelaars die aan dit project werken.
 Lees eerst `README.md` voor context en `CHANGELOG.md` voor recente wijzigingen.
+Ontwerp (merk, raster, kleur, typografie, ruimte, vorm, beweging): `DESIGN.md`, live op `/brand`. Wijzig je tokens of vormen, werk `DESIGN.md` bij.
 
 ## Project
 - Klant: LAGADO architects · Bedrijf: All This · SLA: TODO
