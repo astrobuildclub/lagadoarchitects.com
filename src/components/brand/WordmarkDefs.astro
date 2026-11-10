@@ -3,7 +3,12 @@
 // elke letter een geanimeerde glyph (#wm-gL …) met SMIL: geen JavaScript nodig voor de animatie. De frames
 // zijn vooraf uitgerekend (raster.ts, animatie()), daarom calcMode linear en geen keySplines.
 // Kleur via --g op de <use> of een ouder; die erft door in de schaduwboom van de <use>.
+// Kleine variant: eigen standen en een glyph per letter (#wm-k-gL …) die één keer speelt (begin="indefinite"),
+// gestart door het script hieronder bij laden en bij hover of focus. Zonder JavaScript staat hij stil.
 import { LETTERS, SCHETSEN } from '../../lib/brand/wordmark';
+
+const grootIds = new Set(LETTERS.flatMap((l) => l.standen.map((s) => s.id)));
+const kleinStanden = LETTERS.flatMap((l) => l.klein.standen).filter((s) => !grootIds.has(s.id));
 
 ---
 
@@ -32,8 +37,57 @@ import { LETTERS, SCHETSEN } from '../../lib/brand/wordmark';
         </g>
       ))
     }
+    {kleinStanden.map((s) => <path id={`wm-${s.id}`} class="wm-gp" d={s.d} fill-rule="evenodd" />)}
+    {
+      LETTERS.map((l) => (
+        <g id={`wm-k-${l.id}`}>
+          <path class="wm-gp" d={l.klein.standen[l.klein.stappen[0].stand].d} fill-rule="evenodd">
+            {l.klein.anim && (
+              <animate
+                class="wm-k-anim"
+                attributeName="d"
+                dur={`${l.klein.duur}s`}
+                begin="indefinite"
+                calcMode="linear"
+                keyTimes={l.klein.anim.keyTimes}
+                values={l.klein.anim.values}
+              />
+            )}
+          </path>
+        </g>
+      ))
+    }
   </defs>
 </svg>
+
+<script>
+  // Kleine variant één keer afspelen: bij laden en bij hover of focus op het woordmerk (of de link eromheen).
+  // Niet bij reduced motion of pauze; dan toont de CSS de stilstaande versie.
+  const stil = () => matchMedia('(prefers-reduced-motion: reduce)').matches || 'wmPauze' in document.documentElement.dataset;
+  let klaar = 0;
+
+  function speel() {
+    const anims = [...document.querySelectorAll<SVGAnimationElement>('.wm-defs .wm-k-anim')];
+    if (!anims.length || stil() || performance.now() < klaar) return;
+    anims.forEach((a) => a.beginElement());
+    klaar = performance.now() + Math.max(...anims.map((a) => a.getSimpleDuration())) * 1000;
+  }
+
+  function koppel() {
+    klaar = 0;
+    document.querySelectorAll<SVGElement>('.wm--klein').forEach((wm) => {
+      const doel = wm.closest('a') ?? wm;
+      if ((doel as HTMLElement).dataset.wmKlein) return;
+      (doel as HTMLElement).dataset.wmKlein = '';
+      doel.addEventListener('pointerenter', speel);
+      doel.addEventListener('focusin', speel);
+    });
+    speel();
+  }
+
+  document.addEventListener('astro:page-load', koppel);
+  if (!document.querySelector('meta[name="astro-view-transitions-enabled"]')) koppel();
+</script>
 
 <style is:global>
   .wm-defs {

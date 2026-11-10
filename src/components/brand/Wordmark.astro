@@ -5,10 +5,14 @@
 // - tiles:    tegelversie, geanimeerd
 // - hover:    stilstaand; bij hover of focus rolt elke letter naar zijn tweede stand
 // mono: altijd één kleur (kleinste maten, header). Anders volgt de kleur [data-kleur] op de wortel.
+// maat="klein": de kleine variant (rustiger vormen, speelt één keer bij laden en bij hover). Voor de header en
+// alles onder ongeveer 112 px breed. Alleen bij animated en static.
 import { LETTERS, LETTERKLEUR_DONKER, LETTERKLEUR_LICHT, TEGEL, TEGELS, WOORD_BREEDTE, type Kleur } from '../../lib/brand/wordmark';
 
 interface Props {
   variant?: 'animated' | 'static' | 'tiles' | 'hover';
+  /** Kleine variant voor kleine maten. */
+  maat?: 'groot' | 'klein';
   mono?: boolean;
   label?: string;
   /** Alleen bij hover: link van het logo. */
@@ -21,17 +25,20 @@ interface Props {
   style?: string;
 }
 
-const { variant = 'animated', mono = false, label = 'LAGADO', href = '/', invert = false, decoratief = false, class: className, style } = Astro.props;
+const { variant = 'animated', maat = 'groot', mono = false, label = 'LAGADO', href = '/', invert = false, decoratief = false, class: className, style } = Astro.props;
 
 const kleur = (k: Kleur) => `var(--wm-${k})`;
 const letterStijl = (i: number) => (mono ? undefined : `--g-licht: ${kleur(LETTERKLEUR_LICHT[i])}; --g-donker: ${kleur(LETTERKLEUR_DONKER[i])}`);
+const klein = maat === 'klein';
+const animId = (l: (typeof LETTERS)[number]) => (klein ? `wm-k-${l.id}` : `wm-${l.id}`);
+const stilId = (l: (typeof LETTERS)[number]) => `wm-${klein ? l.klein.standen[l.klein.stappen[0].stand].id : l.standen[0].id}`;
 const tegelStijl = (i: number) => `--tegel: ${kleur(TEGELS[i][0])}; --letter: ${kleur(TEGELS[i][1])}`;
 ---
 
 {
   (variant === 'animated' || variant === 'static') && (
     <svg
-      class:list={['wm', { 'wm--mono': mono, 'wm--inv': invert }, className]}
+      class:list={['wm', { 'wm--mono': mono, 'wm--inv': invert, 'wm--klein': klein && variant === 'animated' }, className]}
       style={style}
       viewBox={`0 0 ${WOORD_BREEDTE} 10`}
       role={decoratief ? undefined : 'img'}
@@ -42,13 +49,13 @@ const tegelStijl = (i: number) => `--tegel: ${kleur(TEGELS[i][0])}; --letter: ${
       {variant === 'animated' && (
         <g class="wm-anim">
           {LETTERS.map((l, i) => (
-            <use href={`#wm-${l.id}`} class="wm-l" style={letterStijl(i)} transform={l.x ? `translate(${l.x} 0)` : undefined} />
+            <use href={`#${animId(l)}`} class="wm-l" style={letterStijl(i)} transform={l.x ? `translate(${l.x} 0)` : undefined} />
           ))}
         </g>
       )}
       <g class={variant === 'animated' ? 'wm-still' : undefined}>
         {LETTERS.map((l, i) => (
-          <use href={`#wm-${l.standen[0].id}`} class="wm-l" style={letterStijl(i)} transform={l.x ? `translate(${l.x} 0)` : undefined} />
+          <use href={`#${stilId(l)}`} class="wm-l" style={letterStijl(i)} transform={l.x ? `translate(${l.x} 0)` : undefined} />
         ))}
       </g>
     </svg>
