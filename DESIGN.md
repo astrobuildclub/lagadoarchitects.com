@@ -63,7 +63,8 @@ Gebruik `--vorm-radius` en `--vorm-clip` op het vlak; geen eigen `border-radius`
 
 - Zes letters, elk 5 × 5 blokken (10 × 10 eenheden in SVG), **één blok tussenruimte**. Los woordmerk: viewBox `0 0 70 10`.
 - Tegelversie: tegels van 7 × 7 blokken (14 eenheden), letter met één blok marge. viewBox `0 0 84 14`.
-- Standen per letter staan in `src/lib/brand/wordmark.ts`; `raster.ts` maakt er SVG-paden van.
+- Standen en de lus per letter staan in `src/lib/brand/woordmerk.json`; `wordmark.ts` leest dat in en `raster.ts` maakt er SVG-paden en de animatie van.
+- Bewerken kan in de editor op `/brand/editor`: punten slepen, hoeken schuin of rond, frames met ease en duur. Exporteren geeft een nieuwe `woordmerk.json`.
 
 | Letter | Standen |
 |---|---|

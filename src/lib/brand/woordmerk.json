@@ -1,0 +1,382 @@
+{
+  "duur": 6,
+  "letters": [
+    {
+      "id": "gL",
+      "teken": "L",
+      "begin": 0,
+      "hover": [
+        0,
+        2
+      ],
+      "standen": [
+        {
+          "id": "L1",
+          "label": "L recht",
+          "vorm": [
+            "0,0 2,0 2,3 3,3 3,3 4,3 4,3 5,3 5,5 0,5"
+          ]
+        },
+        {
+          "id": "L2",
+          "label": "L halve trap",
+          "vorm": [
+            "0,0 2,0 2,2 3,2 3,3 4,3 4,3 5,3 5,5 0,5"
+          ]
+        },
+        {
+          "id": "L3",
+          "label": "L grote trap",
+          "vorm": [
+            "0,0 2,0 2,1 3,1 3,2 4,2 4,3 5,3 5,5 0,5"
+          ]
+        },
+        {
+          "id": "L4",
+          "label": "L schuin",
+          "vorm": [
+            "0,0s 2,0 2,3 3,3 3,3 4,3 4,3 5,3s 5,5 0,5"
+          ]
+        }
+      ],
+      "stappen": [
+        {
+          "stand": 0,
+          "morph": 0.35,
+          "ease": "snap",
+          "vast": 1.28
+        },
+        {
+          "stand": 1,
+          "morph": 0.22,
+          "ease": "uit",
+          "vast": 0.06
+        },
+        {
+          "stand": 2,
+          "morph": 0.22,
+          "ease": "uit",
+          "vast": 1
+        },
+        {
+          "stand": 1,
+          "morph": 0.2,
+          "ease": "val",
+          "vast": 0.02
+        },
+        {
+          "stand": 0,
+          "morph": 0.3,
+          "ease": "veer",
+          "vast": 1
+        },
+        {
+          "stand": 3,
+          "morph": 0.35,
+          "ease": "snap",
+          "vast": 1
+        }
+      ]
+    },
+    {
+      "id": "gA",
+      "teken": "A",
+      "begin": -0.35,
+      "hover": [
+        0,
+        1
+      ],
+      "standen": [
+        {
+          "id": "A1r",
+          "label": "A recht",
+          "vorm": [
+            "0,0 5,0 5,5 3,5 3,4 2,4 2,5 0,5",
+            "2,1 3,1 3,3 2,3"
+          ]
+        },
+        {
+          "id": "A1s",
+          "label": "A met scheef gat",
+          "vorm": [
+            "0,0 5,0 5,5 3,5 3,4 2,4 2,5 0,5",
+            "2,2 3,1 3,3 2,3"
+          ]
+        },
+        {
+          "id": "A1o",
+          "label": "A afgerond, gat rond",
+          "vorm": [
+            "0,0r 5,0r 5,5 3,5 3,4 2,4 2,5 0,5",
+            "2,1r.5 3,1r.5 3,3 2,3"
+          ]
+        }
+      ],
+      "stappen": [
+        {
+          "stand": 0,
+          "morph": 0.35,
+          "ease": "snap",
+          "vast": 2.1
+        },
+        {
+          "stand": 1,
+          "morph": 0.35,
+          "ease": "veer",
+          "vast": 1.4
+        },
+        {
+          "stand": 2,
+          "morph": 0.4,
+          "ease": "snap",
+          "vast": 1.4
+        }
+      ]
+    },
+    {
+      "id": "gG",
+      "teken": "G",
+      "begin": -0.7,
+      "hover": [
+        0,
+        1
+      ],
+      "standen": [
+        {
+          "id": "Gr",
+          "label": "G recht",
+          "vorm": [
+            "0,0 5,0 5,1 2,1 2,4 4,4 4,3 3,3 3,2 5,2 5,5 0,5"
+          ]
+        },
+        {
+          "id": "Gs",
+          "label": "G schuin",
+          "vorm": [
+            "0,0s 5,0 5,1 2,1 2,4 4,4 4,3 3,3 3,2 5,2 5,5s 0,5"
+          ]
+        },
+        {
+          "id": "Go",
+          "label": "G afgerond",
+          "vorm": [
+            "0,0r 5,0 5,1 2,1 2,4 4,4 4,3 3,3 3,2 5,2 5,5 0,5r"
+          ]
+        }
+      ],
+      "stappen": [
+        {
+          "stand": 0,
+          "morph": 0.35,
+          "ease": "snap",
+          "vast": 2.1
+        },
+        {
+          "stand": 1,
+          "morph": 0.35,
+          "ease": "snap",
+          "vast": 1.4
+        },
+        {
+          "stand": 2,
+          "morph": 0.4,
+          "ease": "uit",
+          "vast": 1.4
+        }
+      ]
+    },
+    {
+      "id": "gA2",
+      "teken": "A",
+      "begin": -2.2,
+      "hover": [
+        0,
+        1
+      ],
+      "standen": [
+        {
+          "id": "A2c",
+          "label": "A afgeschuind, gat hoog",
+          "vorm": [
+            "0,0s 5,0s 5,5 3,5 3,3 2,3 2,5 0,5",
+            "2,1 3,1 3,2 2,2"
+          ]
+        },
+        {
+          "id": "A2s",
+          "label": "A met scheef gat",
+          "vorm": [
+            "0,0 5,0 5,5 3,5 3,3 2,3 2,5 0,5",
+            "2,2 3,1 3,2 2,2"
+          ]
+        },
+        {
+          "id": "A2o",
+          "label": "A afgerond, gat rond",
+          "vorm": [
+            "0,0r 5,0r 5,5 3,5 3,3 2,3 2,5 0,5",
+            "2,1r.5 3,1r.5 3,2 2,2"
+          ]
+        }
+      ],
+      "stappen": [
+        {
+          "stand": 0,
+          "morph": 0.35,
+          "ease": "snap",
+          "vast": 2.1
+        },
+        {
+          "stand": 1,
+          "morph": 0.35,
+          "ease": "veer",
+          "vast": 1.4
+        },
+        {
+          "stand": 2,
+          "morph": 0.4,
+          "ease": "uit",
+          "vast": 1.4
+        }
+      ]
+    },
+    {
+      "id": "gD",
+      "teken": "D",
+      "begin": -1.05,
+      "hover": [
+        0,
+        1
+      ],
+      "standen": [
+        {
+          "id": "Dr",
+          "label": "D recht",
+          "vorm": [
+            "0,0 4,0 4,1 5,1 5,4 4,4 4,5 0,5",
+            "2,1 3,1 3,4 2,4"
+          ]
+        },
+        {
+          "id": "Ds",
+          "label": "D schuin, gat scheef",
+          "vorm": [
+            "0,0 4,0 5,1 5,1 5,4 5,4 4,5 0,5",
+            "2,1 3,2 3,3 2,4"
+          ]
+        },
+        {
+          "id": "Do",
+          "label": "D afgerond, gat rond",
+          "vorm": [
+            "0,0 4,0 5,0r 5,1 5,4 5,5r 4,5 0,5",
+            "2,1r.5 3,1r.5 3,4r.5 2,4r.5"
+          ]
+        },
+        {
+          "id": "Dh",
+          "label": "D met gat hoog",
+          "vorm": [
+            "0,0 4,0 4,1 5,1 5,4 4,4 4,5 0,5",
+            "2,1 3,1 3,3 2,3"
+          ]
+        }
+      ],
+      "stappen": [
+        {
+          "stand": 0,
+          "morph": 0.3,
+          "ease": "snap",
+          "vast": 2
+        },
+        {
+          "stand": 1,
+          "morph": 0.3,
+          "ease": "snap",
+          "vast": 0.9
+        },
+        {
+          "stand": 2,
+          "morph": 0.35,
+          "ease": "uit",
+          "vast": 0.9
+        },
+        {
+          "stand": 3,
+          "morph": 0.35,
+          "ease": "veer",
+          "vast": 0.9
+        }
+      ]
+    },
+    {
+      "id": "gO",
+      "teken": "O",
+      "begin": -1.4,
+      "hover": [
+        0,
+        1
+      ],
+      "standen": [
+        {
+          "id": "Or",
+          "label": "O recht",
+          "vorm": [
+            "0,0 5,0 5,5 0,5",
+            "2,1 3,1 3,4 2,4"
+          ]
+        },
+        {
+          "id": "Os",
+          "label": "O schuin, gat scheef",
+          "vorm": [
+            "0,0s 5,0 5,5s 0,5",
+            "2,2 3,1 3,3 2,4"
+          ]
+        },
+        {
+          "id": "Oo",
+          "label": "O afgerond, gat hoog",
+          "vorm": [
+            "0,0r 5,0r 5,5r 0,5r",
+            "2,1 3,1 3,3 2,3"
+          ]
+        },
+        {
+          "id": "Oo2",
+          "label": "O afgerond, gat laag",
+          "vorm": [
+            "0,0r 5,0r 5,5r 0,5r",
+            "2,2 3,2 3,4 2,4"
+          ]
+        }
+      ],
+      "stappen": [
+        {
+          "stand": 0,
+          "morph": 0.3,
+          "ease": "snap",
+          "vast": 2
+        },
+        {
+          "stand": 1,
+          "morph": 0.3,
+          "ease": "snap",
+          "vast": 0.9
+        },
+        {
+          "stand": 2,
+          "morph": 0.35,
+          "ease": "uit",
+          "vast": 0.9
+        },
+        {
+          "stand": 3,
+          "morph": 0.35,
+          "ease": "veer",
+          "vast": 0.9
+        }
+      ]
+    }
+  ]
+}

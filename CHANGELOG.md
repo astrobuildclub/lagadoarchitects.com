@@ -8,12 +8,14 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 ## [Unreleased]
 
 ### Gewijzigd
+- Letters, standen en frames van het woordmerk staan nu in `src/lib/brand/woordmerk.json` in plaats van in `wordmark.ts`.
 - Header en footer gebruiken het kinetische woordmerk (zwart-wit) in plaats van het oude logo. In de footer staat het over de volle breedte onderaan; het blok met logo en payoff is vervallen. `WordmarkDefs` staat één keer in `BaseLayout`.
 
 ### Beveiliging
 - Videoblok: `<` en `>` worden uit de titel gehaald voordat die naar iframemanager gaat. iframemanager 1.3.0 (nieuwste versie) zet `data-title` als HTML in de pagina, waardoor een titel in de Studio script kon uitvoeren.
 
 ### Toegevoegd
+- Woordmerk-editor op `/brand/editor` (geprerenderd, `noindex`): per letter en stand de hoekpunten over het 5×5-raster slepen (of met de pijltjestoetsen), hoeken recht, schuin of rond, en de frames van de lus bewerken (stand, ease, morph, stilstand; toevoegen, herhalen, verplaatsen, verwijderen). Live voorbeeld met tijdschuif, ongedaan maken, bewaren in de browser, export en import van `woordmerk.json`.
 - Brandpagina op `/brand` (los van Sanity, geprerenderd, `noindex`): verkenning van het kinetische woordmerk (tegels, losse letters, alle standen, hover, formaten, header, preloader) en een weergave van de tokens (kleur, typografie, ruimte, vorm, beweging) met in de browser gemeten waarden. Schakelaars voor thema, kleur en pauze. Woordmerk in `src/lib/brand/wordmark.ts` (één bron) en `src/components/brand/`. `brand` staat in `GERESERVEERD`.
 - Woordmerk op een raster van 5 × 5 (`src/lib/brand/raster.ts`): elke letter is één vorm (buitencontour plus gaten) met hoekpunten op het raster; ingrepen per hoek (schuin, afgerond) en per hoekpunt (gat hoger, lager, scheef). Alle standen van een letter hebben dezelfde opbouw (`paden()` controleert dat) en morphen in elkaar over. Basis is het blokkenalfabet uit Figma (A–Z, ook op de brandpagina). De L is een trap: de treden schieten trapsgewijs omhoog en zakken weer in tot een L. De animatie rekent haar eigen frames uit (`animatie()`: geen deukjes meer in de gaten van de A en D) en gebruikt per overgang een eigen ease (`snap`, `uit`, `val`, `veer`), met korte morphs en een lus van 6 s. Op `/brand` staat de notatie per stand in monospace kolommen onder de letter.
 - `DESIGN.md`: merk, raster en vorm, woordmerk, kleur, typografie, ruimte, beweging, beeld, niet-doen en beslislog. Verwijzing in `AGENTS.md`.

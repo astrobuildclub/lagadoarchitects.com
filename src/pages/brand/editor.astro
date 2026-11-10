@@ -1,0 +1,525 @@
+---
+// Woordmerk-editor: per letter de hoekpunten van elke stand over het 5×5-raster schuiven, hoeken schuin of
+// rond maken, en de lus (frames, eases, duur) instellen. Export = een nieuwe src/lib/brand/woordmerk.json.
+// Alles draait in de browser (src/scripts/woordmerk-editor.ts) met dezelfde rekenkern als de site (raster.ts).
+import BrandLayout from '../../layouts/BrandLayout.astro';
+
+export const prerender = true;
+---
+
+<BrandLayout title="Woordmerk-editor" description="Hoekpunten en beweging van het LAGADO-woordmerk bewerken en exporteren.">
+  <header class="kop wrapper--full">
+    <a href="/brand" class="kop__terug">← Brand</a>
+    <h1 class="kop__titel">Woordmerk-editor</h1>
+    <div class="kop__knoppen">
+      <button type="button" class="knop" id="ongedaan" title="⌘Z">Ongedaan maken</button>
+      <button type="button" class="knop" id="opnieuw" title="⇧⌘Z">Opnieuw</button>
+      <label class="knop">
+        Importeren
+        <input type="file" id="importeer" accept=".json,application/json" class="visually-hidden" />
+      </label>
+      <button type="button" class="knop" id="kopieer">JSON kopiëren</button>
+      <button type="button" class="knop knop--vol" id="exporteer">Exporteren</button>
+    </div>
+  </header>
+
+  <main id="inhoud" class="wrapper--full editor" tabindex="-1">
+    <p id="melding" class="melding" role="status" aria-live="polite"></p>
+
+    <nav class="letters" aria-label="Letter kiezen" id="letters"></nav>
+
+    <section class="doek-vak" aria-labelledby="doek-kop">
+      <h2 id="doek-kop" class="visually-hidden">Tekenvlak</h2>
+      <svg id="doek" class="doek" viewBox="-1.5 -1.5 13 13" aria-label="Tekenvlak: kies een punt en versleep het, of gebruik Tab en de pijltjestoetsen">
+      </svg>
+      <p class="hulp">
+        Slepen klikt vast op hele blokken, met <kbd>Shift</kbd> op halve. Met het toetsenbord: <kbd>Tab</kbd> naar een punt,
+        pijltjes verplaatsen (<kbd>Shift</kbd> = half blok), <kbd>R</kbd> rond, <kbd>S</kbd> schuin, <kbd>X</kbd> recht. De vorige
+        frame staat licht op de achtergrond. Punten op dezelfde plek tonen een getal.
+      </p>
+    </section>
+
+    <aside class="paneel">
+      <section class="vak" aria-labelledby="punt-kop">
+        <h2 id="punt-kop" class="vak__kop">Punt <span id="punt-naam" class="muted"></span></h2>
+        <div class="velden">
+          <label>x <input type="number" id="p-x" min="0" max="5" step="0.5" /></label>
+          <label>y <input type="number" id="p-y" min="0" max="5" step="0.5" /></label>
+          <label
+            >Hoek
+            <select id="p-type">
+              <option value="">recht</option>
+              <option value="s">schuin</option>
+              <option value="r">rond</option>
+            </select>
+          </label>
+          <label
+            >Maat
+            <select id="p-maat">
+              <option value="0.5">½ blok</option>
+              <option value="1">1 blok</option>
+              <option value="1.5">1½ blok</option>
+              <option value="2">2 blokken</option>
+              <option value="2.5">2½ blok</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="vak" aria-labelledby="stand-kop">
+        <h2 id="stand-kop" class="vak__kop">Stand van dit frame</h2>
+        <div class="velden">
+          <label class="breed">Stand <select id="stand-keuze"></select></label>
+          <label class="breed">Naam <input type="text" id="stand-label" /></label>
+        </div>
+        <p class="noot muted">
+          Een stand kan in meer frames staan; pas je hem aan, dan verandert hij overal. Alle standen van een letter hebben
+          evenveel punten, anders kan hij niet morphen.
+        </p>
+      </section>
+
+      <section class="vak" aria-labelledby="vb-kop">
+        <h2 id="vb-kop" class="vak__kop">Voorbeeld</h2>
+        <svg id="voorbeeld" class="voorbeeld" viewBox="-1 -1 12 12" role="img" aria-label="Voorbeeld van de letter"></svg>
+        <div class="tijd">
+          <button type="button" class="knop" id="speel">Pauzeren</button>
+          <label class="tijd__schuif"
+            ><span class="visually-hidden">Tijd</span>
+            <input type="range" id="scrub" min="0" max="6" step="0.01" value="0" />
+          </label>
+          <output id="tijd" class="tijd__waarde">0,00 s</output>
+        </div>
+        <label class="breed velden">Begin in de lus (s) <input type="number" id="letter-begin" step="0.05" max="0" /></label>
+      </section>
+    </aside>
+
+    <section class="strip-vak" aria-labelledby="strip-kop">
+      <div class="strip-kop">
+        <h2 id="strip-kop" class="vak__kop">Frames</h2>
+        <p id="totaal" class="totaal"></p>
+      </div>
+      <ol id="strip" class="strip" role="list"></ol>
+      <div class="strip-knoppen">
+        <button type="button" class="knop" id="frame-nieuw">+ Frame met nieuwe stand</button>
+        <button type="button" class="knop" id="frame-herhaal">+ Frame met deze stand</button>
+        <button type="button" class="knop" id="frame-links">← Naar links</button>
+        <button type="button" class="knop" id="frame-rechts">Naar rechts →</button>
+        <button type="button" class="knop" id="frame-weg">Frame verwijderen</button>
+        <button type="button" class="knop" id="opruimen">Ongebruikte standen opruimen</button>
+      </div>
+      <p class="noot muted">
+        Per frame: de overgang ernaartoe (ease en duur van de morph) en hoe lang hij stilstaat. De overgang van het eerste frame
+        is die vanaf het laatste, terug naar het begin. Wat over is van de lus gaat naar de stilstand van het eerste frame.
+      </p>
+    </section>
+
+    <section class="woord-vak" aria-labelledby="woord-kop">
+      <h2 id="woord-kop" class="vak__kop">Woordmerk</h2>
+      <svg id="woord" class="woord" viewBox="0 0 70 10" role="img" aria-label="LAGADO, voorbeeld van alle letters"></svg>
+      <p class="noot muted">
+        Klaar? <strong>Exporteren</strong> geeft <code>woordmerk.json</code>: vervang daarmee <code>src/lib/brand/woordmerk.json</code>,
+        of stuur het door. Je werk blijft tussendoor bewaard in deze browser.
+        <button type="button" class="linkknop" id="terugzetten">Terugzetten naar de versie van de site</button>
+      </p>
+    </section>
+  </main>
+</BrandLayout>
+
+<script>
+  import '../../scripts/woordmerk-editor';
+</script>
+
+<style>
+  /* Accent voor punten en randen (blauw uit het palet), en een foutkleur; lichter in donker. */
+  :global(:root) {
+    --ed-accent: oklch(51.51% 0.2539 272.56);
+    --ed-fout: oklch(55% 0.2 34);
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) {
+      --ed-accent: oklch(72% 0.16 272);
+      --ed-fout: oklch(72% 0.17 34);
+    }
+  }
+  :global(:root[data-theme='dark']) {
+    --ed-accent: oklch(72% 0.16 272);
+    --ed-fout: oklch(72% 0.17 34);
+  }
+  .kop {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 5;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs) var(--space-m);
+    padding-block: var(--space-xs);
+    border-block-end: var(--border-width) solid var(--color-line);
+    background: var(--color-bg);
+  }
+  .kop__terug {
+    text-decoration: none;
+  }
+  .kop__titel {
+    margin: 0;
+    font-size: var(--step-0);
+    font-weight: 500;
+  }
+  .kop__knoppen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin-inline-start: auto;
+  }
+
+  .editor {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-m);
+    padding-block: var(--space-m) var(--space-2xl);
+  }
+  @media (min-width: 60rem) {
+    .editor {
+      grid-template-columns: minmax(0, 3fr) minmax(18rem, 2fr);
+      grid-template-areas:
+        'melding melding'
+        'letters letters'
+        'doek paneel'
+        'strip strip'
+        'woord woord';
+    }
+    .melding {
+      grid-area: melding;
+    }
+    .letters {
+      grid-area: letters;
+    }
+    .doek-vak {
+      grid-area: doek;
+    }
+    .paneel {
+      grid-area: paneel;
+    }
+    .strip-vak {
+      grid-area: strip;
+    }
+    .woord-vak {
+      grid-area: woord;
+    }
+  }
+
+  .melding {
+    min-block-size: 1.5em;
+    margin: 0;
+    font-size: var(--step--1);
+  }
+  .melding[data-fout] {
+    color: var(--ed-fout);
+  }
+
+  :global(.knop) {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4em 0.9em;
+    border: var(--border-width) solid currentColor;
+    border-radius: 999px;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: var(--step--1);
+    cursor: pointer;
+  }
+  :global(.knop:hover),
+  :global(.knop[aria-pressed='true']) {
+    background: var(--color-fg);
+    color: var(--color-bg);
+  }
+  .knop--vol {
+    background: var(--color-fg);
+    color: var(--color-bg);
+  }
+  :global(.knop:disabled) {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  label.knop:focus-within {
+    outline: 2px solid var(--color-fg);
+    outline-offset: 2px;
+  }
+  .linkknop {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .letters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+  }
+  .letters :global(.knop) {
+    min-inline-size: 3rem;
+    justify-content: center;
+    font-size: var(--step-0);
+  }
+
+  .doek-vak {
+    display: grid;
+    gap: var(--space-s);
+    align-content: start;
+  }
+  .doek {
+    display: block;
+    inline-size: 100%;
+    max-block-size: 75vh;
+    aspect-ratio: 1;
+    touch-action: none;
+    user-select: none;
+    background: var(--color-surface);
+    border-radius: var(--radius-s, 0.5rem);
+  }
+  .doek :global(.lijn) {
+    stroke: var(--color-line);
+    stroke-width: 0.03;
+  }
+  .doek :global(.stip) {
+    fill: var(--color-muted);
+  }
+  .doek :global(.ui) {
+    fill: var(--color-fg);
+    opacity: 0.12;
+  }
+  .doek :global(.vorm) {
+    fill: var(--color-fg);
+    opacity: 0.82;
+  }
+  .doek :global(.rand) {
+    fill: none;
+    stroke: var(--ed-accent);
+    stroke-width: 0.05;
+  }
+  .doek :global(.punt) {
+    cursor: grab;
+    outline: none;
+  }
+  .doek :global(.punt .raak) {
+    fill: transparent;
+  }
+  .doek :global(.punt .teken) {
+    fill: var(--color-bg);
+    stroke: var(--ed-accent);
+    stroke-width: 0.08;
+  }
+  .doek :global(.punt:hover .teken),
+  .doek :global(.punt:focus-visible .teken) {
+    stroke-width: 0.14;
+  }
+  .doek :global(.punt:focus-visible .raak) {
+    stroke: var(--color-fg);
+    stroke-width: 0.05;
+    stroke-dasharray: 0.12 0.08;
+  }
+  .doek :global(.punt.is-gekozen .teken) {
+    fill: var(--ed-accent);
+  }
+  .doek :global(.aantal) {
+    fill: var(--ed-accent);
+    font-size: 0.42px;
+    font-weight: 600;
+    pointer-events: none;
+  }
+  .doek :global(.as) {
+    fill: var(--color-muted);
+    font-size: 0.4px;
+    text-anchor: middle;
+    dominant-baseline: middle;
+  }
+  .hulp {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--color-muted);
+    max-inline-size: 70ch;
+  }
+  kbd {
+    padding: 0 0.3em;
+    border: var(--border-width) solid var(--color-line);
+    border-radius: 0.25em;
+    font-family: inherit;
+    font-size: 0.9em;
+  }
+
+  .paneel {
+    display: grid;
+    gap: var(--space-m);
+    align-content: start;
+  }
+  .vak {
+    display: grid;
+    gap: var(--space-xs);
+  }
+  .vak__kop {
+    margin: 0;
+    font-size: var(--step-0);
+    font-weight: 500;
+  }
+  .velden {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-xs);
+    font-size: var(--step--1);
+  }
+  .velden label,
+  label.velden {
+    display: grid;
+    gap: 0.25em;
+  }
+  .breed {
+    grid-column: 1 / -1;
+  }
+  input:not([type='range'], [type='file']),
+  select {
+    inline-size: 100%;
+    padding: 0.35em 0.5em;
+    border: var(--border-width) solid var(--color-line);
+    border-radius: 0.35em;
+    background: var(--color-bg);
+    color: inherit;
+    font: inherit;
+  }
+  input:disabled,
+  select:disabled {
+    opacity: 0.4;
+  }
+  .noot {
+    margin: 0;
+    font-size: var(--step--1);
+  }
+  .muted {
+    color: var(--color-muted);
+  }
+
+  .voorbeeld {
+    display: block;
+    inline-size: min(100%, 14rem);
+    aspect-ratio: 1;
+  }
+  .voorbeeld :global(path),
+  .woord :global(path) {
+    fill: var(--color-fg);
+  }
+  .tijd {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+  .tijd__schuif {
+    flex: 1;
+  }
+  .tijd__schuif input {
+    inline-size: 100%;
+    accent-color: var(--color-fg);
+  }
+  .tijd__waarde {
+    min-inline-size: 4.5em;
+    font-variant-numeric: tabular-nums;
+    font-size: var(--step--1);
+    text-align: end;
+  }
+
+  .strip-vak {
+    display: grid;
+    gap: var(--space-s);
+  }
+  .strip-kop {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-s);
+  }
+  .totaal {
+    margin: 0;
+    font-size: var(--step--1);
+    color: var(--color-muted);
+  }
+  .totaal[data-fout] {
+    color: var(--ed-fout);
+  }
+  .strip {
+    display: flex;
+    gap: var(--space-2xs);
+    overflow-x: auto;
+    padding: 0 0 var(--space-xs);
+    margin: 0;
+    list-style: none;
+  }
+  .strip :global(.frame) {
+    display: grid;
+    flex: 0 0 9.5rem;
+    gap: var(--space-3xs, 0.25rem);
+    font-size: var(--step--2, 0.75rem);
+  }
+  .strip :global(.overgang) {
+    display: grid;
+    grid-template-columns: 1fr 4.2em;
+    gap: 0.25rem;
+    padding: 0.35rem;
+    border-radius: 0.35rem;
+    background: var(--color-surface);
+  }
+  .strip :global(.overgang__label) {
+    grid-column: 1 / -1;
+    color: var(--color-muted);
+  }
+  .strip :global(.frame__knop) {
+    display: grid;
+    gap: 0.25rem;
+    justify-items: center;
+    padding: 0.5rem;
+    border: var(--border-width) solid var(--color-line);
+    border-radius: 0.5rem;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+  .strip :global(.frame__knop[aria-pressed='true']) {
+    border-color: var(--color-fg);
+    box-shadow: inset 0 0 0 1px var(--color-fg);
+  }
+  .strip :global(.frame__knop svg) {
+    inline-size: 4rem;
+    aspect-ratio: 1;
+  }
+  .strip :global(.frame__knop path) {
+    fill: var(--color-fg);
+  }
+  .strip :global(.stil) {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .strip :global(input),
+  .strip :global(select) {
+    padding: 0.2em 0.3em;
+    font-size: inherit;
+  }
+  .strip-knoppen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+  }
+
+  .woord-vak {
+    display: grid;
+    gap: var(--space-s);
+  }
+  .woord {
+    display: block;
+    inline-size: 100%;
+  }
+</style>
