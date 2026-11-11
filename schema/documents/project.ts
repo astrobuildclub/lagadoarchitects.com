@@ -1,7 +1,6 @@
 // Project. Groepen en volgorde volgen lagado-content/README.md → "Opbouw van een project".
 import { defineArrayMember, defineField, defineType } from 'sanity';
 import {
-  HOMEPAGE_GROOTTE,
   KAARTVORM,
   KLEUR,
   MATERIAAL,
@@ -127,15 +126,6 @@ export const project = defineType({
     defineField({ name: 'kleurpalet', title: 'Kleurpalet', description: 'Voor het kleurpalet-blok.', type: 'array', of: [{ type: 'kleur' }], group: 'weergave' }),
     defineField({ name: 'hero', title: 'Hero-beeld', type: 'beeld', group: 'weergave', validation: (r) => r.required() }),
     defineField({ name: 'featured', title: 'Uitgelicht op de home', type: 'boolean', group: 'weergave', initialValue: false }),
-    defineField({
-      name: 'homepageGrootte',
-      title: 'Kaartgrootte op de home',
-      description: '1 rij: mini, klein, breed, lang · 2 rijen: hoog, toren, groot.',
-      type: 'string',
-      group: 'weergave',
-      options: { list: opties(HOMEPAGE_GROOTTE) },
-      initialValue: 'klein',
-    }),
     defineField({ name: 'kaartvorm', title: 'Kaartvorm op de home', description: 'Leeg = uit de eerste vorm.', type: 'string', group: 'weergave', options: { list: opties(KAARTVORM) } }),
     defineField({ name: 'volgorde', title: 'Volgorde', description: 'Laag = eerst.', type: 'number', group: 'weergave', initialValue: 0 }),
     defineField({

@@ -403,7 +403,7 @@ export const projectSchema = z
 
     hero: imageRef.pick({ src: true, alt: true }),
     featured: z.boolean().default(false),
-    /** Kaartgrootte op de homepage: klein, hoog, toren, breed of groot. */
+    /** Kaartgrootte in het homeraster. Geen veld in de Studio meer: ProjectGrid zet hem zelf (vaste indeling). */
     homepageGrootte: z.enum(HOMEPAGE_GROOTTE).default('klein'),
     kaartvorm: z.enum(KAARTVORM).optional(),
     volgorde: z.number().default(0),
