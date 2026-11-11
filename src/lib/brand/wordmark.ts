@@ -32,7 +32,28 @@ export interface Letter {
   stappen: Stap[];
   /** Uitgerekende SMIL-tijdlijn (calcMode linear). */
   anim: { keyTimes: string; values: string };
+  /** Kleine variant (header, kleine maten): eigen standen, speelt één keer. Zie Klein. */
+  klein: Klein;
 }
+
+/**
+ * Kleine variant voor maten waar de details van de grote wegvallen (header: één blok ≈ 3 px). Eigen standen,
+ * rustiger vormen. Speelt één keer, bij laden en bij hover of focus, en eindigt in de eerste stand: geen
+ * eindeloze beweging (WCAG 2.2.2). De stilstand van het eerste frame is de wachttijd, zo lopen de letters na
+ * elkaar. Zonder eigen stappen staat de letter stil.
+ */
+export interface Klein {
+  standen: Stand[];
+  stappen: Stap[];
+  /** Duur van de hele beweging in seconden; 0 = stil. */
+  duur: number;
+  anim: { keyTimes: string; values: string } | null;
+}
+
+/** Langste beweging van de kleine variant. Korter dan 5 s, dan hoeft er geen pauzeknop bij (WCAG 2.2.2). */
+export const KLEIN_MAX = 4.5;
+
+type StandData = { id: string; label: string; vorm: Vorm };
 
 /**
  * De bron: letters, standen en de lus per letter staan in woordmerk.json. Die bewerk je met de editor op
@@ -41,7 +62,10 @@ export interface Letter {
 export interface WoordmerkData {
   /** Duur van één lus in seconden, voor elke letter gelijk zodat de onderlinge verschuiving blijft staan. */
   duur: number;
-  letters: (Omit<Letter, 'x' | 'standen' | 'duur' | 'anim'> & { standen: { id: string; label: string; vorm: Vorm }[] })[];
+  letters: (Omit<Letter, 'x' | 'standen' | 'duur' | 'anim' | 'klein'> & {
+    standen: StandData[];
+    klein?: { standen: StandData[]; stappen: Stap[] };
+  })[];
 }
 export const DATA = data as WoordmerkData;
 export const DUUR = DATA.duur;
@@ -53,12 +77,33 @@ export function vulAan(stappen: Stap[], duur: number, naam = 'letter'): Stap[] {
   return stappen.map((s, n) => (n === 0 ? { ...s, vast: +(s.vast + duur - totaal).toFixed(3) } : s));
 }
 
+/** Kleine variant uitrekenen. Gooit als hij langer duurt dan KLEIN_MAX. Zonder data: de eerste grote stand, stil. */
+export function maakKlein(l: WoordmerkData['letters'][number], naam = l.id): Klein {
+  const bron = l.klein ?? { standen: [l.standen[l.stappen[0].stand]], stappen: [] };
+  const vormen = bron.standen.map((s) => s.vorm);
+  const d = paden(vormen, `${naam} klein`);
+  const standen = bron.standen.map((s, n) => ({ ...s, d: d[n] }));
+  const stappen = bron.stappen.length ? bron.stappen : [{ stand: 0, morph: 0.3, ease: 'snap' as const, vast: 0 }];
+  if (stappen.length < 2) return { standen, stappen, duur: 0, anim: null };
+  const { duur, keyTimes, values } = animatie(vormen, stappen, `${naam} klein`);
+  if (duur > KLEIN_MAX + 1e-9) throw new Error(`${naam} klein: duurt ${duur.toFixed(2)} s, meer dan ${KLEIN_MAX} s`);
+  return { standen, stappen, duur, anim: { keyTimes, values } };
+}
+
 export const LETTERS: Letter[] = DATA.letters.map((l, i) => {
   const vormen = l.standen.map((s) => s.vorm);
   const d = paden(vormen, l.id);
   const stappen = vulAan(l.stappen, DUUR, l.id);
   const { keyTimes, values } = animatie(vormen, stappen, l.id);
-  return { ...l, stappen, duur: DUUR, x: i * 12, standen: l.standen.map((s, n) => ({ ...s, d: d[n] })), anim: { keyTimes, values } };
+  return {
+    ...l,
+    stappen,
+    duur: DUUR,
+    x: i * 12,
+    standen: l.standen.map((s, n) => ({ ...s, d: d[n] })),
+    anim: { keyTimes, values },
+    klein: maakKlein(l),
+  };
 });
 
 /** Schetsvormen: statisch, andere puntopbouw, niet in de animatie. Index = kolom in de matrix. */
