@@ -485,10 +485,10 @@ $('strip').addEventListener('change', (e) => {
 });
 
 /** Unieke id voor een nieuwe stand: letter-id zonder de g, plus een nummer (ids gelden voor de hele pagina). */
-function nieuweId() {
-  const alle = new Set(staat.letters.flatMap((l) => [...l.standen, ...l.klein.standen].map((s) => s.id)));
-  const basis = `${letter().id.replace(/^g/, '')}${klein() ? 'k' : ''}`;
-  let n = deel().standen.length + 1;
+function nieuweId(l = letter(), m = sel.maat) {
+  const alle = new Set(staat.letters.flatMap((x) => [...x.standen, ...x.klein.standen].map((s) => s.id)));
+  const basis = `${l.id.replace(/^g/, '')}${m === 'klein' ? 'k' : ''}`;
+  let n = (m === 'klein' ? l.klein : l).standen.length + 1;
   while (alle.has(`${basis}-${n}`)) n++;
   return `${basis}-${n}`;
 }
@@ -525,24 +525,111 @@ $('frame-weg').addEventListener('click', () =>
     sel.frame = Math.max(0, sel.frame - 1);
   }),
 );
+/** Standen die in geen frame (en geen hover) staan weghalen; `alleen` beperkt dat tot standen die eraan voldoen. */
+function ruimOp(lt: LetterE, m: Maat, alleen: (s: StandE) => boolean = () => true) {
+  const l = m === 'klein' ? lt.klein : lt;
+  const hover = m === 'klein' ? [] : lt.hover;
+  const gebruikt = new Set([...l.stappen.map((s) => s.stand), ...hover]);
+  const blijft = (s: StandE, n: number) => gebruikt.has(n) || !alleen(s);
+  const weg = l.standen.filter((s, n) => !blijft(s, n)).map((s) => s.id);
+  if (!weg.length) return weg;
+  const nieuw = new Map<number, number>();
+  l.standen = l.standen.filter((s, n) => {
+    if (!blijft(s, n)) return false;
+    nieuw.set(n, nieuw.size);
+    return true;
+  });
+  l.stappen.forEach((s) => (s.stand = nieuw.get(s.stand)!));
+  if (m === 'groot') lt.hover = [nieuw.get(hover[0])!, nieuw.get(hover[1])!];
+  return weg;
+}
+
 $('opruimen').addEventListener('click', () => {
   const l = deel();
   const hover = klein() ? [] : letter().hover;
   const gebruikt = new Set([...l.stappen.map((s) => s.stand), ...hover]);
-  const weg = l.standen.filter((_, n) => !gebruikt.has(n)).map((s) => s.id);
-  if (!weg.length) return meld('Alle standen worden gebruikt.');
-  wijzig(() => {
-    const nieuw = new Map<number, number>();
-    l.standen = l.standen.filter((_, n) => {
-      if (!gebruikt.has(n)) return false;
-      nieuw.set(n, nieuw.size);
-      return true;
-    });
-    l.stappen.forEach((s) => (s.stand = nieuw.get(s.stand)!));
-    if (!klein()) letter().hover = [nieuw.get(hover[0])!, nieuw.get(hover[1])!];
-    meld(`Verwijderd: ${weg.join(', ')}.`);
-  });
+  if (l.standen.every((_, n) => gebruikt.has(n))) return meld('Alle standen worden gebruikt.');
+  wijzig(() => meld(`Verwijderd: ${ruimOp(letter(), sel.maat).join(', ')}.`));
 });
+
+/* ───────────── Willekeurig ───────────── */
+
+const kies = <T,>(a: readonly T[]) => a[Math.floor(Math.random() * a.length)];
+/** Willekeurig getal tussen a en b, afgerond op stapjes van 0,05. */
+const tussenIn = (a: number, b: number) => +(a + Math.round((Math.random() * (b - a)) / 0.05) * 0.05).toFixed(2);
+const WILLEKEURIG = '· willekeurig';
+
+/**
+ * Een variatie op een stand, met dezelfde punten (anders kan hij niet morphen): een paar hoeken schuin of rond,
+ * en soms schuift een gat een blok. Kan een rare vorm geven; ongedaan maken kan altijd.
+ */
+function variatie(bron: StandE, id: string): StandE {
+  const vorm = structuredClone(bron.vorm);
+  vorm.forEach((c, k) => {
+    c.forEach((p) => {
+      if (Math.random() < 0.3) {
+        p.t = kies(['', 's', 'r'] as const);
+        p.m = kies([0.5, 1, 1, 1.5]);
+      }
+    });
+    if (k > 0 && Math.random() < 0.6) {
+      const [dx, dy] = kies([[0, -1], [0, 1], [-1, 0], [1, 0], [0, 0]] as const);
+      if (c.every((p) => p.x + dx >= 1 && p.x + dx <= 4 && p.y + dy >= 1 && p.y + dy <= 4))
+        c.forEach((p) => {
+          p.x += dx;
+          p.y += dy;
+        });
+    }
+  });
+  const label = `${bron.label.replace(` ${WILLEKEURIG}`, '')} ${WILLEKEURIG}`;
+  return { id, label, vorm };
+}
+
+/**
+ * Nieuwe willekeurige beweging voor één letter: soms een nieuwe stand (variatie op een bestaande), dan een
+ * reeks frames langs de standen met willekeurige eases, morphs en stilstanden. Frame 1 blijft dezelfde stand.
+ * Groot past in de lus, klein blijft onder KLEIN_MAX en houdt zijn wachttijd (de stilstand van frame 1).
+ */
+function willekeurig(lt: LetterE, m: Maat) {
+  const d = m === 'klein' ? lt.klein : lt;
+  ruimOp(lt, m, (s) => s.label.endsWith(WILLEKEURIG));
+  if (d.standen.length < 2 || Math.random() < 0.6) d.standen.push(variatie(kies(d.standen), nieuweId(lt, m)));
+
+  const begin = d.stappen[0];
+  const aantal = m === 'klein' ? 2 + Math.floor(Math.random() * 2) : 3 + Math.floor(Math.random() * 4);
+  const stappen: Stap[] = [{ ...begin, morph: tussenIn(0.25, 0.45), ease: kies(EASE_NAMEN), vast: m === 'klein' ? begin.vast : 0.5 }];
+  let vorige = begin.stand;
+  for (let j = 1; j < aantal; j++) {
+    const keuzes = d.standen.map((_, n) => n).filter((n) => n !== vorige && (j < aantal - 1 || n !== begin.stand));
+    const stand = keuzes.length ? kies(keuzes) : vorige;
+    stappen.push({ stand, morph: tussenIn(0.2, 0.45), ease: kies(EASE_NAMEN), vast: m === 'klein' ? tussenIn(0.1, 0.6) : tussenIn(0.05, 1.2) });
+    vorige = stand;
+  }
+
+  // Inkorten tot het past: alleen de stilstanden na frame 1.
+  const max = m === 'klein' ? KLEIN_MAX : staat.duur;
+  const totaal = duurVan(stappen);
+  const rest = stappen.slice(1).reduce((t, s) => t + s.vast, 0);
+  if (totaal > max && rest > 0) {
+    const f = Math.max(0, (rest - (totaal - max) - 0.05) / rest);
+    stappen.slice(1).forEach((s) => (s.vast = Math.floor(s.vast * f * 100) / 100));
+  }
+  d.stappen = stappen;
+  ruimOp(lt, m, (s) => s.label.endsWith(WILLEKEURIG));
+}
+
+function willekeurigeBeweging(alle: boolean) {
+  wijzig(() => {
+    (alle ? staat.letters : [letter()]).forEach((l) => willekeurig(l, sel.maat));
+    sel.frame = 0;
+    sel.punt = null;
+  });
+  const wat = alle ? 'alle letters' : letter().teken;
+  meld(`Willekeurige beweging voor ${wat} (${sel.maat}). Nog eens klikken voor een nieuwe; ⌘Z maakt hem ongedaan.`);
+  if (voorbeeld.animationsPaused()) zetTijd(0);
+}
+$('willekeurig-letter').addEventListener('click', () => willekeurigeBeweging(false));
+$('willekeurig-alles').addEventListener('click', () => willekeurigeBeweging(true));
 
 /* ───────────── Voorbeeld ───────────── */
 
