@@ -5,16 +5,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import BlockRenderer from '../components/BlockRenderer.astro';
 import PageHeader from '../components/PageHeader.astro';
 import { getContact, getSettings } from '../lib/content';
+import type { Block } from '../lib/schema';
 import { platteTekst } from '../lib/richtext';
 import { pageDescription, pageTitle } from '../lib/seo';
 
 const settings = await getSettings();
 const c = await getContact();
+// Nog geen bouwstenen? Dan in elk geval de gegevens, zodat de contactpagina nooit leeg is.
+const blocks: Block[] = c.blocks.length ? c.blocks : [{ type: 'contactgegevens', kop: '' }];
 ---
 
 <BaseLayout title={pageTitle(settings, c)} description={pageDescription(settings, { ...c, fallbackDescription: platteTekst(c.intro) })} noindex={c.seo?.noindex}>
   <div class="layout flow">
     <PageHeader title={c.title} intro={c.intro} label beeld={c.sfeerbeeld} />
-    <BlockRenderer blocks={c.blocks} />
+    <BlockRenderer blocks={blocks} />
   </div>
 </BaseLayout>
