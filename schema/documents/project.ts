@@ -55,6 +55,7 @@ export const project = defineType({
       validation: (r) => r.required(),
     }),
     defineField({ name: 'tagline', title: 'Tagline', description: 'Eén zin, voor de kaart en de hero.', type: 'string', group: 'identiteit', validation: (r) => r.required() }),
+    defineField({ name: 'intro', title: 'Intro', description: '2 tot 4 zinnen.', type: 'richText', group: 'identiteit', validation: (r) => r.required() }),
     defineField({
       name: 'vraag',
       title: 'Ontwerpvraag',
@@ -62,7 +63,6 @@ export const project = defineType({
       type: 'string',
       group: 'identiteit',
     }),
-    defineField({ name: 'intro', title: 'Intro', description: '2 tot 4 zinnen.', type: 'richText', group: 'identiteit', validation: (r) => r.required() }),
 
     // Verhaal
     { ...blocksField(), group: 'verhaal' },

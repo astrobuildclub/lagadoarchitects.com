@@ -10,6 +10,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 ### Gewijzigd
 - Studio: kleurkiezer bij Accentkleur (project) en Hex (kleurpalet). De waarde blijft een hex-string; typen kan nog steeds, met een knop om het veld leeg te maken.
 - Kleurpalet-blok heeft een breedte-keuze (content, popout, feature, full), net als Beeld. Standaard full, zoals het was.
+- Studio: Ontwerpvraag staat onder Intro, in dezelfde volgorde als op de projectpagina.
 - Letters, standen en frames van het woordmerk staan nu in `src/lib/brand/woordmerk.json` in plaats van in `wordmark.ts`.
 - Header en footer gebruiken het kinetische woordmerk (zwart-wit) in plaats van het oude logo. In de footer staat het over de volle breedte onderaan; het blok met logo en payoff is vervallen. `WordmarkDefs` staat één keer in `BaseLayout`.
 
