@@ -52,17 +52,19 @@ const links = [...(block.linkNaarOverzicht ? [block.linkNaarOverzicht] : []), ..
     <section class="project-grid full">
       {has(block.kop) && <h2>{block.kop}</h2>}
       <ProjectList projects={projects} headingLevel={has(block.kop) ? 3 : 2} id={id} sized zichtbaar={stap} />
-      {(projects.length > stap || links.length > 0) && (
+      {projects.length > stap && (
         <p class="project-grid__acties">
-          {projects.length > stap && (
-            <button type="button" class="button" data-meer={id} data-stap={stap} aria-controls={id} hidden>
-              Meer projecten
-            </button>
-          )}
-          {links.map((l) => (
-            <a class="button" href={l.href}>{l.label}</a>
-          ))}
+          <button type="button" class="button" data-meer={id} data-stap={stap} aria-controls={id} hidden>
+            Meer projecten
+          </button>
         </p>
+      )}
+      {links.length > 0 && (
+        <ul role="list" class="project-grid__links">
+          {links.map((l) => (
+            <li><a href={l.href}>{l.label}</a></li>
+          ))}
+        </ul>
       )}
     </section>
   )
@@ -88,6 +90,36 @@ const links = [...(block.linkNaarOverzicht ? [block.linkNaarOverzicht] : []), ..
     });
   }
   document.addEventListener('astro:page-load', initMeer);
+
+  // Stagger-reveal: zodra de eerste kaart in beeld is, komen de zichtbare kaarten één voor één binnen (110 ms na
+  // elkaar, hooguit 9 stappen). De kaarten zijn al vanaf de eerste paint verborgen via CSS (alleen met JS en zonder
+  // reduced motion); dit script zet de lijst op 'klaar'. Bij een paginawissel pas als het gordijn weg is
+  // (interlude:idle), anders speelt de reveal onder de transitie.
+  function initReveal() {
+    document.querySelectorAll<HTMLElement>('.project-grid .project-list').forEach((lijst) => {
+      const kaarten = [...lijst.children].filter((k): k is HTMLElement => k instanceof HTMLElement && !k.hidden);
+      if (!kaarten.length) return;
+      kaarten.forEach((k, i) => k.style.setProperty('--reveal-i', String(Math.min(i, 8))));
+      const klaar = () => (lijst.dataset.reveal = 'klaar');
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return klaar();
+
+      const io = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry.isIntersecting) return;
+          io.disconnect();
+          klaar();
+        },
+        { rootMargin: '0px 0px -10% 0px' },
+      );
+      const start = () => io.observe(kaarten[0]);
+      const interlude = document.querySelector<HTMLElement>('[data-interlude]');
+      if (interlude?.dataset.state && interlude.dataset.state !== 'idle') {
+        document.addEventListener('interlude:idle', start, { once: true });
+      } else start();
+      document.addEventListener('astro:before-swap', () => io.disconnect(), { once: true });
+    });
+  }
+  document.addEventListener('astro:page-load', initReveal);
 </script>
 
 <style>
@@ -97,7 +129,47 @@ const links = [...(block.linkNaarOverzicht ? [block.linkNaarOverzicht] : []), ..
     gap: var(--space-xl);
     padding-inline: var(--gutter);
   }
-  /* Knoppen onder het raster (Figma 447:2103): grijze pillen naast elkaar, even breed, zonder gap. */
+  /* Stagger-reveal (zie script): vanaf de eerste paint onzichtbaar en 3rem lager (alleen met JS en zonder
+     reduced motion, anders gewoon zichtbaar); op 'klaar' komt elke kaart met zijn eigen vertraging binnen.
+     De transitie staat alleen op 'klaar', zodat het verbergen niet zichtbaar uitfadet. Met `translate`,
+     zodat transforms op de kaart zelf (hover) er niet mee botsen. */
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    .project-grid :global(.project-list:not([data-reveal='klaar']) > li) {
+      opacity: 0;
+      translate: 0 3rem;
+    }
+  }
+  .project-grid :global(.project-list[data-reveal='klaar'] > li) {
+    transition:
+      opacity 0.8s var(--ease) calc(var(--reveal-i, 0) * 110ms),
+      translate 0.8s var(--ease) calc(var(--reveal-i, 0) * 110ms);
+  }
+
+  /* Links onder het raster ("Alle projecten", "Over ons"): als de navlinks in de header (step-0, medium,
+     onderstreept bij hover), in twee helften zoals de header (logo en rechterdeel elk flex 1 1 0 met gap m).
+     De tweede link begint zo waar "Projecten" in de nav begint. Onder 48rem (geen nav in de balk) onder elkaar. */
+  .project-grid__links {
+    display: grid;
+    gap: var(--space-2xs) var(--space-m);
+    font-size: var(--step-0);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.125;
+  }
+  @media (min-width: 48rem) {
+    .project-grid__links {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .project-grid__links a {
+    text-decoration: none;
+  }
+  .project-grid__links a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 0.07em;
+    text-underline-offset: 0.15em;
+  }
+  /* "Meer projecten" (Figma 447:2103): grijze pil over de volle breedte. */
   .project-grid__acties {
     display: grid;
     grid-auto-flow: column;
