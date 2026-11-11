@@ -167,8 +167,12 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
     z-index: 30;
     transition: translate 0.35s cubic-bezier(0.2, 0, 0, 1);
     padding-block: var(--space-m);
-    background: var(--color-bg);
-    color: var(--color-fg);
+    /* Transparant; logo, links en themaknop in wit met `exclusion`: wit keert de achtergrond om, dus zwart op
+       wit, wit op zwart en het negatief op beeld (licht en donker thema). De blend moet op de header zelf:
+       sticky + z-index maakt een eigen stacking context, op de kinderen zou hij alleen met de header mengen. */
+    background: transparent;
+    color: oklch(1 0 0);
+    mix-blend-mode: exclusion;
     font-size: var(--step-0);
     font-weight: 500;
     letter-spacing: -0.02em;
@@ -194,6 +198,10 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
     gap: 0.25rem;
     font-weight: 400;
     text-decoration: none;
+  }
+  /* Woordmerk (mono) volgt de tekstkleur van de header in plaats van --color-fg. */
+  .site-header :global(.wm) {
+    --g: currentColor;
   }
   .site-header__logo :global(.site-header__wordmark) {
     /* Kinetisch woordmerk, zwart-wit. Hoogte bepaalt de maat; breedte volgt de viewBox (70 × 10). */
@@ -264,6 +272,10 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
       position: fixed;
       inset: 0 0 auto;
       z-index: 50;
+      /* Overlay: gewone kleuren, anders keert de blend het hele menu om. */
+      background: var(--color-bg);
+      color: var(--color-fg);
+      mix-blend-mode: normal;
     }
     .site-header[data-menu='open'] nav {
       position: fixed;

@@ -52,17 +52,19 @@ const links = [...(block.linkNaarOverzicht ? [block.linkNaarOverzicht] : []), ..
     <section class="project-grid full">
       {has(block.kop) && <h2>{block.kop}</h2>}
       <ProjectList projects={projects} headingLevel={has(block.kop) ? 3 : 2} id={id} sized zichtbaar={stap} />
-      {(projects.length > stap || links.length > 0) && (
+      {projects.length > stap && (
         <p class="project-grid__acties">
-          {projects.length > stap && (
-            <button type="button" class="button" data-meer={id} data-stap={stap} aria-controls={id} hidden>
-              Meer projecten
-            </button>
-          )}
-          {links.map((l) => (
-            <a class="button" href={l.href}>{l.label}</a>
-          ))}
+          <button type="button" class="button" data-meer={id} data-stap={stap} aria-controls={id} hidden>
+            Meer projecten
+          </button>
         </p>
+      )}
+      {links.length > 0 && (
+        <ul role="list" class="project-grid__links">
+          {links.map((l) => (
+            <li><a href={l.href}>{l.label}</a></li>
+          ))}
+        </ul>
       )}
     </section>
   )
@@ -88,6 +90,30 @@ const links = [...(block.linkNaarOverzicht ? [block.linkNaarOverzicht] : []), ..
     });
   }
   document.addEventListener('astro:page-load', initMeer);
+
+  // Stagger-reveal: zodra de eerste kaart in beeld komt, komen alle zichtbare kaarten één voor één binnen
+  // (opacity en een korte verschuiving omhoog, 70 ms na elkaar, hooguit 9 stappen). De kaarten staan pas
+  // op 'wacht' als JS draait, dus zonder JS of bij prefers-reduced-motion is alles meteen zichtbaar.
+  function initReveal() {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.querySelectorAll<HTMLElement>('.project-grid .project-list').forEach((lijst) => {
+      const kaarten = [...lijst.children].filter((k): k is HTMLElement => k instanceof HTMLElement && !k.hidden);
+      if (!kaarten.length) return;
+      kaarten.forEach((k, i) => k.style.setProperty('--reveal-i', String(Math.min(i, 8))));
+      lijst.dataset.reveal = 'wacht';
+      const io = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry.isIntersecting) return;
+          lijst.dataset.reveal = 'klaar';
+          io.disconnect();
+        },
+        { rootMargin: '0px 0px -10% 0px' },
+      );
+      io.observe(kaarten[0]);
+      document.addEventListener('astro:before-swap', () => io.disconnect(), { once: true });
+    });
+  }
+  document.addEventListener('astro:page-load', initReveal);
 </script>
 
 <style>
@@ -97,7 +123,42 @@ const links = [...(block.linkNaarOverzicht ? [block.linkNaarOverzicht] : []), ..
     gap: var(--space-xl);
     padding-inline: var(--gutter);
   }
-  /* Knoppen onder het raster (Figma 447:2103): grijze pillen naast elkaar, even breed, zonder gap. */
+  /* Stagger-reveal (zie script): eerst onzichtbaar en 2rem lager, dan per kaart binnen. Met `translate`, zodat
+     transforms op de kaart zelf (hover) er niet mee botsen. */
+  .project-grid :global(.project-list[data-reveal] > li) {
+    transition:
+      opacity 0.6s var(--ease, ease) calc(var(--reveal-i, 0) * 70ms),
+      translate 0.6s cubic-bezier(0.2, 0, 0, 1) calc(var(--reveal-i, 0) * 70ms);
+  }
+  .project-grid :global(.project-list[data-reveal='wacht'] > li) {
+    opacity: 0;
+    translate: 0 2rem;
+  }
+
+  /* Links onder het raster ("Alle projecten", "Over ons"): grote tekstlinks in twee helften, zoals de header
+     (logo en rechterdeel elk flex 1 1 0 met gap m). De tweede link begint zo waar "Projecten" in de nav begint.
+     Onder 48rem (geen nav in de balk) onder elkaar. */
+  .project-grid__links {
+    display: grid;
+    gap: var(--space-s) var(--space-m);
+    font-size: var(--step-2);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.125;
+  }
+  @media (min-width: 48rem) {
+    .project-grid__links {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .project-grid__links a {
+    text-decoration-thickness: 0.06em;
+    text-underline-offset: 0.15em;
+  }
+  .project-grid__links a:hover {
+    text-decoration-thickness: 0.12em;
+  }
+  /* "Meer projecten" (Figma 447:2103): grijze pil over de volle breedte. */
   .project-grid__acties {
     display: grid;
     grid-auto-flow: column;
