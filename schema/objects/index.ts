@@ -1,6 +1,7 @@
 // Herbruikbare objecttypes. Veldnamen = src/lib/schema.ts.
 import { defineArrayMember, defineField, defineType } from 'sanity';
 import { RESULTAAT } from '../../src/lib/waarden';
+import { KleurInput } from '../components/KleurInput';
 import { opties } from '../helpers';
 
 /**
@@ -137,8 +138,9 @@ export const kleur = defineType({
     defineField({
       name: 'hex',
       title: 'Hex',
-      description: 'Bv. #1f4fd1',
+      description: 'Kies een kleur of typ een hex, bv. #1f4fd1',
       type: 'string',
+      components: { input: KleurInput },
       validation: (r) => r.regex(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i, { name: 'hex' }).warning('Gebruik een hexwaarde, bv. #1f4fd1'),
     }),
   ],

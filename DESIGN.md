@@ -64,7 +64,8 @@ Gebruik `--vorm-radius` en `--vorm-clip` op het vlak; geen eigen `border-radius`
 - Zes letters, elk 5 × 5 blokken (10 × 10 eenheden in SVG), **één blok tussenruimte**. Los woordmerk: viewBox `0 0 70 10`.
 - Tegelversie: tegels van 7 × 7 blokken (14 eenheden), letter met één blok marge. viewBox `0 0 84 14`.
 - Standen en de lus per letter staan in `src/lib/brand/woordmerk.json`; `wordmark.ts` leest dat in en `raster.ts` maakt er SVG-paden en de animatie van.
-- Bewerken kan in de editor op `/brand/editor`: punten slepen, hoeken schuin of rond, frames met ease en duur. Exporteren geeft een nieuwe `woordmerk.json`.
+- Bewerken kan in de editor op `/brand/editor`: punten slepen, hoeken schuin of rond, frames met ease en duur. Exporteren geeft een nieuwe `woordmerk.json`. Met de keuze Groot/Klein bewerk je beide varianten; onderaan staat het woordmerk op ware grootte.
+- **Kleine variant** (`maat="klein"`, per letter `klein` in de JSON): **alleen in de header (de nav)**, waar de details van de grote (één blok ≈ 3 px) wegvallen. Overal elders, zoals de footer over de volle breedte, staat de grote. Rustiger vormen en één duidelijke ingreep per letter. Speelt één keer, bij laden en bij hover of focus, en eindigt in de eerste stand; hooguit 4,5 s (`KLEIN_MAX`). De stilstand van frame 1 is de wachttijd, zo lopen de letters na elkaar.
 
 | Letter | Standen |
 |---|---|
@@ -96,7 +97,7 @@ Gebruik `--vorm-radius` en `--vorm-clip` op het vlak; geen eigen `border-radius`
 
 ### Formaten
 
-448, 280, 168, 112 en 84 px breed. **112 px en kleiner: altijd één kleur** (`mono`). 84 px is de kleinste maat. In de header: 112 px, één kleur.
+448, 280, 168, 112 en 84 px breed. **112 px en kleiner: altijd één kleur** (`mono`). De kleine variant (`maat="klein"`) alleen in de header. 84 px is de kleinste maat. In de header: 112 px, één kleur.
 
 ### Kleur
 
@@ -114,7 +115,7 @@ Gebruik `--vorm-radius` en `--vorm-clip` op het vlak; geen eigen `border-radius`
 
 - Logo: `role="img"` met `aria-label="LAGADO"`; decoratieve kopieën `aria-hidden`.
 - `prefers-reduced-motion`: het woordmerk staat stil in de eerste stand.
-- De animatie loopt langer dan 5 seconden en heeft daarom een pauzeknop nodig waar hij op de site komt (WCAG 2.2.2). Op `/brand`: `data-wm-pauze` op de wortel.
+- De grote animatie loopt langer dan 5 seconden en heeft daarom een pauzeknop nodig waar hij op de site komt (WCAG 2.2.2). Op `/brand`: `data-wm-pauze` op de wortel. De kleine variant (header) speelt één keer en korter dan 5 s: geen pauzeknop nodig.
 
 ## 5. Kleur
 

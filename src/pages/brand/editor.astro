@@ -26,7 +26,17 @@ export const prerender = true;
   <main id="inhoud" class="wrapper--full editor" tabindex="-1">
     <p id="melding" class="melding" role="status" aria-live="polite"></p>
 
-    <nav class="letters" aria-label="Letter kiezen" id="letters"></nav>
+    <div class="kiezer">
+      <nav class="letters" aria-label="Letter kiezen" id="letters"></nav>
+      <div class="maat" id="maat" role="group" aria-label="Variant">
+        <button type="button" class="knop" data-maat="groot" aria-pressed="true">Groot</button>
+        <button type="button" class="knop" data-maat="klein" aria-pressed="false">Klein</button>
+      </div>
+      <div class="maat" role="group" aria-label="Willekeurige beweging">
+        <button type="button" class="knop" id="willekeurig-letter" title="Nieuwe willekeurige frames voor deze letter">Willekeurig: letter</button>
+        <button type="button" class="knop" id="willekeurig-alles" title="Nieuwe willekeurige frames voor alle letters">Willekeurig: alles</button>
+      </div>
+    </div>
 
     <section class="doek-vak" aria-labelledby="doek-kop">
       <h2 id="doek-kop" class="visually-hidden">Tekenvlak</h2>
@@ -89,7 +99,7 @@ export const prerender = true;
           </label>
           <output id="tijd" class="tijd__waarde">0,00 s</output>
         </div>
-        <label class="breed velden">Begin in de lus (s) <input type="number" id="letter-begin" step="0.05" max="0" /></label>
+        <label class="breed velden alleen-groot">Begin in de lus (s) <input type="number" id="letter-begin" step="0.05" max="0" /></label>
       </section>
     </aside>
 
@@ -116,6 +126,16 @@ export const prerender = true;
     <section class="woord-vak" aria-labelledby="woord-kop">
       <h2 id="woord-kop" class="vak__kop">Woordmerk</h2>
       <svg id="woord" class="woord" viewBox="0 0 70 10" role="img" aria-label="LAGADO, voorbeeld van alle letters"></svg>
+      <h3 class="vak__kop ware-kop">Op ware grootte</h3>
+      <dl class="ware">
+        <div><dt>Klein · header (14 px)</dt><dd><svg data-ware="klein" viewBox="0 0 70 10" style="block-size: 14px" aria-hidden="true"></svg></dd></div>
+        <div><dt>Groot · footer (volle breedte)</dt><dd><svg data-ware="groot" viewBox="0 0 70 10" class="ware__vol" aria-hidden="true"></svg></dd></div>
+      </dl>
+      <p class="noot muted">
+        <strong>Klein</strong> staat alleen in de header (de nav): rustiger vormen, en hij speelt één keer (bij laden en bij
+        hover), niet in een lus. <strong>Groot</strong> staat overal elders, zoals in de footer over de volle breedte. Hier herhaalt hij, zodat je hem kunt beoordelen. De stilstand van
+        frame 1 is de wachttijd vóór de beweging; zo lopen de letters na elkaar.
+      </p>
       <p class="noot muted">
         Klaar? <strong>Exporteren</strong> geeft <code>woordmerk.json</code>: vervang daarmee <code>src/lib/brand/woordmerk.json</code>,
         of stuur het door. Je werk blijft tussendoor bewaard in deze browser.
@@ -130,6 +150,52 @@ export const prerender = true;
 </script>
 
 <style>
+  .kiezer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .maat {
+    display: flex;
+    gap: 0.25rem;
+  }
+  :global(:root[data-ed-klein]) .alleen-groot {
+    display: none;
+  }
+  .ware-kop {
+    margin-block-start: 1.5rem;
+  }
+  .ware {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0.75rem 0 0;
+  }
+  .ware > div {
+    display: grid;
+    grid-template-columns: minmax(10rem, max-content) 1fr;
+    gap: 1rem;
+    align-items: center;
+  }
+  .ware dt {
+    font-size: 0.8125rem;
+    color: var(--color-muted, currentColor);
+  }
+  .ware dd {
+    margin: 0;
+    min-inline-size: 0;
+  }
+  .ware .ware__vol {
+    inline-size: 100%;
+  }
+  .ware svg {
+    display: block;
+    inline-size: auto;
+    max-inline-size: 100%;
+    fill: currentColor;
+    overflow: visible;
+  }
   /* Accent voor punten en randen (blauw uit het palet), en een foutkleur; lichter in donker. */
   :global(:root) {
     --ed-accent: oklch(51.51% 0.2539 272.56);
@@ -191,7 +257,7 @@ export const prerender = true;
     .melding {
       grid-area: melding;
     }
-    .letters {
+    .kiezer {
       grid-area: letters;
     }
     .doek-vak {
