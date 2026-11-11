@@ -124,14 +124,12 @@ export const prerender = true;
       <svg id="woord" class="woord" viewBox="0 0 70 10" role="img" aria-label="LAGADO, voorbeeld van alle letters"></svg>
       <h3 class="vak__kop ware-kop">Op ware grootte</h3>
       <dl class="ware">
-        <div><dt>Groot · header (14 px)</dt><dd><svg data-ware="groot" viewBox="0 0 70 10" style="block-size: 14px" aria-hidden="true"></svg></dd></div>
         <div><dt>Klein · header (14 px)</dt><dd><svg data-ware="klein" viewBox="0 0 70 10" style="block-size: 14px" aria-hidden="true"></svg></dd></div>
-        <div><dt>Klein · 24 px</dt><dd><svg data-ware="klein" viewBox="0 0 70 10" style="block-size: 24px" aria-hidden="true"></svg></dd></div>
-        <div><dt>Groot · 48 px</dt><dd><svg data-ware="groot" viewBox="0 0 70 10" style="block-size: 48px" aria-hidden="true"></svg></dd></div>
+        <div><dt>Groot · footer (volle breedte)</dt><dd><svg data-ware="groot" viewBox="0 0 70 10" class="ware__vol" aria-hidden="true"></svg></dd></div>
       </dl>
       <p class="noot muted">
-        <strong>Klein</strong> is de variant voor de header en maten tot ongeveer 112 px breed: rustiger vormen, en hij speelt
-        één keer (bij laden en bij hover), niet in een lus. Hier herhaalt hij, zodat je hem kunt beoordelen. De stilstand van
+        <strong>Klein</strong> staat alleen in de header (de nav): rustiger vormen, en hij speelt één keer (bij laden en bij
+        hover), niet in een lus. <strong>Groot</strong> staat overal elders, zoals in de footer over de volle breedte. Hier herhaalt hij, zodat je hem kunt beoordelen. De stilstand van
         frame 1 is de wachttijd vóór de beweging; zo lopen de letters na elkaar.
       </p>
       <p class="noot muted">
@@ -182,10 +180,15 @@ export const prerender = true;
   }
   .ware dd {
     margin: 0;
+    min-inline-size: 0;
+  }
+  .ware .ware__vol {
+    inline-size: 100%;
   }
   .ware svg {
     display: block;
     inline-size: auto;
+    max-inline-size: 100%;
     fill: currentColor;
     overflow: visible;
   }
