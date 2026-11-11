@@ -8,6 +8,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 ## [Unreleased]
 
 ### Gewijzigd
+- Studio: kleurkiezer bij Accentkleur (project) en Hex (kleurpalet). De waarde blijft een hex-string; typen kan nog steeds, met een knop om het veld leeg te maken.
 - Letters, standen en frames van het woordmerk staan nu in `src/lib/brand/woordmerk.json` in plaats van in `wordmark.ts`.
 - Header en footer gebruiken het kinetische woordmerk (zwart-wit) in plaats van het oude logo. In de footer staat het over de volle breedte onderaan; het blok met logo en payoff is vervallen. `WordmarkDefs` staat één keer in `BaseLayout`.
 

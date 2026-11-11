@@ -15,6 +15,7 @@ import {
   VORM,
 } from '../../src/lib/waarden';
 import { blocksField } from '../blocks';
+import { KleurInput } from '../components/KleurInput';
 import { opties } from '../helpers';
 
 const meerkeuze = (name: string, title: string, waarden: readonly string[], description?: string) =>
@@ -117,9 +118,10 @@ export const project = defineType({
     defineField({
       name: 'accentkleur',
       title: 'Accentkleur',
-      description: 'Hex, bv. #1f4fd1. Pagina-accent en kaartkleur; leeg = de bepalende kleur van het hero-beeld.',
+      description: 'Kies een kleur of typ een hex, bv. #1f4fd1. Pagina-accent en kaartkleur; leeg = de bepalende kleur van het hero-beeld.',
       type: 'string',
       group: 'weergave',
+      components: { input: KleurInput },
       validation: (r) => r.regex(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i, { name: 'hex' }).warning('Gebruik een hexwaarde'),
     }),
     defineField({ name: 'kleurpalet', title: 'Kleurpalet', description: 'Voor het kleurpalet-blok.', type: 'array', of: [{ type: 'kleur' }], group: 'weergave' }),
