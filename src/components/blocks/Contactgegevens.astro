@@ -20,7 +20,7 @@ const bedrijf = [
 const H = has(block.kop) ? 'h3' : 'h2';
 ---
 
-<section class="contactgegevens popout" aria-label={has(block.kop) ? undefined : 'Contactgegevens'}>
+<section class="contactgegevens feature" aria-label={has(block.kop) ? undefined : 'Contactgegevens'}>
   {has(block.kop) && <h2 class="contactgegevens__kop">{block.kop}</h2>}
   <div class="contactgegevens__grid">
     <section>
