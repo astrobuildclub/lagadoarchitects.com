@@ -4,7 +4,7 @@
  * dan opnieuw tekenen. De vormen en de animatie komen uit raster.ts, dus wat je hier ziet is wat de site toont.
  */
 import { EASES, animatie, paden, type Ease, type Stap, type Vorm } from '../lib/brand/raster';
-import { DATA, vulAan, type WoordmerkData } from '../lib/brand/wordmark';
+import { DATA, KLEIN_MAX, maakKlein, vulAan, type WoordmerkData } from '../lib/brand/wordmark';
 
 type Hoek = '' | 's' | 'r';
 interface Punt {
@@ -18,14 +18,19 @@ interface StandE {
   label: string;
   vorm: Punt[][];
 }
-interface LetterE {
+/** Een set standen met frames: de grote variant (de letter zelf) of de kleine (letter.klein). */
+interface Deel {
+  standen: StandE[];
+  stappen: Stap[];
+}
+interface LetterE extends Deel {
   id: string;
   teken: string;
   begin: number;
   hover: [number, number];
-  standen: StandE[];
-  stappen: Stap[];
+  klein: Deel;
 }
+type Maat = 'groot' | 'klein';
 interface Staat {
   duur: number;
   letters: LetterE[];
@@ -47,19 +52,34 @@ const getal = (n: number) => String(+n.toFixed(3));
 const schrijfPunt = (p: Punt) => `${getal(p.x)},${getal(p.y)}${p.t}${p.t && p.m !== 1 ? getal(p.m).replace(/^0\./, '.') : ''}`;
 const vormVan = (s: StandE): Vorm => s.vorm.map((c) => c.map(schrijfPunt).join(' '));
 
+const leesStand = (s: { id: string; label: string; vorm: Vorm }): StandE => ({
+  id: s.id,
+  label: s.label,
+  vorm: s.vorm.map((c) => c.trim().split(/\s+/).map(leesPunt)),
+});
+
 function vanData(d: WoordmerkData): Staat {
+  const ids = new Set(d.letters.flatMap((l) => [...l.standen, ...(l.klein?.standen ?? [])].map((s) => s.id)));
   return {
     duur: d.duur,
-    letters: d.letters.map((l) => ({
-      id: l.id,
-      teken: l.teken,
-      begin: l.begin,
-      hover: [l.hover[0], l.hover[1]],
-      standen: l.standen.map((s) => ({ id: s.id, label: s.label, vorm: s.vorm.map((c) => c.trim().split(/\s+/).map(leesPunt)) })),
-      stappen: l.stappen.map((s) => ({ ...s })),
-    })),
+    letters: d.letters.map((l) => {
+      const standen = l.standen.map(leesStand);
+      let klein: Deel;
+      if (l.klein) klein = { standen: l.klein.standen.map(leesStand), stappen: l.klein.stappen.map((s) => ({ ...s })) };
+      else {
+        // Nog geen kleine variant: begin met een kopie van de eerste grote stand, stil.
+        let id = `${l.id.replace(/^g/, '')}k`;
+        while (ids.has(id)) id += 'k';
+        ids.add(id);
+        const bron = standen[l.stappen[0].stand];
+        klein = { standen: [{ id, label: `${bron.label} (klein)`, vorm: structuredClone(bron.vorm) }], stappen: [{ stand: 0, morph: 0.35, ease: 'snap', vast: 0.2 }] };
+      }
+      return { id: l.id, teken: l.teken, begin: l.begin, hover: [l.hover[0], l.hover[1]], standen, stappen: l.stappen.map((s) => ({ ...s })), klein };
+    }),
   };
 }
+
+const schrijfStappen = (st: Stap[]) => st.map((s) => ({ stand: s.stand, morph: s.morph, ease: s.ease, vast: s.vast }));
 
 function naarData(s: Staat): WoordmerkData {
   return {
@@ -70,7 +90,8 @@ function naarData(s: Staat): WoordmerkData {
       begin: l.begin,
       hover: l.hover,
       standen: l.standen.map((st) => ({ id: st.id, label: st.label, vorm: vormVan(st) })),
-      stappen: l.stappen.map((st) => ({ stand: st.stand, morph: st.morph, ease: st.ease, vast: st.vast })),
+      stappen: schrijfStappen(l.stappen),
+      klein: { standen: l.klein.standen.map((st) => ({ id: st.id, label: st.label, vorm: vormVan(st) })), stappen: schrijfStappen(l.klein.stappen) },
     })),
   };
 }
@@ -84,9 +105,17 @@ function valideer(d: WoordmerkData) {
       l.id,
     );
     if (!l.stappen.length) throw new Error(`${l.id}: geen frames`);
-    for (const s of l.stappen) {
-      if (!l.standen[s.stand]) throw new Error(`${l.id}: frame verwijst naar stand ${s.stand + 1}, die bestaat niet`);
-      if (!EASE_NAMEN.includes(s.ease)) throw new Error(`${l.id}: onbekende ease "${s.ease}"`);
+    for (const [naam, deel] of [[l.id, l], [`${l.id} klein`, l.klein ?? { standen: l.standen, stappen: l.stappen }]] as const)
+      for (const s of deel.stappen) {
+        if (!deel.standen[s.stand]) throw new Error(`${naam}: frame verwijst naar stand ${s.stand + 1}, die bestaat niet`);
+        if (!EASE_NAMEN.includes(s.ease)) throw new Error(`${naam}: onbekende ease "${s.ease}"`);
+      }
+    if (l.klein) {
+      if (!l.klein.stappen.length) throw new Error(`${l.id} klein: geen frames`);
+      paden(
+        l.klein.standen.map((s) => s.vorm),
+        `${l.id} klein`,
+      );
     }
   }
 }
@@ -96,16 +125,19 @@ function valideer(d: WoordmerkData) {
 let staat: Staat;
 const terug: string[] = [];
 const vooruit: string[] = [];
-const sel = { letter: 0, frame: 0, punt: null as null | [number, number] };
+const sel = { letter: 0, maat: 'groot' as Maat, frame: 0, punt: null as null | [number, number] };
 
 const momentopname = () => JSON.stringify(naarData(staat));
 const letter = () => staat.letters[sel.letter];
-const stap = () => letter().stappen[sel.frame];
-const stand = () => letter().standen[stap().stand];
+const klein = () => sel.maat === 'klein';
+/** De variant die je bewerkt: groot (de letter zelf) of klein. */
+const deel = (): Deel => (klein() ? letter().klein : letter());
+const stap = () => deel().stappen[sel.frame];
+const stand = () => deel().standen[stap().stand];
 
 function klem() {
   sel.letter = Math.min(Math.max(0, sel.letter), staat.letters.length - 1);
-  sel.frame = Math.min(Math.max(0, sel.frame), letter().stappen.length - 1);
+  sel.frame = Math.min(Math.max(0, sel.frame), deel().stappen.length - 1);
   if (sel.punt) {
     const [k, i] = sel.punt;
     if (!stand().vorm[k]?.[i]) sel.punt = null;
@@ -180,6 +212,8 @@ function render() {
 /* Letters */
 
 function renderLetters() {
+  document.querySelectorAll<HTMLButtonElement>('[data-maat]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.maat === sel.maat)));
+  document.documentElement.toggleAttribute('data-ed-klein', klein());
   $('letters').innerHTML = staat.letters
     .map(
       (l, i) =>
@@ -195,12 +229,21 @@ $('letters').addEventListener('click', (e) => {
   sel.punt = null;
   render();
 });
+$('maat').addEventListener('click', (e) => {
+  const b = (e.target as HTMLElement).closest<HTMLElement>('[data-maat]');
+  if (!b || b.dataset.maat === sel.maat) return;
+  sel.maat = b.dataset.maat as Maat;
+  sel.frame = 0;
+  sel.punt = null;
+  render();
+  if (voorbeeld.animationsPaused()) zetTijd(0);
+});
 
 /* Tekenvlak */
 
 function renderDoek() {
-  const l = letter();
-  const d = paden(l.standen.map(vormVan), l.id);
+  const l = deel();
+  const d = paden(l.standen.map(vormVan), letter().id);
   const vorigeStand = l.stappen[(sel.frame - 1 + l.stappen.length) % l.stappen.length].stand;
   const delen: string[] = [];
 
@@ -365,14 +408,14 @@ $<HTMLSelectElement>('p-maat').addEventListener('change', (e) => zetPunt((p) => 
 /* Paneel: stand en begin */
 
 function renderStand() {
-  const l = letter();
+  const l = deel();
   $('stand-keuze').innerHTML = l.standen
     .map((s, n) => `<option value="${n}"${n === stap().stand ? ' selected' : ''}>${esc(s.id)} · ${esc(s.label)}</option>`)
     .join('');
   const label = $<HTMLInputElement>('stand-label');
   if (document.activeElement !== label) label.value = stand().label;
   const begin = $<HTMLInputElement>('letter-begin');
-  if (document.activeElement !== begin) begin.value = getal(l.begin);
+  if (document.activeElement !== begin) begin.value = getal(letter().begin);
 }
 $('stand-keuze').addEventListener('change', (e) => wijzig(() => (stap().stand = +(e.target as HTMLSelectElement).value)));
 $('stand-label').addEventListener('change', (e) => wijzig(() => (stand().label = (e.target as HTMLInputElement).value.trim() || stand().id)));
@@ -381,14 +424,14 @@ $('letter-begin').addEventListener('change', (e) => wijzig(() => (letter().begin
 /* Frames */
 
 function renderStrip() {
-  const l = letter();
-  const d = paden(l.standen.map(vormVan), l.id);
+  const l = deel();
+  const d = paden(l.standen.map(vormVan), letter().id);
   $('strip').innerHTML = l.stappen
     .map((s, j) => {
       const easeOpties = EASE_NAMEN.map((n) => `<option${n === s.ease ? ' selected' : ''}>${n}</option>`).join('');
       return `<li class="frame">
         <div class="overgang">
-          <span class="overgang__label">${j === 0 ? 'Terug naar begin' : 'Overgang'}</span>
+          <span class="overgang__label">${j === 0 ? (klein() ? 'Terug aan het eind' : 'Terug naar begin') : 'Overgang'}</span>
           <select data-j="${j}" data-veld="ease" data-focus="f-${j}-ease" aria-label="Ease naar frame ${j + 1}">${easeOpties}</select>
           <input type="number" min="0.05" step="0.05" value="${getal(s.morph)}" data-j="${j}" data-veld="morph" data-focus="f-${j}-morph" aria-label="Duur van de morph naar frame ${j + 1}, in seconden" />
         </div>
@@ -396,17 +439,24 @@ function renderStrip() {
           <svg viewBox="-1 -1 12 12" aria-hidden="true"><path d="${d[s.stand]}" fill-rule="evenodd"/></svg>
           <span>${j + 1} · ${esc(l.standen[s.stand].id)}</span>
         </button>
-        <label class="stil">Stil <input type="number" min="0" step="0.05" value="${getal(s.vast)}" data-j="${j}" data-veld="vast" data-focus="f-${j}-vast" aria-label="Stilstand van frame ${j + 1}, in seconden" /></label>
+        <label class="stil">${j === 0 && klein() ? 'Wacht' : 'Stil'} <input type="number" min="0" step="0.05" value="${getal(s.vast)}" data-j="${j}" data-veld="vast" data-focus="f-${j}-vast" aria-label="Stilstand van frame ${j + 1}, in seconden" /></label>
       </li>`;
     })
     .join('');
 
   const totaal = l.stappen.reduce((t, s) => t + s.morph + s.vast, 0);
   const el = $('totaal');
-  const over = totaal > staat.duur + 1e-9;
-  el.textContent = over
-    ? `Lus duurt ${komma(totaal)} s, langer dan ${komma(staat.duur, 0)} s: maak morphs of stilstanden korter.`
-    : `Lus: ${komma(totaal)} s van ${komma(staat.duur, 0)} s, de overige ${komma(staat.duur - totaal)} s staat het eerste frame stil.`;
+  const max = klein() ? KLEIN_MAX : staat.duur;
+  const over = totaal > max + 1e-9;
+  el.textContent = klein()
+    ? l.stappen.length < 2
+      ? 'Eén frame: de kleine letter staat stil. Voeg een frame toe om hem te laten bewegen.'
+      : over
+        ? `Duurt ${komma(totaal)} s, langer dan ${komma(max, 1)} s: maak morphs of stilstanden korter.`
+        : `Speelt één keer, ${komma(totaal)} s (hooguit ${komma(max, 1)} s), en eindigt in frame 1.`
+    : over
+      ? `Lus duurt ${komma(totaal)} s, langer dan ${komma(staat.duur, 0)} s: maak morphs of stilstanden korter.`
+      : `Lus: ${komma(totaal)} s van ${komma(staat.duur, 0)} s, de overige ${komma(staat.duur - totaal)} s staat het eerste frame stil.`;
   el.toggleAttribute('data-fout', over);
 
   $<HTMLButtonElement>('frame-weg').disabled = l.stappen.length < 2;
@@ -427,7 +477,7 @@ $('strip').addEventListener('change', (e) => {
   const veld = v.dataset.veld as keyof Stap;
   if (!veld) return;
   wijzig(() => {
-    const s = letter().stappen[j];
+    const s = deel().stappen[j];
     if (veld === 'ease') s.ease = v.value as Ease;
     else if (veld === 'morph') s.morph = Math.max(0.05, +(+v.value).toFixed(3) || 0.05);
     else if (veld === 'vast') s.vast = Math.max(0, +(+v.value).toFixed(3) || 0);
@@ -435,17 +485,17 @@ $('strip').addEventListener('change', (e) => {
 });
 
 /** Unieke id voor een nieuwe stand: letter-id zonder de g, plus een nummer (ids gelden voor de hele pagina). */
-function nieuweId() {
-  const alle = new Set(staat.letters.flatMap((l) => l.standen.map((s) => s.id)));
-  const basis = letter().id.replace(/^g/, '');
-  let n = letter().standen.length + 1;
+function nieuweId(l = letter(), m = sel.maat) {
+  const alle = new Set(staat.letters.flatMap((x) => [...x.standen, ...x.klein.standen].map((s) => s.id)));
+  const basis = `${l.id.replace(/^g/, '')}${m === 'klein' ? 'k' : ''}`;
+  let n = (m === 'klein' ? l.klein : l).standen.length + 1;
   while (alle.has(`${basis}-${n}`)) n++;
   return `${basis}-${n}`;
 }
 
 $('frame-nieuw').addEventListener('click', () =>
   wijzig(() => {
-    const l = letter();
+    const l = deel();
     const kopie: StandE = { id: nieuweId(), label: `${stand().label} (kopie)`, vorm: structuredClone(stand().vorm) };
     l.standen.push(kopie);
     l.stappen.splice(sel.frame + 1, 0, { ...stap(), stand: l.standen.length - 1, vast: 0.6 });
@@ -455,13 +505,13 @@ $('frame-nieuw').addEventListener('click', () =>
 );
 $('frame-herhaal').addEventListener('click', () =>
   wijzig(() => {
-    letter().stappen.splice(sel.frame + 1, 0, { ...stap(), vast: 0.6 });
+    deel().stappen.splice(sel.frame + 1, 0, { ...stap(), vast: 0.6 });
     sel.frame++;
   }),
 );
 function verschuif(r: -1 | 1) {
   wijzig(() => {
-    const st = letter().stappen;
+    const st = deel().stappen;
     const j = sel.frame;
     [st[j], st[j + r]] = [st[j + r], st[j]];
     sel.frame = j + r;
@@ -471,53 +521,151 @@ $('frame-links').addEventListener('click', () => verschuif(-1));
 $('frame-rechts').addEventListener('click', () => verschuif(1));
 $('frame-weg').addEventListener('click', () =>
   wijzig(() => {
-    letter().stappen.splice(sel.frame, 1);
+    deel().stappen.splice(sel.frame, 1);
     sel.frame = Math.max(0, sel.frame - 1);
   }),
 );
-$('opruimen').addEventListener('click', () => {
-  const l = letter();
-  const gebruikt = new Set([...l.stappen.map((s) => s.stand), ...l.hover]);
-  const weg = l.standen.filter((_, n) => !gebruikt.has(n)).map((s) => s.id);
-  if (!weg.length) return meld('Alle standen worden gebruikt.');
-  wijzig(() => {
-    const nieuw = new Map<number, number>();
-    l.standen = l.standen.filter((_, n) => {
-      if (!gebruikt.has(n)) return false;
-      nieuw.set(n, nieuw.size);
-      return true;
-    });
-    l.stappen.forEach((s) => (s.stand = nieuw.get(s.stand)!));
-    l.hover = [nieuw.get(l.hover[0])!, nieuw.get(l.hover[1])!];
-    meld(`Verwijderd: ${weg.join(', ')}.`);
+/** Standen die in geen frame (en geen hover) staan weghalen; `alleen` beperkt dat tot standen die eraan voldoen. */
+function ruimOp(lt: LetterE, m: Maat, alleen: (s: StandE) => boolean = () => true) {
+  const l = m === 'klein' ? lt.klein : lt;
+  const hover = m === 'klein' ? [] : lt.hover;
+  const gebruikt = new Set([...l.stappen.map((s) => s.stand), ...hover]);
+  const blijft = (s: StandE, n: number) => gebruikt.has(n) || !alleen(s);
+  const weg = l.standen.filter((s, n) => !blijft(s, n)).map((s) => s.id);
+  if (!weg.length) return weg;
+  const nieuw = new Map<number, number>();
+  l.standen = l.standen.filter((s, n) => {
+    if (!blijft(s, n)) return false;
+    nieuw.set(n, nieuw.size);
+    return true;
   });
+  l.stappen.forEach((s) => (s.stand = nieuw.get(s.stand)!));
+  if (m === 'groot') lt.hover = [nieuw.get(hover[0])!, nieuw.get(hover[1])!];
+  return weg;
+}
+
+$('opruimen').addEventListener('click', () => {
+  const l = deel();
+  const hover = klein() ? [] : letter().hover;
+  const gebruikt = new Set([...l.stappen.map((s) => s.stand), ...hover]);
+  if (l.standen.every((_, n) => gebruikt.has(n))) return meld('Alle standen worden gebruikt.');
+  wijzig(() => meld(`Verwijderd: ${ruimOp(letter(), sel.maat).join(', ')}.`));
 });
+
+/* ───────────── Willekeurig ───────────── */
+
+const kies = <T,>(a: readonly T[]) => a[Math.floor(Math.random() * a.length)];
+/** Willekeurig getal tussen a en b, afgerond op stapjes van 0,05. */
+const tussenIn = (a: number, b: number) => +(a + Math.round((Math.random() * (b - a)) / 0.05) * 0.05).toFixed(2);
+const WILLEKEURIG = '· willekeurig';
+
+/**
+ * Een variatie op een stand, met dezelfde punten (anders kan hij niet morphen): een paar hoeken schuin of rond,
+ * en soms schuift een gat een blok. Kan een rare vorm geven; ongedaan maken kan altijd.
+ */
+function variatie(bron: StandE, id: string): StandE {
+  const vorm = structuredClone(bron.vorm);
+  vorm.forEach((c, k) => {
+    c.forEach((p) => {
+      if (Math.random() < 0.3) {
+        p.t = kies(['', 's', 'r'] as const);
+        p.m = kies([0.5, 1, 1, 1.5]);
+      }
+    });
+    if (k > 0 && Math.random() < 0.6) {
+      const [dx, dy] = kies([[0, -1], [0, 1], [-1, 0], [1, 0], [0, 0]] as const);
+      if (c.every((p) => p.x + dx >= 1 && p.x + dx <= 4 && p.y + dy >= 1 && p.y + dy <= 4))
+        c.forEach((p) => {
+          p.x += dx;
+          p.y += dy;
+        });
+    }
+  });
+  const label = `${bron.label.replace(` ${WILLEKEURIG}`, '')} ${WILLEKEURIG}`;
+  return { id, label, vorm };
+}
+
+/**
+ * Nieuwe willekeurige beweging voor één letter: soms een nieuwe stand (variatie op een bestaande), dan een
+ * reeks frames langs de standen met willekeurige eases, morphs en stilstanden. Frame 1 blijft dezelfde stand.
+ * Groot past in de lus, klein blijft onder KLEIN_MAX en houdt zijn wachttijd (de stilstand van frame 1).
+ */
+function willekeurig(lt: LetterE, m: Maat) {
+  const d = m === 'klein' ? lt.klein : lt;
+  ruimOp(lt, m, (s) => s.label.endsWith(WILLEKEURIG));
+  if (d.standen.length < 2 || Math.random() < 0.6) d.standen.push(variatie(kies(d.standen), nieuweId(lt, m)));
+
+  const begin = d.stappen[0];
+  const aantal = m === 'klein' ? 2 + Math.floor(Math.random() * 2) : 3 + Math.floor(Math.random() * 4);
+  const stappen: Stap[] = [{ ...begin, morph: tussenIn(0.25, 0.45), ease: kies(EASE_NAMEN), vast: m === 'klein' ? begin.vast : 0.5 }];
+  let vorige = begin.stand;
+  for (let j = 1; j < aantal; j++) {
+    const keuzes = d.standen.map((_, n) => n).filter((n) => n !== vorige && (j < aantal - 1 || n !== begin.stand));
+    const stand = keuzes.length ? kies(keuzes) : vorige;
+    stappen.push({ stand, morph: tussenIn(0.2, 0.45), ease: kies(EASE_NAMEN), vast: m === 'klein' ? tussenIn(0.1, 0.6) : tussenIn(0.05, 1.2) });
+    vorige = stand;
+  }
+
+  // Inkorten tot het past: alleen de stilstanden na frame 1.
+  const max = m === 'klein' ? KLEIN_MAX : staat.duur;
+  const totaal = duurVan(stappen);
+  const rest = stappen.slice(1).reduce((t, s) => t + s.vast, 0);
+  if (totaal > max && rest > 0) {
+    const f = Math.max(0, (rest - (totaal - max) - 0.05) / rest);
+    stappen.slice(1).forEach((s) => (s.vast = Math.floor(s.vast * f * 100) / 100));
+  }
+  d.stappen = stappen;
+  ruimOp(lt, m, (s) => s.label.endsWith(WILLEKEURIG));
+}
+
+function willekeurigeBeweging(alle: boolean) {
+  wijzig(() => {
+    (alle ? staat.letters : [letter()]).forEach((l) => willekeurig(l, sel.maat));
+    sel.frame = 0;
+    sel.punt = null;
+  });
+  const wat = alle ? 'alle letters' : letter().teken;
+  meld(`Willekeurige beweging voor ${wat} (${sel.maat}). Nog eens klikken voor een nieuwe; ⌘Z maakt hem ongedaan.`);
+  if (voorbeeld.animationsPaused()) zetTijd(0);
+}
+$('willekeurig-letter').addEventListener('click', () => willekeurigeBeweging(false));
+$('willekeurig-alles').addEventListener('click', () => willekeurigeBeweging(true));
 
 /* ───────────── Voorbeeld ───────────── */
 
 const NS = 'http://www.w3.org/2000/svg';
 
-function animatieVan(l: LetterE) {
-  const vormen = l.standen.map(vormVan);
-  const stappen = vulAan(l.stappen, staat.duur, l.id);
-  return { stappen, ...animatie(vormen, stappen, l.id), start: paden(vormen, l.id)[stappen[0].stand] };
-}
+const duurVan = (st: Stap[]) => st.reduce((t, s) => t + s.morph + s.vast, 0);
+/**
+ * Lengte van de lus in het voorbeeld. Groot: de lus van de site. Klein speelt op de site één keer; hier herhaalt
+ * hij, na de langste kleine letter plus een seconde stilte, zodat alle letters samen opnieuw beginnen.
+ */
+const lusduur = (m: Maat) => (m === 'groot' ? staat.duur : Math.max(...staat.letters.map((l) => duurVan(l.klein.stappen))) + 1);
 
-function glyph(l: LetterE, begin: number, x = 0) {
-  const a = animatieVan(l);
+function glyph(l: LetterE, m: Maat, x = 0) {
+  const d = m === 'groot' ? l : l.klein;
+  const vormen = d.standen.map(vormVan);
+  const naam = m === 'groot' ? l.id : `${l.id} klein`;
   const pad = document.createElementNS(NS, 'path');
-  pad.setAttribute('d', a.start);
+  pad.setAttribute('d', paden(vormen, naam)[d.stappen[0].stand]);
   pad.setAttribute('fill-rule', 'evenodd');
   if (x) pad.setAttribute('transform', `translate(${x} 0)`);
+  if (d.stappen.length < 2) return pad;
+  const stappen = m === 'groot' ? vulAan(d.stappen, staat.duur, naam) : d.stappen;
+  const a = animatie(vormen, stappen, naam);
+  const lus = lusduur(m);
+  // Klein: tijden schalen naar de lus en de rest stil laten staan in de eindstand.
+  const keyTimes = m === 'groot' ? a.keyTimes : `${a.keyTimes.split(';').map((k) => +((+k * a.duur) / lus).toFixed(5)).join(';')};1`;
+  const values = m === 'groot' ? a.values : `${a.values};${a.values.slice(a.values.lastIndexOf(';') + 1)}`;
   const anim = document.createElementNS(NS, 'animate');
   Object.entries({
     attributeName: 'd',
-    dur: `${staat.duur}s`,
-    begin: `${begin}s`,
+    dur: `${lus}s`,
+    begin: `${m === 'groot' ? l.begin : 0}s`,
     repeatCount: 'indefinite',
     calcMode: 'linear',
-    keyTimes: a.keyTimes,
-    values: a.values,
+    keyTimes,
+    values,
   }).forEach(([k, v]) => anim.setAttribute(k, v));
   pad.append(anim);
   return pad;
@@ -525,9 +673,14 @@ function glyph(l: LetterE, begin: number, x = 0) {
 
 function renderVoorbeeld() {
   try {
-    voorbeeld.replaceChildren(glyph(letter(), 0));
-    woord.replaceChildren(...staat.letters.map((l, i) => glyph(l, l.begin, i * 12)));
-    scrub.max = String(staat.duur);
+    if (klein()) staat.letters.forEach((l) => maakKlein(naarData({ duur: staat.duur, letters: [l] }).letters[0]));
+    voorbeeld.replaceChildren(glyph(letter(), sel.maat));
+    woord.replaceChildren(...staat.letters.map((l, i) => glyph(l, sel.maat, i * 12)));
+    document.querySelectorAll<SVGSVGElement>('[data-ware]').forEach((svg) => {
+      const m = svg.dataset.ware as Maat;
+      svg.replaceChildren(...staat.letters.map((l, i) => glyph(l, m, i * 12)));
+    });
+    scrub.max = String(lusduur(sel.maat));
     if (melding.hasAttribute('data-fout')) meld('');
   } catch (e) {
     meld((e as Error).message, true);
@@ -536,9 +689,9 @@ function renderVoorbeeld() {
 
 /** Moment in de lus waarop frame j helemaal bereikt is. */
 function frameTijd(j: number) {
-  const l = letter().stappen;
-  const totaal = l.reduce((t, s) => t + s.morph + s.vast, 0);
-  const st = l.map((s, n) => (n === 0 ? { ...s, vast: s.vast + Math.max(0, staat.duur - totaal) } : s));
+  const l = deel().stappen;
+  const totaal = duurVan(l);
+  const st = klein() ? l : l.map((s, n) => (n === 0 ? { ...s, vast: s.vast + Math.max(0, staat.duur - totaal) } : s));
   let t = st[0].vast;
   for (let n = 1; n <= j; n++) t += st[n].morph + (n < j ? st[n].vast : 0);
   return j === 0 ? 0 : t;
@@ -557,11 +710,11 @@ speel.addEventListener('click', () => {
   if (voorbeeld.animationsPaused()) {
     voorbeeld.unpauseAnimations();
     speel.textContent = 'Pauzeren';
-  } else zetTijd(voorbeeld.getCurrentTime() % staat.duur);
+  } else zetTijd(voorbeeld.getCurrentTime() % lusduur(sel.maat));
 });
 function lus() {
   if (!voorbeeld.animationsPaused()) {
-    const t = voorbeeld.getCurrentTime() % staat.duur;
+    const t = voorbeeld.getCurrentTime() % lusduur(sel.maat);
     scrub.value = String(t);
     tijd.value = `${komma(t)} s`;
   }
@@ -575,6 +728,7 @@ const json = () => `${JSON.stringify(naarData(staat), null, 2)}\n`;
 function klaarVoorExport() {
   try {
     staat.letters.forEach((l) => vulAan(l.stappen, staat.duur, l.id));
+    naarData(staat).letters.forEach((l) => maakKlein(l));
     return true;
   } catch (e) {
     meld(`Niet geëxporteerd: ${(e as Error).message}.`, true);
@@ -660,4 +814,5 @@ lus();
 if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
   zetTijd(0);
   woord.pauseAnimations();
+  document.querySelectorAll<SVGSVGElement>('[data-ware]').forEach((svg) => svg.pauseAnimations());
 }

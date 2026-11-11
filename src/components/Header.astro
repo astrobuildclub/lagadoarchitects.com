@@ -3,6 +3,7 @@
 // brede kolommen en de themaknop ernaast. Mobiel (Figma 462:9091, 462:9522): "menu" en de themaknop;
 // "menu" opent een overlay over het hele scherm met de links onder elkaar en onderin adres en
 // bedrijfsgegevens, en wordt dan "sluit". Zonder JS staan de links gewoon in de balk.
+// De balk plakt bovenaan: naar beneden scrollen schuift hem weg, naar boven scrollen haalt hem terug.
 import type { Contact, Settings } from '../lib/schema';
 import Wordmark from './brand/Wordmark.astro';
 import ThemeToggle from './ThemeToggle.astro';
@@ -21,7 +22,7 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
 <header class="site-header">
   <div class="wrapper wrapper--full site-header__inner">
     <a class="site-header__logo" href="/">
-      <Wordmark mono decoratief class="site-header__wordmark" />
+      <Wordmark mono maat="klein" decoratief class="site-header__wordmark" />
       <span class="site-header__toevoeging" aria-hidden="true">architects</span>
       <span class="visually-hidden">{settings.siteNaam}</span>
     </a>
@@ -104,6 +105,55 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
   }
   document.addEventListener('astro:page-load', initMenu);
   document.addEventListener('astro:before-swap', () => teardown?.());
+
+  // Scroll-reveal: naar beneden scrollen zet data-scroll="weg" (balk schuift omhoog weg), naar boven
+  // scrollen haalt hem terug. Bovenaan de pagina, met het menu open of met de focus in de balk
+  // (toetsenbord) blijft hij altijd staan. Scroll-events komen hooguit één keer per frame, dus geen rAF nodig.
+  let stopReveal: (() => void) | undefined;
+  // Drempels per richting, gemeten vanaf het punt waar de balk voor het laatst reageerde: weg na een
+  // korte slag omlaag, terug pas na een duidelijke slag omhoog. Een paar pixels heen en weer doet niets.
+  const WEG = 10;
+  const TERUG = 32;
+
+  function initReveal() {
+    stopReveal?.();
+    const header = document.querySelector<HTMLElement>('.site-header');
+    if (!header) return;
+    const ac = new AbortController();
+    let anker = scrollY;
+
+    const toon = () => delete header.dataset.scroll;
+    const verwerk = () => {
+      const y = Math.max(0, scrollY);
+      const vast = header.dataset.menu === 'open' || header.contains(document.activeElement);
+      if (y <= header.offsetHeight || vast) {
+        toon();
+        anker = y;
+        return;
+      }
+      const delta = y - anker;
+      if (delta > WEG) {
+        header.dataset.scroll = 'weg';
+        anker = y;
+      } else if (delta < -TERUG) {
+        toon();
+        anker = y;
+      } else if (header.dataset.scroll === 'weg' ? delta > 0 : delta < 0) {
+        anker = y; // verder in dezelfde richting: anker schuift mee
+      }
+    };
+
+    toon();
+    addEventListener('scroll', verwerk, { passive: true, signal: ac.signal });
+    header.addEventListener('focusin', toon, { signal: ac.signal });
+
+    stopReveal = () => {
+      ac.abort();
+      stopReveal = undefined;
+    };
+  }
+  document.addEventListener('astro:page-load', initReveal);
+  document.addEventListener('astro:before-swap', () => stopReveal?.());
 </script>
 
 <style>
@@ -111,6 +161,11 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
   .site-header {
     /* Hoogte van de balk op mobiel: padding s + regel; de overlay begint eronder. */
     --header-hoogte: calc(2 * var(--space-s) + 1.25rem);
+    /* Plakt bovenaan. Wegschuiven met `translate`, niet met `transform`: die zet de paginatransitie (GSAP). */
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 30;
+    transition: translate 0.35s cubic-bezier(0.2, 0, 0, 1);
     padding-block: var(--space-m);
     background: var(--color-bg);
     color: var(--color-fg);
@@ -118,6 +173,14 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
     font-weight: 500;
     letter-spacing: -0.02em;
     line-height: 1.125;
+  }
+  .site-header[data-scroll='weg'] {
+    translate: 0 -100%;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .site-header {
+      transition: none;
+    }
   }
   .site-header__inner {
     display: flex;

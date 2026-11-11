@@ -144,8 +144,14 @@ export const colors = defineType({
   title: 'Kleurpalet',
   type: 'object',
   description: 'Leeg = het kleurpalet van het project.',
-  fields: [defineField({ name: 'kleuren', title: 'Kleuren', type: 'array', of: [{ type: 'kleur' }] })],
-  preview: { select: { kleuren: 'kleuren' }, prepare: ({ kleuren }) => ({ title: kleuren?.length ? `${kleuren.length} kleuren` : 'Kleurpalet van het project', subtitle: 'Kleurpalet' }) },
+  fields: [
+    defineField({ name: 'kleuren', title: 'Kleuren', type: 'array', of: [{ type: 'kleur' }] }),
+    defineField({ name: 'breedte', title: 'Breedte', type: 'string', options: { list: opties(BREEDTE), layout: 'radio', direction: 'horizontal' }, initialValue: 'full' }),
+  ],
+  preview: {
+    select: { kleuren: 'kleuren', breedte: 'breedte' },
+    prepare: ({ kleuren, breedte }) => ({ title: kleuren?.length ? `${kleuren.length} kleuren` : 'Kleurpalet van het project', subtitle: `Kleurpalet · ${breedte ?? 'full'}` }),
+  },
 });
 
 export const beforeAfter = defineType({

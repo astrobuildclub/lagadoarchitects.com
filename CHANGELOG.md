@@ -9,6 +9,12 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 
 ### Gewijzigd
 - Contact heeft het template van Over: titel, intro en beeld, dan bouwstenen. Nieuw blok **Contactgegevens** (contact, bezoekadres, social, bedrijfsgegevens, downloads uit Contact → Gegevens), ook op andere pagina's te gebruiken. Bio, tekst, stage en kaartbeeld zijn blokken geworden (`scripts/sanity/2026-11-11-contact-blokken.ts`); Contactpersoon staat nu onder Gegevens.
+- Header plakt bovenaan en schuift weg bij omlaag scrollen; bij omhoog scrollen (vanaf 32 px) komt hij terug. Bovenaan de pagina, met het menu open of met de focus in de balk blijft hij staan; zonder animatie bij `prefers-reduced-motion`.
+- Studio: kleurkiezer bij Accentkleur (project) en Hex (kleurpalet). De waarde blijft een hex-string; typen kan nog steeds, met een knop om het veld leeg te maken.
+- Kleurpalet-blok heeft een breedte-keuze (content, popout, feature, full), net als Beeld. Standaard full, zoals het was.
+- Studio: Ontwerpvraag staat onder Intro, in dezelfde volgorde als op de projectpagina.
+- Header gebruikt de kleine variant van het woordmerk: rustiger vormen die op 14 px leesbaar blijven, en hij speelt één keer (bij laden en bij hover) in plaats van eindeloos (WCAG 2.2.2).
+- Woordmerk bijgewerkt met een export uit de editor: nieuwe vormen voor de L (recht en schuin), A, G, A2 en O, en een vierde stand voor de eerste A.
 - Letters, standen en frames van het woordmerk staan nu in `src/lib/brand/woordmerk.json` in plaats van in `wordmark.ts`.
 - Header en footer gebruiken het kinetische woordmerk (zwart-wit) in plaats van het oude logo. In de footer staat het over de volle breedte onderaan; het blok met logo en payoff is vervallen. `WordmarkDefs` staat één keer in `BaseLayout`.
 
@@ -16,6 +22,8 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Videoblok: `<` en `>` worden uit de titel gehaald voordat die naar iframemanager gaat. iframemanager 1.3.0 (nieuwste versie) zet `data-title` als HTML in de pagina, waardoor een titel in de Studio script kon uitvoeren.
 
 ### Toegevoegd
+- Editor: knoppen "Willekeurig: letter" en "Willekeurig: alles" maken een willekeurige beweging (frames, eases, duur en soms een nieuwe stand als variatie op een bestaande) voor de gekozen variant. Ongedaan maken kan.
+- Kleine variant van het woordmerk (`maat="klein"`, per letter `klein` in `woordmerk.json`), met een startversie per letter. Alleen voor de header; de footer en de rest gebruiken de grote. De editor bewerkt groot en klein en toont klein op headermaat en groot op footerbreedte.
 - Woordmerk-editor op `/brand/editor` (geprerenderd, `noindex`): per letter en stand de hoekpunten over het 5×5-raster slepen (of met de pijltjestoetsen), hoeken recht, schuin of rond, en de frames van de lus bewerken (stand, ease, morph, stilstand; toevoegen, herhalen, verplaatsen, verwijderen). Live voorbeeld met tijdschuif, ongedaan maken, bewaren in de browser, export en import van `woordmerk.json`.
 - Brandpagina op `/brand` (los van Sanity, geprerenderd, `noindex`): verkenning van het kinetische woordmerk (tegels, losse letters, alle standen, hover, formaten, header, preloader) en een weergave van de tokens (kleur, typografie, ruimte, vorm, beweging) met in de browser gemeten waarden. Schakelaars voor thema, kleur en pauze. Woordmerk in `src/lib/brand/wordmark.ts` (één bron) en `src/components/brand/`. `brand` staat in `GERESERVEERD`.
 - Woordmerk op een raster van 5 × 5 (`src/lib/brand/raster.ts`): elke letter is één vorm (buitencontour plus gaten) met hoekpunten op het raster; ingrepen per hoek (schuin, afgerond) en per hoekpunt (gat hoger, lager, scheef). Alle standen van een letter hebben dezelfde opbouw (`paden()` controleert dat) en morphen in elkaar over. Basis is het blokkenalfabet uit Figma (A–Z, ook op de brandpagina). De L is een trap: de treden schieten trapsgewijs omhoog en zakken weer in tot een L. De animatie rekent haar eigen frames uit (`animatie()`: geen deukjes meer in de gaten van de A en D) en gebruikt per overgang een eigen ease (`snap`, `uit`, `val`, `veer`), met korte morphs en een lus van 6 s. Op `/brand` staat de notatie per stand in monospace kolommen onder de letter.
@@ -35,6 +43,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 
 ### Gewijzigd
 - Contact heeft het template van Over: titel, intro en beeld, dan bouwstenen. Nieuw blok **Contactgegevens** (contact, bezoekadres, social, bedrijfsgegevens, downloads uit Contact → Gegevens), ook op andere pagina's te gebruiken. Bio, tekst, stage en kaartbeeld zijn blokken geworden (`scripts/sanity/2026-11-11-contact-blokken.ts`); Contactpersoon staat nu onder Gegevens.
+- Header plakt bovenaan en schuift weg bij omlaag scrollen; bij omhoog scrollen (vanaf 32 px) komt hij terug. Bovenaan de pagina, met het menu open of met de focus in de balk blijft hij staan; zonder animatie bij `prefers-reduced-motion`.
 - Blok *Pers of awards* volgt het Figma-persblok: vanaf 48rem twee gelijke kolommen, jaar (mono, step--1) links rechts uitgelijnd op de basislijn, tekst in step-1, projectlink onderstreept, lijn boven elk item. Mobiel: jaar klein boven de tekst. Nieuw veld *Intro*: kop en intro staan rechts boven de lijst. Op Over zijn kop en tekst van het tekstblok erboven verplaatst met `scripts/sanity/2026-11-09-persblok-intro.ts`. "Toon alles" is een knop die de rest erbij zet (zonder JavaScript staat alles er).
 - Lijnkleur (`--color-line`) in het lichte thema naar `#f4f4f4` (Figma).
 - Ruimte tussen de navigatie en het begin van elke pagina (`--page-top`) is nu 30svh (was `space-4xl`): home-hero, paginakop en projectkop.
@@ -64,6 +73,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 
 ### Gewijzigd
 - Contact heeft het template van Over: titel, intro en beeld, dan bouwstenen. Nieuw blok **Contactgegevens** (contact, bezoekadres, social, bedrijfsgegevens, downloads uit Contact → Gegevens), ook op andere pagina's te gebruiken. Bio, tekst, stage en kaartbeeld zijn blokken geworden (`scripts/sanity/2026-11-11-contact-blokken.ts`); Contactpersoon staat nu onder Gegevens.
+- Header plakt bovenaan en schuift weg bij omlaag scrollen; bij omhoog scrollen (vanaf 32 px) komt hij terug. Bovenaan de pagina, met het menu open of met de focus in de balk blijft hij staan; zonder animatie bij `prefers-reduced-motion`.
 - Projecttagline en volgend-projecttitel: snelle word-type-animatie met een korte fade per woord, zonder schuiven of bounce, in het tempo van de wisseltekst op de home (0,25 s per woord, fade 0,1 s). Beide grote titels hebben dezelfde letterafstand (-0.03em) als de andere grote koppen.
 - Projectkaarten: type • jaar een stap kleiner, op de home (step--1, op elke kaart even groot) en op /projecten (step--2).
 - Home: de wisselwoorden in de intro blijven 4 seconden staan (was 2).
@@ -151,6 +161,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 
 ### Gewijzigd
 - Contact heeft het template van Over: titel, intro en beeld, dan bouwstenen. Nieuw blok **Contactgegevens** (contact, bezoekadres, social, bedrijfsgegevens, downloads uit Contact → Gegevens), ook op andere pagina's te gebruiken. Bio, tekst, stage en kaartbeeld zijn blokken geworden (`scripts/sanity/2026-11-11-contact-blokken.ts`); Contactpersoon staat nu onder Gegevens.
+- Header plakt bovenaan en schuift weg bij omlaag scrollen; bij omhoog scrollen (vanaf 32 px) komt hij terug. Bovenaan de pagina, met het menu open of met de focus in de balk blijft hij staan; zonder animatie bij `prefers-reduced-motion`.
 - /projecten, filters: "Verras me" is geen eigen kolom meer maar staat rechts in de actieregel (naast "Verfijn", op mobiel naast "Filters") en in de overlay onder "Toon n projecten", met een nieuw dobbelsteen-icoon. Bij hover of focus speelt de Lottie-animatie "hover-pinch" (`lottie-web`, lichte SVG-speler, pas geladen bij de eerste hover; `src/scripts/verras-dobbelsteen.ts`); zonder JS of met reduced motion het statische icoon. Vanaf 64rem een kolom per filtergroep, ook dicht. De lijn onder de actieregel staat er op desktop alleen als "Verfijn" open is.
 - /projecten, filters: vanaf 64rem ook met "Verfijn" open uitgevuld over de volle breedte, alle groepen even breed. Het aantal loopt direct achter een lang label ("Papieren werkelijkheid 12") in plaats van als losse kolom.
 - Header en footer omgekeerd t.o.v. het thema: licht thema = donker vlak, donker thema = licht vlak (`--color-ink`, `--color-on-ink`, DRKM-as volgt mee). Logo (20px hoog) en menu (step-0) kleiner, balk lager.

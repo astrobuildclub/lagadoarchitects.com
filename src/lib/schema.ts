@@ -141,6 +141,7 @@ const kleur = z.object({ label: z.string(), hex: invulplek });
 const colorsBlock = z.object({
   type: z.literal('colors'),
   kleuren: z.array(kleur).default([]),
+  breedte: z.enum(BREEDTE).default('full'),
 });
 
 const beforeAfterBlock = z.object({
