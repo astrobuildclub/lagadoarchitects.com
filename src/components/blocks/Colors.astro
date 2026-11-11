@@ -12,7 +12,7 @@ const kleuren = source.map((k) => ({ ...k, oklch: hexToOklch(k.hex) })).filter((
 
 {
   kleuren.length > 0 && (
-    <section class="colors full" aria-label="Kleurpalet">
+    <section class:list={['colors', block.breedte]} aria-label="Kleurpalet">
       <ul role="list">
         {kleuren.map((k) => (
           <li style={`--swatch: ${k.oklch}`}>
