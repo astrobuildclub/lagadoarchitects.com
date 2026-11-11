@@ -8,7 +8,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 ## [Unreleased]
 
 ### Gewijzigd
-- Home: "Alle projecten" en "Over" onder het projectraster als grote tekstlinks in twee helften; de tweede begint waar "Projecten" in de nav begint. Projectkaarten komen met een stagger-reveal binnen zodra de eerste in beeld is (niet bij `prefers-reduced-motion`).
+- Home: "Alle projecten" en "Over ons" onder het projectraster als tekstlinks in de stijl van de nav, in twee helften; de tweede begint waar "Projecten" in de nav begint. Projectkaarten komen met een stagger-reveal binnen zodra de eerste in beeld is (niet bij `prefers-reduced-motion`).
 - Header is transparant; logo, links en themaknop in wit met `mix-blend-mode: exclusion` (op de header zelf), zodat ze leesbaar blijven op elke achtergrond. Met het mobiele menu open gewone kleuren.
 - Blok Contactgegevens staat op de featurebreedte (zo breed als de paginakop), niet meer op popout.
 - Contact heeft het template van Over: titel, intro en beeld, dan bouwstenen. Nieuw blok **Contactgegevens** (contact, bezoekadres, social, bedrijfsgegevens, downloads uit Contact → Gegevens), ook op andere pagina's te gebruiken. Bio, tekst, stage en kaartbeeld zijn blokken geworden (`scripts/sanity/2026-11-11-contact-blokken.ts`); Contactpersoon staat nu onder Gegevens.
@@ -45,7 +45,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Schakelaar *AI-modellen mogen de content gebruiken voor training* (Site-instellingen → SEO). Uit = trainingscrawlers geweerd in `robots.txt`; AI-zoekcrawlers blijven welkom.
 
 ### Gewijzigd
-- Home: "Alle projecten" en "Over" onder het projectraster als grote tekstlinks in twee helften; de tweede begint waar "Projecten" in de nav begint. Projectkaarten komen met een stagger-reveal binnen zodra de eerste in beeld is (niet bij `prefers-reduced-motion`).
+- Home: "Alle projecten" en "Over ons" onder het projectraster als tekstlinks in de stijl van de nav, in twee helften; de tweede begint waar "Projecten" in de nav begint. Projectkaarten komen met een stagger-reveal binnen zodra de eerste in beeld is (niet bij `prefers-reduced-motion`).
 - Header is transparant; logo, links en themaknop in wit met `mix-blend-mode: exclusion` (op de header zelf), zodat ze leesbaar blijven op elke achtergrond. Met het mobiele menu open gewone kleuren.
 - Blok Contactgegevens staat op de featurebreedte (zo breed als de paginakop), niet meer op popout.
 - Contact heeft het template van Over: titel, intro en beeld, dan bouwstenen. Nieuw blok **Contactgegevens** (contact, bezoekadres, social, bedrijfsgegevens, downloads uit Contact → Gegevens), ook op andere pagina's te gebruiken. Bio, tekst, stage en kaartbeeld zijn blokken geworden (`scripts/sanity/2026-11-11-contact-blokken.ts`); Contactpersoon staat nu onder Gegevens.
@@ -78,7 +78,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - /projecten: de kaartvorm volgt altijd de `vorm` uit de content, zodat de kaart klopt met het vormfilter (Easehouse, schuin, verscheen rond door `kaartvorm: afgerond`). `kaartvorm` geldt alleen op de home.
 
 ### Gewijzigd
-- Home: "Alle projecten" en "Over" onder het projectraster als grote tekstlinks in twee helften; de tweede begint waar "Projecten" in de nav begint. Projectkaarten komen met een stagger-reveal binnen zodra de eerste in beeld is (niet bij `prefers-reduced-motion`).
+- Home: "Alle projecten" en "Over ons" onder het projectraster als tekstlinks in de stijl van de nav, in twee helften; de tweede begint waar "Projecten" in de nav begint. Projectkaarten komen met een stagger-reveal binnen zodra de eerste in beeld is (niet bij `prefers-reduced-motion`).
 - Header is transparant; logo, links en themaknop in wit met `mix-blend-mode: exclusion` (op de header zelf), zodat ze leesbaar blijven op elke achtergrond. Met het mobiele menu open gewone kleuren.
 - Blok Contactgegevens staat op de featurebreedte (zo breed als de paginakop), niet meer op popout.
 - Contact heeft het template van Over: titel, intro en beeld, dan bouwstenen. Nieuw blok **Contactgegevens** (contact, bezoekadres, social, bedrijfsgegevens, downloads uit Contact → Gegevens), ook op andere pagina's te gebruiken. Bio, tekst, stage en kaartbeeld zijn blokken geworden (`scripts/sanity/2026-11-11-contact-blokken.ts`); Contactpersoon staat nu onder Gegevens.
@@ -169,7 +169,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Netlify secrets scanning: `FONTS_URL` uitgezonderd (`SECRETS_SCAN_OMIT_KEYS`), de build faalde omdat de URL in de README staat.
 
 ### Gewijzigd
-- Home: "Alle projecten" en "Over" onder het projectraster als grote tekstlinks in twee helften; de tweede begint waar "Projecten" in de nav begint. Projectkaarten komen met een stagger-reveal binnen zodra de eerste in beeld is (niet bij `prefers-reduced-motion`).
+- Home: "Alle projecten" en "Over ons" onder het projectraster als tekstlinks in de stijl van de nav, in twee helften; de tweede begint waar "Projecten" in de nav begint. Projectkaarten komen met een stagger-reveal binnen zodra de eerste in beeld is (niet bij `prefers-reduced-motion`).
 - Header is transparant; logo, links en themaknop in wit met `mix-blend-mode: exclusion` (op de header zelf), zodat ze leesbaar blijven op elke achtergrond. Met het mobiele menu open gewone kleuren.
 - Blok Contactgegevens staat op de featurebreedte (zo breed als de paginakop), niet meer op popout.
 - Contact heeft het template van Over: titel, intro en beeld, dan bouwstenen. Nieuw blok **Contactgegevens** (contact, bezoekadres, social, bedrijfsgegevens, downloads uit Contact → Gegevens), ook op andere pagina's te gebruiken. Bio, tekst, stage en kaartbeeld zijn blokken geworden (`scripts/sanity/2026-11-11-contact-blokken.ts`); Contactpersoon staat nu onder Gegevens.
