@@ -8,6 +8,9 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 ## [Unreleased]
 
 ### Gewijzigd
+- Studio: kleurkiezer bij Accentkleur (project) en Hex (kleurpalet). De waarde blijft een hex-string; typen kan nog steeds, met een knop om het veld leeg te maken.
+- Kleurpalet-blok heeft een breedte-keuze (content, popout, feature, full), net als Beeld. Standaard full, zoals het was.
+- Studio: Ontwerpvraag staat onder Intro, in dezelfde volgorde als op de projectpagina.
 - Header gebruikt de kleine variant van het woordmerk: rustiger vormen die op 14 px leesbaar blijven, en hij speelt één keer (bij laden en bij hover) in plaats van eindeloos (WCAG 2.2.2).
 - Woordmerk bijgewerkt met een export uit de editor: nieuwe vormen voor de L (recht en schuin), A, G, A2 en O, en een vierde stand voor de eerste A.
 - Letters, standen en frames van het woordmerk staan nu in `src/lib/brand/woordmerk.json` in plaats van in `wordmark.ts`.

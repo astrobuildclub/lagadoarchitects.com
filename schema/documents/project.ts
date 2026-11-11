@@ -15,6 +15,7 @@ import {
   VORM,
 } from '../../src/lib/waarden';
 import { blocksField } from '../blocks';
+import { KleurInput } from '../components/KleurInput';
 import { opties } from '../helpers';
 
 const meerkeuze = (name: string, title: string, waarden: readonly string[], description?: string) =>
@@ -54,6 +55,7 @@ export const project = defineType({
       validation: (r) => r.required(),
     }),
     defineField({ name: 'tagline', title: 'Tagline', description: 'Eén zin, voor de kaart en de hero.', type: 'string', group: 'identiteit', validation: (r) => r.required() }),
+    defineField({ name: 'intro', title: 'Intro', description: '2 tot 4 zinnen.', type: 'richText', group: 'identiteit', validation: (r) => r.required() }),
     defineField({
       name: 'vraag',
       title: 'Ontwerpvraag',
@@ -61,7 +63,6 @@ export const project = defineType({
       type: 'string',
       group: 'identiteit',
     }),
-    defineField({ name: 'intro', title: 'Intro', description: '2 tot 4 zinnen.', type: 'richText', group: 'identiteit', validation: (r) => r.required() }),
 
     // Verhaal
     { ...blocksField(), group: 'verhaal' },
@@ -117,9 +118,10 @@ export const project = defineType({
     defineField({
       name: 'accentkleur',
       title: 'Accentkleur',
-      description: 'Hex, bv. #1f4fd1. Pagina-accent en kaartkleur; leeg = de bepalende kleur van het hero-beeld.',
+      description: 'Kies een kleur of typ een hex, bv. #1f4fd1. Pagina-accent en kaartkleur; leeg = de bepalende kleur van het hero-beeld.',
       type: 'string',
       group: 'weergave',
+      components: { input: KleurInput },
       validation: (r) => r.regex(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i, { name: 'hex' }).warning('Gebruik een hexwaarde'),
     }),
     defineField({ name: 'kleurpalet', title: 'Kleurpalet', description: 'Voor het kleurpalet-blok.', type: 'array', of: [{ type: 'kleur' }], group: 'weergave' }),
