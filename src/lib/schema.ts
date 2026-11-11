@@ -236,6 +236,12 @@ const downloadsBlock = z.object({
   items: z.array(downloadItem).default([]),
 });
 
+/** Gegevens komen uit het Contact-document, niet uit het blok. */
+const contactgegevensBlock = z.object({
+  type: z.literal('contactgegevens'),
+  kop: text,
+});
+
 export const block = z.discriminatedUnion('type', [
   heroBlock,
   textBlock,
@@ -254,6 +260,7 @@ export const block = z.discriminatedUnion('type', [
   servicesBlock,
   logosBlock,
   downloadsBlock,
+  contactgegevensBlock,
 ]);
 export type Block = z.infer<typeof block>;
 export type BlockOf<T extends Block['type']> = Extract<Block, { type: T }>;
@@ -324,13 +331,9 @@ export const projectenPaginaSchema = z.object({
 export const contactSchema = z.object({
   title: z.string(),
   intro: rich,
-  tekst: rich,
   sfeerbeeld: imageRef.optional(),
+  blocks: z.array(block).default([]),
   contactpersoon: z.object({ naam: z.string(), rol: text }).optional(),
-  /** Portret met quote van de oprichter. */
-  bio: z.object({ kop: text, foto: imageRef.pick({ src: true, alt: true }).optional(), quote: richText.default([]) }).optional(),
-  /** Oproep voor stagiairs. */
-  stage: z.object({ kop: z.string(), tekst: richText.default([]) }).optional(),
   email: invulplek,
   telefoon: text,
   adres: z.object({
@@ -342,7 +345,7 @@ export const contactSchema = z.object({
     bezoek: text,
   }),
   kaart: z
-    .object({ link: text, statischBeeld: imageRef.pick({ src: true, alt: true }).optional() })
+    .object({ link: text })
     .optional(),
   bedrijf: z.object({
     kvk: text,

@@ -58,8 +58,8 @@ export const PROJECTEN_PAGINA_QUERY = groq`*[_id == "projecten"][0] { title, int
 export const CONTACT_QUERY = groq`*[_id == "contact"][0] {
   ...,
   "sfeerbeeld": sfeerbeeld { ${IMG} },
-  "bio": bio { ..., "foto": foto { ${IMG} } },
-  "kaart": kaart { link, "statischBeeld": statischBeeld { ${IMG} } },
+  "blocks": blocks[] { ${BLOCKS} },
+  "kaart": kaart { link },
   "downloads": downloads[] { label, "bestand": ${DL} }
 }`;
 

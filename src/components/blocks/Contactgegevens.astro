@@ -1,0 +1,99 @@
+---
+// Contactgegevens: contact, bezoekadres (met kaartlink, geen iframe: AVG), social, bedrijfsgegevens en
+// downloads in kolommen. De gegevens komen uit het Contact-document (ook gebruikt door header, footer en
+// JSON-LD); het blok zelf heeft alleen een optionele kop. Lege kolommen vallen weg.
+import { getContact } from '../../lib/content';
+import { has, type BlockProps } from './scope';
+
+type Props = BlockProps<'contactgegevens'>;
+const { block } = Astro.props;
+const c = await getContact();
+const tel = c.telefoon?.replace('(0)', '').replace(/[^\d+]/g, '');
+const social = c.social.filter((s) => s.href);
+const downloads = c.downloads.map((d) => ({ ...d, url: d.bestand })).filter((d) => d.url);
+const bedrijf = [
+  c.bedrijf.kvk && `KvK ${c.bedrijf.kvk}`,
+  c.bedrijf.btw && `btw ${c.bedrijf.btw}`,
+  c.bedrijf.architectenregister && `Architectenregister ${c.bedrijf.architectenregister}`,
+].filter(Boolean);
+// Kolomkoppen een niveau onder de kop van het blok; zonder kop zijn ze zelf h2 (geen sprong in de koppen).
+const H = has(block.kop) ? 'h3' : 'h2';
+---
+
+<section class="contactgegevens popout" aria-label={has(block.kop) ? undefined : 'Contactgegevens'}>
+  {has(block.kop) && <h2 class="contactgegevens__kop">{block.kop}</h2>}
+  <div class="contactgegevens__grid">
+    <section>
+      <H class="contactgegevens__label">Contact</H>
+      {c.contactpersoon && <p>{c.contactpersoon.naam}{c.contactpersoon.rol && <span class="muted"><br />{c.contactpersoon.rol}</span>}</p>}
+      <p>
+        {c.email && <a href={`mailto:${c.email}`}>{c.email}</a>}
+        {c.email && c.telefoon && <br />}
+        {c.telefoon && <a href={`tel:${tel}`}>{c.telefoon}</a>}
+      </p>
+    </section>
+
+    <section>
+      <H class="contactgegevens__label">Bezoekadres</H>
+      <address>
+        {c.adres.naam && <>{c.adres.naam}<br /></>}
+        {c.adres.straat}<br />
+        {c.adres.postcode} {c.adres.plaats}
+      </address>
+      {c.adres.bezoek && <p class="muted">{c.adres.bezoek}</p>}
+      {c.kaart?.link && <p><a href={c.kaart.link} rel="noopener">Bekijk op de kaart</a></p>}
+    </section>
+
+    {
+      social.length > 0 && (
+        <section>
+          <H class="contactgegevens__label">Volg ons</H>
+          <ul role="list">
+            {social.map((s) => <li><a href={s.href} rel="noopener">{s.label}</a></li>)}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      (bedrijf.length > 0 || c.bedrijf.lidmaatschappen.length > 0) && (
+        <section>
+          <H class="contactgegevens__label">Gegevens</H>
+          <ul role="list">
+            {bedrijf.map((regel) => <li>{regel}</li>)}
+            {c.bedrijf.lidmaatschappen.map((l) => <li>{l.href ? <a href={l.href} rel="noopener">{l.label}</a> : l.label}</li>)}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      downloads.length > 0 && (
+        <section>
+          <H class="contactgegevens__label">Downloads</H>
+          <ul role="list">
+            {downloads.map((d) => <li><a href={d.url} download>{d.label}</a></li>)}
+          </ul>
+        </section>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .contactgegevens__kop {
+    margin-block-end: var(--space-m);
+  }
+  .contactgegevens__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: var(--space-l);
+  }
+  .contactgegevens__label {
+    font-size: var(--step-0);
+    margin-block-end: var(--space-2xs);
+  }
+  address {
+    font-style: normal;
+  }
+</style>
