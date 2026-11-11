@@ -8,6 +8,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 ## [Unreleased]
 
 ### Gewijzigd
+- Contact heeft het template van Over: titel, intro en beeld, dan bouwstenen. Nieuw blok **Contactgegevens** (contact, bezoekadres, social, bedrijfsgegevens, downloads uit Contact → Gegevens), ook op andere pagina's te gebruiken. Bio, tekst, stage en kaartbeeld zijn blokken geworden (`scripts/sanity/2026-11-11-contact-blokken.ts`); Contactpersoon staat nu onder Gegevens.
 - Header plakt bovenaan en schuift weg bij omlaag scrollen; bij omhoog scrollen (vanaf 32 px) komt hij terug. Bovenaan de pagina, met het menu open of met de focus in de balk blijft hij staan; zonder animatie bij `prefers-reduced-motion`.
 - Studio: kleurkiezer bij Accentkleur (project) en Hex (kleurpalet). De waarde blijft een hex-string; typen kan nog steeds, met een knop om het veld leeg te maken.
 - Kleurpalet-blok heeft een breedte-keuze (content, popout, feature, full), net als Beeld. Standaard full, zoals het was.
@@ -41,6 +42,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Schakelaar *AI-modellen mogen de content gebruiken voor training* (Site-instellingen → SEO). Uit = trainingscrawlers geweerd in `robots.txt`; AI-zoekcrawlers blijven welkom.
 
 ### Gewijzigd
+- Contact heeft het template van Over: titel, intro en beeld, dan bouwstenen. Nieuw blok **Contactgegevens** (contact, bezoekadres, social, bedrijfsgegevens, downloads uit Contact → Gegevens), ook op andere pagina's te gebruiken. Bio, tekst, stage en kaartbeeld zijn blokken geworden (`scripts/sanity/2026-11-11-contact-blokken.ts`); Contactpersoon staat nu onder Gegevens.
 - Header plakt bovenaan en schuift weg bij omlaag scrollen; bij omhoog scrollen (vanaf 32 px) komt hij terug. Bovenaan de pagina, met het menu open of met de focus in de balk blijft hij staan; zonder animatie bij `prefers-reduced-motion`.
 - Blok *Pers of awards* volgt het Figma-persblok: vanaf 48rem twee gelijke kolommen, jaar (mono, step--1) links rechts uitgelijnd op de basislijn, tekst in step-1, projectlink onderstreept, lijn boven elk item. Mobiel: jaar klein boven de tekst. Nieuw veld *Intro*: kop en intro staan rechts boven de lijst. Op Over zijn kop en tekst van het tekstblok erboven verplaatst met `scripts/sanity/2026-11-09-persblok-intro.ts`. "Toon alles" is een knop die de rest erbij zet (zonder JavaScript staat alles er).
 - Lijnkleur (`--color-line`) in het lichte thema naar `#f4f4f4` (Figma).
@@ -70,6 +72,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - /projecten: de kaartvorm volgt altijd de `vorm` uit de content, zodat de kaart klopt met het vormfilter (Easehouse, schuin, verscheen rond door `kaartvorm: afgerond`). `kaartvorm` geldt alleen op de home.
 
 ### Gewijzigd
+- Contact heeft het template van Over: titel, intro en beeld, dan bouwstenen. Nieuw blok **Contactgegevens** (contact, bezoekadres, social, bedrijfsgegevens, downloads uit Contact → Gegevens), ook op andere pagina's te gebruiken. Bio, tekst, stage en kaartbeeld zijn blokken geworden (`scripts/sanity/2026-11-11-contact-blokken.ts`); Contactpersoon staat nu onder Gegevens.
 - Header plakt bovenaan en schuift weg bij omlaag scrollen; bij omhoog scrollen (vanaf 32 px) komt hij terug. Bovenaan de pagina, met het menu open of met de focus in de balk blijft hij staan; zonder animatie bij `prefers-reduced-motion`.
 - Projecttagline en volgend-projecttitel: snelle word-type-animatie met een korte fade per woord, zonder schuiven of bounce, in het tempo van de wisseltekst op de home (0,25 s per woord, fade 0,1 s). Beide grote titels hebben dezelfde letterafstand (-0.03em) als de andere grote koppen.
 - Projectkaarten: type • jaar een stap kleiner, op de home (step--1, op elke kaart even groot) en op /projecten (step--2).
@@ -157,6 +160,7 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Netlify secrets scanning: `FONTS_URL` uitgezonderd (`SECRETS_SCAN_OMIT_KEYS`), de build faalde omdat de URL in de README staat.
 
 ### Gewijzigd
+- Contact heeft het template van Over: titel, intro en beeld, dan bouwstenen. Nieuw blok **Contactgegevens** (contact, bezoekadres, social, bedrijfsgegevens, downloads uit Contact → Gegevens), ook op andere pagina's te gebruiken. Bio, tekst, stage en kaartbeeld zijn blokken geworden (`scripts/sanity/2026-11-11-contact-blokken.ts`); Contactpersoon staat nu onder Gegevens.
 - Header plakt bovenaan en schuift weg bij omlaag scrollen; bij omhoog scrollen (vanaf 32 px) komt hij terug. Bovenaan de pagina, met het menu open of met de focus in de balk blijft hij staan; zonder animatie bij `prefers-reduced-motion`.
 - /projecten, filters: "Verras me" is geen eigen kolom meer maar staat rechts in de actieregel (naast "Verfijn", op mobiel naast "Filters") en in de overlay onder "Toon n projecten", met een nieuw dobbelsteen-icoon. Bij hover of focus speelt de Lottie-animatie "hover-pinch" (`lottie-web`, lichte SVG-speler, pas geladen bij de eerste hover; `src/scripts/verras-dobbelsteen.ts`); zonder JS of met reduced motion het statische icoon. Vanaf 64rem een kolom per filtergroep, ook dicht. De lijn onder de actieregel staat er op desktop alleen als "Verfijn" open is.
 - /projecten, filters: vanaf 64rem ook met "Verfijn" open uitgevuld over de volle breedte, alle groepen even breed. Het aantal loopt direct achter een lang label ("Papieren werkelijkheid 12") in plaats van als losse kolom.

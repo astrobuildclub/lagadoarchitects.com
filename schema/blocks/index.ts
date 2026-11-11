@@ -358,10 +358,19 @@ export const downloads = defineType({
   preview: { select: { title: 'kop' }, prepare: ({ title }) => ({ title: title || 'Downloads', subtitle: 'Downloads' }) },
 });
 
+export const contactgegevens = defineType({
+  name: 'contactgegevens',
+  title: 'Contactgegevens',
+  type: 'object',
+  description: 'Contact, bezoekadres, social, bedrijfsgegevens en downloads uit Contact → Gegevens.',
+  fields: [defineField({ name: 'kop', title: 'Kop', description: 'Leeg = geen kop.', type: 'string' })],
+  preview: { select: { title: 'kop' }, prepare: ({ title }) => ({ title: title || 'Contactgegevens', subtitle: 'Contactgegevens' }) },
+});
+
 /** Sanity-naam → `type` op de site, voor de twee blokken die anders heten. */
 export const BLOK_TYPE: Record<string, string> = { textBlock: 'text', imageBlock: 'image' };
 
-export const blockTypes = [hero, text, image, gallery, columns, quote, video, colors, beforeAfter, projectGrid, statement, team, list, cta, services, logos, downloads];
+export const blockTypes = [hero, text, image, gallery, columns, quote, video, colors, beforeAfter, projectGrid, statement, team, list, cta, services, logos, downloads, contactgegevens];
 
 /** Bloktypes die op een pagina of in een project mogen. */
 export const blocksField = (name = 'blocks', title = 'Bouwstenen') =>

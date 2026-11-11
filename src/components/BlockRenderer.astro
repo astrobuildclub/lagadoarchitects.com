@@ -6,6 +6,7 @@ import { assertNever, type BlockScope } from './blocks/scope';
 import BeforeAfter from './blocks/BeforeAfter.astro';
 import Colors from './blocks/Colors.astro';
 import Columns from './blocks/Columns.astro';
+import Contactgegevens from './blocks/Contactgegevens.astro';
 import Cta from './blocks/Cta.astro';
 import Downloads from './blocks/Downloads.astro';
 import Gallery from './blocks/Gallery.astro';
@@ -50,6 +51,7 @@ const { blocks, scope = {} } = Astro.props;
       case 'services': return <Services block={block} {...props} />;
       case 'logos': return <Logos block={block} {...props} />;
       case 'downloads': return <Downloads block={block} {...props} />;
+      case 'contactgegevens': return <Contactgegevens block={block} {...props} />;
       default: return assertNever(block);
     }
   })

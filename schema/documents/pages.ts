@@ -126,32 +126,14 @@ export const contact = defineType({
   fields: [
     defineField({ name: 'title', title: 'Titel', type: 'string', group: 'content', validation: (r) => r.required() }),
     defineField({ name: 'intro', title: 'Intro', type: 'richText', group: 'content' }),
-    defineField({ name: 'tekst', title: 'Tekst', type: 'richText', group: 'content' }),
     defineField({ name: 'sfeerbeeld', title: 'Beeld bovenaan', description: 'Breed beeld onder de intro (3:2). Leeg = geen beeld.', type: 'beeld', group: 'content' }),
+    defineField({ ...blocksField(), description: 'Zoals Over. Het blok Contactgegevens toont de gegevens hieronder.', group: 'content' }),
     defineField({
       name: 'contactpersoon',
       title: 'Contactpersoon',
       type: 'object',
-      group: 'content',
+      group: 'gegevens',
       fields: [defineField({ name: 'naam', title: 'Naam', type: 'string' }), defineField({ name: 'rol', title: 'Rol', type: 'string' })],
-    }),
-    defineField({
-      name: 'bio',
-      title: 'Bio van de oprichter',
-      type: 'object',
-      group: 'content',
-      fields: [
-        defineField({ name: 'kop', title: 'Kop', type: 'string' }),
-        defineField({ name: 'foto', title: 'Foto', type: 'beeld' }),
-        defineField({ name: 'quote', title: 'Quote', type: 'richText' }),
-      ],
-    }),
-    defineField({
-      name: 'stage',
-      title: 'Stage',
-      type: 'object',
-      group: 'content',
-      fields: [defineField({ name: 'kop', title: 'Kop', type: 'string' }), defineField({ name: 'tekst', title: 'Tekst', type: 'richText' })],
     }),
     defineField({ name: 'email', title: 'E-mail', type: 'string', group: 'gegevens', validation: (r) => r.required().email() }),
     defineField({ name: 'telefoon', title: 'Telefoon', type: 'string', group: 'gegevens' }),
@@ -159,10 +141,10 @@ export const contact = defineType({
     defineField({
       name: 'kaart',
       title: 'Kaart',
-      description: 'Geen iframe (AVG): een link en eventueel een eigen beeld.',
+      description: 'Geen iframe (AVG): alleen een link. Een kaartbeeld kan als Beeld-blok.',
       type: 'object',
       group: 'gegevens',
-      fields: [defineField({ name: 'link', title: 'Link naar kaartdienst', type: 'url' }), defineField({ name: 'statischBeeld', title: 'Statisch beeld', type: 'beeld' })],
+      fields: [defineField({ name: 'link', title: 'Link naar kaartdienst', type: 'url' })],
     }),
     defineField({
       name: 'bedrijf',
