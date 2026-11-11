@@ -91,25 +91,31 @@ const links = [...(block.linkNaarOverzicht ? [block.linkNaarOverzicht] : []), ..
   }
   document.addEventListener('astro:page-load', initMeer);
 
-  // Stagger-reveal: zodra de eerste kaart in beeld komt, komen alle zichtbare kaarten één voor één binnen
-  // (opacity en een korte verschuiving omhoog, 70 ms na elkaar, hooguit 9 stappen). De kaarten staan pas
-  // op 'wacht' als JS draait, dus zonder JS of bij prefers-reduced-motion is alles meteen zichtbaar.
+  // Stagger-reveal: zodra de eerste kaart in beeld is, komen de zichtbare kaarten één voor één binnen (110 ms na
+  // elkaar, hooguit 9 stappen). De kaarten zijn al vanaf de eerste paint verborgen via CSS (alleen met JS en zonder
+  // reduced motion); dit script zet de lijst op 'klaar'. Bij een paginawissel pas als het gordijn weg is
+  // (interlude:idle), anders speelt de reveal onder de transitie.
   function initReveal() {
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     document.querySelectorAll<HTMLElement>('.project-grid .project-list').forEach((lijst) => {
       const kaarten = [...lijst.children].filter((k): k is HTMLElement => k instanceof HTMLElement && !k.hidden);
       if (!kaarten.length) return;
       kaarten.forEach((k, i) => k.style.setProperty('--reveal-i', String(Math.min(i, 8))));
-      lijst.dataset.reveal = 'wacht';
+      const klaar = () => (lijst.dataset.reveal = 'klaar');
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return klaar();
+
       const io = new IntersectionObserver(
         ([entry]) => {
           if (!entry.isIntersecting) return;
-          lijst.dataset.reveal = 'klaar';
           io.disconnect();
+          klaar();
         },
         { rootMargin: '0px 0px -10% 0px' },
       );
-      io.observe(kaarten[0]);
+      const start = () => io.observe(kaarten[0]);
+      const interlude = document.querySelector<HTMLElement>('[data-interlude]');
+      if (interlude?.dataset.state && interlude.dataset.state !== 'idle') {
+        document.addEventListener('interlude:idle', start, { once: true });
+      } else start();
       document.addEventListener('astro:before-swap', () => io.disconnect(), { once: true });
     });
   }
@@ -123,16 +129,20 @@ const links = [...(block.linkNaarOverzicht ? [block.linkNaarOverzicht] : []), ..
     gap: var(--space-xl);
     padding-inline: var(--gutter);
   }
-  /* Stagger-reveal (zie script): eerst onzichtbaar en 2rem lager, dan per kaart binnen. Met `translate`, zodat
-     transforms op de kaart zelf (hover) er niet mee botsen. */
-  .project-grid :global(.project-list[data-reveal] > li) {
-    transition:
-      opacity 0.6s var(--ease, ease) calc(var(--reveal-i, 0) * 70ms),
-      translate 0.6s cubic-bezier(0.2, 0, 0, 1) calc(var(--reveal-i, 0) * 70ms);
+  /* Stagger-reveal (zie script): vanaf de eerste paint onzichtbaar en 3rem lager (alleen met JS en zonder
+     reduced motion, anders gewoon zichtbaar); op 'klaar' komt elke kaart met zijn eigen vertraging binnen.
+     De transitie staat alleen op 'klaar', zodat het verbergen niet zichtbaar uitfadet. Met `translate`,
+     zodat transforms op de kaart zelf (hover) er niet mee botsen. */
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    .project-grid :global(.project-list:not([data-reveal='klaar']) > li) {
+      opacity: 0;
+      translate: 0 3rem;
+    }
   }
-  .project-grid :global(.project-list[data-reveal='wacht'] > li) {
-    opacity: 0;
-    translate: 0 2rem;
+  .project-grid :global(.project-list[data-reveal='klaar'] > li) {
+    transition:
+      opacity 0.8s var(--ease) calc(var(--reveal-i, 0) * 110ms),
+      translate 0.8s var(--ease) calc(var(--reveal-i, 0) * 110ms);
   }
 
   /* Links onder het raster ("Alle projecten", "Over ons"): als de navlinks in de header (step-0, medium,
