@@ -7,7 +7,13 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 
 ## [Unreleased]
 
+### Toegevoegd
+- Woordmerkanimaties in Sanity: documenttype *Woordmerkanimatie* (één versie per document; nieuwe versie = dupliceren, geschiedenis via Sanity). De woordmerk-editor draait in het document zelf (`/brand/editor?ingebed` in een iframe, `schema/components/WoordmerkInput.tsx`): bewerken wordt een concept, publiceren zet hem live, zonder deploy. Knop *Volledig scherm* (Esc sluit) voor de brede editor. In Site-instellingen → Woordmerk kies je per plek (intro, header, footer) een versie; leeg = `woordmerk.json`.
+- Intro bij het eerste bezoek (één keer per sessie, `sessionStorage`): het woordmerk op een vlak in de kleur van een willekeurig project; na de duur (standaard 5 s, Site-instellingen → Woordmerk) schuift de onderrand omhoog en verdwijnt het woordmerk erachter. Over te slaan met een klik of toets, niet bij `prefers-reduced-motion`, niet in de Presentation tool (`src/components/Intro.astro`, `src/transitions/intro-lagado.ts`).
+- Editor: menu *Downloaden* met SVG van het woordmerk op het moment op de tijdlijn, een geanimeerde SVG (SMIL) en een ZIP met alle frames (de momenten waarop alle letters stilstaan) en elke letterstand los (`src/lib/brand/svg.ts`, `zip.ts`).
+
 ### Gewijzigd
+- Header toont het eerste frame van de gekozen woordmerkversie, stil; zonder keuze blijft de kleine variant die één keer speelt.
 - Studio: veld *Kaartgrootte op de home* weg uit projecten. Het deed niets: het projectraster op de home gebruikt een vaste indeling.
 - Home: "Alle projecten" en "Over ons" onder het projectraster als tekstlinks in de stijl van de nav, in twee helften; de tweede begint waar "Projecten" in de nav begint. Projectkaarten komen met een stagger-reveal binnen zodra de eerste in beeld is (niet bij `prefers-reduced-motion`).
 - Header is transparant; logo, links en themaknop in wit met `mix-blend-mode: exclusion` (op de header zelf), zodat ze leesbaar blijven op elke achtergrond. Met het mobiele menu open gewone kleuren.

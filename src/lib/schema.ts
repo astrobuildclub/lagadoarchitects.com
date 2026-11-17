@@ -1,6 +1,7 @@
 // Contentmodel zoals de site het gebruikt. Bron is Sanity (schema/); de queries in src/lib/sanity/queries.ts
 // leveren precies deze vorm, en Zod controleert dat bij elk request. Wijzig eerst schema/, dan dit bestand.
 import { z } from 'astro/zod';
+import type { WoordmerkData } from './brand/wordmark';
 
 // ── Waardenlijsten (src/lib/waarden.ts, gedeeld met de Studio) ──
 import {
@@ -272,6 +273,23 @@ export type PersItem = z.infer<typeof persItem>;
 export type AwardItem = z.infer<typeof awardItem>;
 export type ListItem = z.infer<typeof listItem>;
 
+/**
+ * Een woordmerkanimatie uit Sanity: `data` is de JSON uit de editor. Klopt die niet (meer), dan valt de plek
+ * terug op de standaardversie (woordmerk.json) in plaats van dat de pagina breekt.
+ */
+const woordmerkVersie = z
+  .object({ _id: z.string(), naam: text, data: z.string() })
+  .transform(({ _id, naam, data }) => {
+    try {
+      return { id: _id.replace(/^drafts\./, ''), naam, data: JSON.parse(data) as WoordmerkData };
+    } catch {
+      console.error(`Woordmerk ${naam || _id}: ongeldige JSON, standaardversie gebruikt`);
+      return undefined;
+    }
+  })
+  .nullish()
+  .catch(undefined);
+
 // ── Documenten ─────────────────────────────────────────────
 export const settingsSchema = z.object({
   siteNaam: z.string(),
@@ -292,6 +310,10 @@ export const settingsSchema = z.object({
     /** Uit = ook AI-zoekmachines (ChatGPT, Claude, Perplexity) geweerd: de site verschijnt niet meer in hun antwoorden. */
     aiZoeken: z.boolean().default(true),
   }),
+  /** Welke woordmerkanimatie waar speelt. Leeg = woordmerk.json. */
+  woordmerk: z.object({ intro: woordmerkVersie, header: woordmerkVersie, footer: woordmerkVersie }).default({}),
+  /** Intro bij het eerste bezoek per sessie (src/transitions/intro-lagado.ts). */
+  intro: z.object({ aan: z.boolean().default(true), duur: z.number().min(1.5).max(5).default(5).catch(5) }).default({ aan: true, duur: 5 }),
   /** Statistiek: cookieloos (Umami, Plausible) zonder banner, Google Analytics pas na toestemming. */
   analytics: z
     .object({

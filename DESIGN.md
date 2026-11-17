@@ -65,6 +65,8 @@ Gebruik `--vorm-radius` en `--vorm-clip` op het vlak; geen eigen `border-radius`
 - Tegelversie: tegels van 7 × 7 blokken (14 eenheden), letter met één blok marge. viewBox `0 0 84 14`.
 - Standen en de lus per letter staan in `src/lib/brand/woordmerk.json`; `wordmark.ts` leest dat in en `raster.ts` maakt er SVG-paden en de animatie van.
 - Bewerken kan in de editor op `/brand/editor`: punten slepen, hoeken schuin of rond, frames met ease en duur. Exporteren geeft een nieuwe `woordmerk.json`. Met de keuze Groot/Klein bewerk je beide varianten; onderaan staat het woordmerk op ware grootte.
+- **Versies:** naast `woordmerk.json` (de standaard) staan versies in Sanity als *Woordmerkanimatie*. De editor draait daar in het document. Per plek (intro, header, footer) kies je een versie in Site-instellingen → Woordmerk. Elke versie krijgt eigen ids in de defs (`#wm-<sleutel>-L1`, `idVan()` in `wordmark.ts`); `<Wordmark versie={…} />` en `<WordmarkDefs versies={[…]} />`. De kleine variant bestaat alleen in de standaardversie.
+- **Downloads** in de editor: het woordmerk op één moment, geanimeerd (SMIL, één bestand) en een ZIP met alle frames en losse letterstanden. Altijd `currentColor` (zwart als je het bestand los opent).
 - **Kleine variant** (`maat="klein"`, per letter `klein` in de JSON): **alleen in de header (de nav)**, waar de details van de grote (één blok ≈ 3 px) wegvallen. Overal elders, zoals de footer over de volle breedte, staat de grote. Rustiger vormen en één duidelijke ingreep per letter. Speelt één keer, bij laden en bij hover of focus, en eindigt in de eerste stand; hooguit 4,5 s (`KLEIN_MAX`). De stilstand van frame 1 is de wachttijd, zo lopen de letters na elkaar.
 
 | Letter | Standen |
@@ -92,6 +94,7 @@ Gebruik `--vorm-radius` en `--vorm-clip` op het vlak; geen eigen `border-radius`
 | Statisch | Waar beweging stoort, en bij reduced motion | `<Wordmark variant="static" />` |
 | Hover | Stilstaand; bij hover of focus rolt elke letter naar zijn tweede stand | `<Wordmark variant="hover" />` |
 | Preloader | Omgekeerd op een vlak, met voortgangsbalk | `<Wordmark invert mono />` |
+| Intro | Eerste bezoek per sessie: op een vlak in een projectkleur, daarna schuift de onderrand omhoog en verdwijnt het woordmerk erachter | `src/components/Intro.astro` |
 
 `<WordmarkDefs />` staat één keer per pagina (de SVG-definities).
 
@@ -115,6 +118,7 @@ Gebruik `--vorm-radius` en `--vorm-clip` op het vlak; geen eigen `border-radius`
 
 - Logo: `role="img"` met `aria-label="LAGADO"`; decoratieve kopieën `aria-hidden`.
 - `prefers-reduced-motion`: het woordmerk staat stil in de eerste stand.
+- Intro: hooguit 5 s, over te slaan met een klik of toets, en niet bij `prefers-reduced-motion`: geen pauzeknop nodig.
 - De grote animatie loopt langer dan 5 seconden en heeft daarom een pauzeknop nodig waar hij op de site komt (WCAG 2.2.2). Op `/brand`: `data-wm-pauze` op de wortel. De kleine variant (header) speelt één keer en korter dan 5 s: geen pauzeknop nodig.
 
 ## 5. Kleur

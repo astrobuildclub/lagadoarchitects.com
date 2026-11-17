@@ -88,6 +88,7 @@ TODO.md              Openstaande projecttaken
 - **Beelden:** in Sanity, geleverd via de Sanity-CDN met `srcset` (`<Img>`). Hotspot in de Studio bepaalt de uitsnede.
 - **Verborgen projecten:** een draft die nooit is gepubliceerd (bv. Tasgram, Tommy Jeans).
 - **Pagina's:** Home, Projecten (`/projecten`, met filters; intro, prijsfilter en SEO in het document *Projecten* onder Pagina's), Project (`/projecten/<slug>`), Contact (geen formulier) en pagina's uit Sanity op `/<slug>` (`src/pages/[slug].astro`): Over, Privacy en wat er bij komt. Template *Bouwstenen* of *Tekst* (één lopende tekst met koppen, zoals Privacy).
+- **Woordmerk:** versies als *Woordmerkanimatie* (editor in het document, publiceren = live). Welke versie in intro, header en footer, en de intro aan/uit met duur: Site-instellingen → Woordmerk. `/brand/editor` los blijft een speelplaats; zijn export is de standaardversie (`src/lib/brand/woordmerk.json`, via PR).
 - **Menu en footer:** in de Site-instellingen (tabs Menu en Footer). Footer = vier kolommen, de eerste twee breed; een link naar `#cookies` wordt de knop Cookie-instellingen.
 - **Bouwstenen:** hero, text, image, gallery, columns, quote, video, colors, beforeAfter, projectGrid, team, list, cta, services, logos, downloads.
 

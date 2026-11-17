@@ -29,7 +29,10 @@ export const interlude = {
    * - `minCoverTime`: keep it covered at least this long (ms), counted from when
    *   Interlude starts: for an intro, or a preloader of the site's own.
    */
-  revealOnLoad: false as RevealOnLoad,
+  // LAGADO: de intro (src/components/Intro.astro, src/transitions/intro-lagado.ts). De server rendert de eerste
+  // pagina altijd bedekt; Intro.astro haalt de bedekking weg vóór de eerste paint als de intro niet hoeft
+  // (al gezien deze sessie, beweging beperken, uit in Sanity). De duur komt uit Sanity, niet uit minCoverTime.
+  revealOnLoad: { transition: 'intro-lagado' } as RevealOnLoad,
 
   /**
    * With `prefers-reduced-motion`: `'none'` swaps pages instantly; `'fade'`
