@@ -208,6 +208,7 @@ export const siteSettings = defineType({
     { name: 'algemeen', title: 'Algemeen', default: true },
     { name: 'menu', title: 'Menu' },
     { name: 'footer', title: 'Footer' },
+    { name: 'woordmerk', title: 'Woordmerk' },
     { name: 'statistiek', title: 'Statistiek' },
     { name: 'seo', title: 'SEO' },
   ],
@@ -253,6 +254,37 @@ export const siteSettings = defineType({
     defineField({ name: 'payoff', title: 'Payoff', type: 'string', group: 'algemeen', validation: (r) => r.required() }),
     defineField({ name: 'taal', title: 'Taal', type: 'string', group: 'algemeen', initialValue: 'nl', readOnly: true }),
     defineField({ name: 'url', title: 'URL', description: 'Zonder slash aan het eind.', type: 'url', group: 'algemeen', validation: (r) => r.required() }),
+    defineField({
+      name: 'woordmerk',
+      title: 'Woordmerk',
+      description: 'Welke woordmerkanimatie waar speelt. Leeg = de standaardversie van de site.',
+      type: 'object',
+      group: 'woordmerk',
+      fields: [
+        defineField({ name: 'intro', title: 'Intro', type: 'reference', to: [{ type: 'woordmerk' }] }),
+        defineField({ name: 'header', title: 'Header', description: 'Staat stil: het eerste frame.', type: 'reference', to: [{ type: 'woordmerk' }] }),
+        defineField({ name: 'footer', title: 'Footer', type: 'reference', to: [{ type: 'woordmerk' }] }),
+      ],
+    }),
+    defineField({
+      name: 'intro',
+      title: 'Intro',
+      description:
+        'Bij het eerste bezoek (één keer per sessie): het woordmerk op een vlak in de kleur van een willekeurig project, daarna schuift het vlak weg. Niet bij "beweging beperken" en over te slaan met een klik of toets.',
+      type: 'object',
+      group: 'woordmerk',
+      fields: [
+        defineField({ name: 'aan', title: 'Intro tonen', type: 'boolean', initialValue: true }),
+        defineField({
+          name: 'duur',
+          title: 'Duur (seconden)',
+          description: 'Hoe lang het woordmerk staat voor het vlak wegschuift. Hooguit 5 s (toegankelijkheid).',
+          type: 'number',
+          initialValue: 5,
+          validation: (r) => r.min(1.5).max(5),
+        }),
+      ],
+    }),
     defineField({
       name: 'analytics',
       title: 'Statistiek',

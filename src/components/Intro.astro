@@ -1,0 +1,85 @@
+---
+// Intro bij het eerste bezoek (één keer per sessie): het woordmerk op een vlak in de kleur van een willekeurig
+// project. Daarna schuift het vlak omhoog weg en verdwijnt het woordmerk achter de rand (src/transitions/intro-lagado.ts).
+//
+// Hoe: Interlude rendert de eerste pagina altijd bedekt (`revealOnLoad` in interlude.config.ts), want de CDN-cache
+// is voor iedereen gelijk. Het script hieronder staat direct na de Interlude-laag en draait vóór de eerste paint:
+// - al gezien in deze sessie, beweging beperken, of de intro staat uit: de laag op `idle`, de pagina staat er meteen;
+// - anders: een projectkleur kiezen en het vlak met het woordmerk in de laag zetten. De transitie onthult het na `duur`.
+// Geen cookie: sessionStorage, alleen in deze browser (AVG). Zonder JavaScript: geen intro (Interlude.astro).
+import { STANDAARD, type Versie } from '../lib/brand/wordmark';
+import type { Kaartkleur } from '../lib/projectkleur';
+import Wordmark from './brand/Wordmark.astro';
+
+interface Props {
+  aan: boolean;
+  /** Seconden dat het woordmerk staat, gerekend vanaf het begin van het laden. */
+  duur: number;
+  kleuren: Kaartkleur[];
+  versie?: Versie;
+}
+const { aan, duur, kleuren, versie = STANDAARD } = Astro.props;
+---
+
+{
+  aan && kleuren.length > 0 && (
+    <template id="intro-sjabloon">
+      <div class="intro" aria-hidden="true">
+        <div class="intro__merk">
+          <Wordmark variant="animated" versie={versie} mono decoratief />
+        </div>
+      </div>
+    </template>
+  )
+}
+
+<script is:inline define:vars={{ aan: aan && kleuren.length > 0, duur, kleuren }}>
+  (() => {
+    // Alleen bij het eerste laden: na een paginawissel draait dit script opnieuw, maar dan is de laag van Interlude.
+    if (window.lagadoIntro) return;
+    window.lagadoIntro = true;
+    const laag = document.querySelector('[data-interlude]');
+    if (!laag || laag.dataset.state !== 'covered') return;
+
+    let gezien = false;
+    try {
+      gezien = sessionStorage.getItem('lagado-intro') === '1';
+      sessionStorage.setItem('lagado-intro', '1');
+    } catch {}
+    const sjabloon = document.getElementById('intro-sjabloon');
+    if (!aan || gezien || !sjabloon || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      laag.dataset.state = 'idle';
+      delete laag.dataset.cover;
+      delete laag.dataset.transition;
+      return;
+    }
+
+    const kleur = kleuren[Math.floor(Math.random() * kleuren.length)];
+    const intro = sjabloon.content.firstElementChild.cloneNode(true);
+    intro.style.setProperty('--intro-vlak', kleur.vlak);
+    intro.style.setProperty('--intro-tekst', kleur.tekst);
+    laag.style.setProperty('--interlude-color', kleur.vlak);
+    laag.dataset.introDuur = String(duur);
+    laag.append(intro);
+  })();
+</script>
+
+<style is:global>
+  .intro {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: var(--intro-vlak);
+    color: var(--intro-tekst);
+    /* Het masker: de onderrand schuift omhoog (intro-lagado.ts), het woordmerk blijft staan en verdwijnt erachter. */
+    clip-path: inset(0 0 0 0);
+  }
+  .intro__merk {
+    inline-size: min(80vw, 44rem);
+  }
+  .intro .wm {
+    --g: var(--intro-tekst);
+    inline-size: 100%;
+  }
+</style>

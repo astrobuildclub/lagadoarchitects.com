@@ -6,6 +6,7 @@
 // De balk plakt bovenaan: naar beneden scrollen schuift hem weg, naar boven scrollen haalt hem terug.
 import type { Contact, Settings } from '../lib/schema';
 import Wordmark from './brand/Wordmark.astro';
+import { maakVersie } from '../lib/brand/wordmark';
 import ThemeToggle from './ThemeToggle.astro';
 import { cleanPath } from '../lib/url';
 
@@ -17,12 +18,20 @@ const { settings, contact } = Astro.props;
 const { adres, bedrijf } = contact;
 const path = cleanPath(Astro.url.pathname);
 const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`);
+const headerVersie = settings.woordmerk.header ? maakVersie(settings.woordmerk.header) : undefined;
 ---
 
 <header class="site-header">
   <div class="wrapper wrapper--full site-header__inner">
     <a class="site-header__logo" href="/">
-      <Wordmark mono maat="klein" decoratief class="site-header__wordmark" />
+      {
+        // Gekozen versie (Site-instellingen → Woordmerk): stil, het eerste frame. Anders de kleine variant die één keer speelt.
+        headerVersie ? (
+          <Wordmark variant="static" versie={headerVersie} mono decoratief class="site-header__wordmark" />
+        ) : (
+          <Wordmark mono maat="klein" decoratief class="site-header__wordmark" />
+        )
+      }
       <span class="site-header__toevoeging" aria-hidden="true">architects</span>
       <span class="visually-hidden">{settings.siteNaam}</span>
     </a>

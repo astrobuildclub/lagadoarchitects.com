@@ -38,9 +38,16 @@ const BLOCKS = groq`
   _type == "downloads" => { "items": items[] { label, "bestand": ${DL} } }
 `;
 
+const WOORDMERK = groq`{ _id, naam, data }`;
+
 export const SETTINGS_QUERY = groq`*[_id == "siteSettings"][0] {
   ...,
-  seo { ..., "deelAfbeelding": deelAfbeelding { ${IMG} } }
+  seo { ..., "deelAfbeelding": deelAfbeelding { ${IMG} } },
+  "woordmerk": {
+    "intro": woordmerk.intro-> ${WOORDMERK},
+    "header": woordmerk.header-> ${WOORDMERK},
+    "footer": woordmerk.footer-> ${WOORDMERK}
+  }
 }`;
 
 const PAGE = groq`{

@@ -4,7 +4,9 @@
  * dan opnieuw tekenen. De vormen en de animatie komen uit raster.ts, dus wat je hier ziet is wat de site toont.
  */
 import { EASES, animatie, paden, type Ease, type Stap, type Vorm } from '../lib/brand/raster';
-import { DATA, KLEIN_MAX, maakKlein, vulAan, type WoordmerkData } from '../lib/brand/wordmark';
+import { frameSvg, geanimeerdSvg, letterSvg, standenSvg, stilstanden } from '../lib/brand/svg';
+import { DATA, KLEIN_MAX, bouwLetters, maakKlein, vulAan, type WoordmerkData } from '../lib/brand/wordmark';
+import { zip } from '../lib/brand/zip';
 
 type Hoek = '' | 's' | 'r';
 interface Punt {
@@ -37,6 +39,11 @@ interface Staat {
 }
 
 const SLEUTEL = 'woordmerk-editor';
+/**
+ * In de Studio (schema/components/WoordmerkInput.tsx, iframe met ?ingebed): Sanity is de bron. Geen autosave in
+ * localStorage; elke wijziging gaat via postMessage naar de Studio, die hem als concept bewaart.
+ */
+const INGEBED = new URLSearchParams(location.search).has('ingebed');
 const PUNT = /^(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)(?:([rs])(\d*\.?\d+)?)?$/;
 const EASE_NAMEN = Object.keys(EASES) as Ease[];
 const BLOK = 2;
@@ -144,7 +151,13 @@ function klem() {
   }
 }
 
+let naarStudio: ReturnType<typeof setTimeout> | undefined;
 function bewaar() {
+  if (INGEBED) {
+    clearTimeout(naarStudio);
+    naarStudio = setTimeout(() => parent.postMessage({ type: 'woordmerk:wijziging', data: json() }, location.origin), 300);
+    return;
+  }
   try {
     localStorage.setItem(SLEUTEL, momentopname());
   } catch {}
@@ -721,6 +734,73 @@ function lus() {
   requestAnimationFrame(lus);
 }
 
+/* ───────────── Downloads (SVG) ───────────── */
+
+function download(blob: Blob, naam: string) {
+  const url = URL.createObjectURL(blob);
+  Object.assign(document.createElement('a'), { href: url, download: naam }).click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+const svgBlob = (svg: string) => new Blob([svg], { type: 'image/svg+xml' });
+
+/** De letters zoals de site ze uitrekent; null (met melding) als de animatie nog niet klopt. */
+function sitLetters() {
+  try {
+    return bouwLetters(naarData(staat));
+  } catch (e) {
+    meld(`Niet gedownload: ${(e as Error).message}.`, true);
+    return null;
+  }
+}
+
+function sluitMenu() {
+  document.querySelector<HTMLDetailsElement>('.downloads')?.removeAttribute('open');
+}
+
+$('dl-frame').addEventListener('click', () => {
+  const letters = sitLetters();
+  if (!letters) return;
+  // Het moment op de tijdlijn (groot: de lus van de site).
+  const t = sel.maat === 'groot' ? +scrub.value : 0;
+  download(svgBlob(frameSvg(letters, t)), `lagado-${komma(t).replace(',', '-')}s.svg`);
+  meld(`SVG van het woordmerk op ${komma(t)} s gedownload.`);
+  sluitMenu();
+});
+
+$('dl-anim').addEventListener('click', () => {
+  const letters = sitLetters();
+  if (!letters) return;
+  download(svgBlob(geanimeerdSvg(letters)), 'lagado-geanimeerd.svg');
+  meld('Geanimeerde SVG gedownload. Open hem in een browser om hem te zien bewegen.');
+  sluitMenu();
+});
+
+$('dl-alles').addEventListener('click', () => {
+  const letters = sitLetters();
+  if (!letters) return;
+  const bestanden: Record<string, string> = {};
+  const nr = (n: number) => String(n + 1).padStart(2, '0');
+  // Elk moment waarop alle letters stilstaan: de standen die samen in beeld komen.
+  // Eerst de rust (elke letter in zijn eerste frame, zoals de header), dan elk moment waarop alle letters
+  // tegelijk stilstaan in de lus.
+  const rust = letters.map((l) => l.stappen[0].stand);
+  const reeks = [rust, ...stilstanden(letters).map((f) => f.standen)].filter((st, n, rij) => rij.findIndex((x) => x.join() === st.join()) === n);
+  reeks.forEach((standen, n) => {
+    const naam = standen.map((s, i) => letters[i].standen[s].id).join('-');
+    bestanden[`frames/${nr(n)}-${naam}.svg`] = standenSvg(letters, standen);
+  });
+  // Elke stand van elke letter los.
+  letters.forEach((l, i) =>
+    l.standen.forEach((s, n) => {
+      bestanden[`letters/${nr(i)}-${l.teken}/${nr(n)}-${s.id}.svg`] = letterSvg(s.d, `${l.teken}: ${s.label}`);
+    }),
+  );
+  bestanden['lagado-geanimeerd.svg'] = geanimeerdSvg(letters);
+  download(zip(bestanden), 'lagado-woordmerk.zip');
+  meld(`${Object.keys(bestanden).length} SVG's gedownload als ZIP.`);
+  sluitMenu();
+});
+
 /* ───────────── Export en import ───────────── */
 
 const json = () => `${JSON.stringify(naarData(staat), null, 2)}\n`;
@@ -796,6 +876,7 @@ document.addEventListener('keydown', (e) => {
 /* ───────────── Start ───────────── */
 
 function laad(): Staat {
+  if (INGEBED) return vanData(DATA); // tot de Studio de versie stuurt (woordmerk:laad)
   try {
     const bewaard = localStorage.getItem(SLEUTEL);
     if (bewaard && bewaard !== JSON.stringify(DATA)) {
@@ -811,6 +892,32 @@ function laad(): Staat {
 staat = laad();
 render();
 lus();
+
+if (INGEBED) {
+  window.addEventListener('message', (e: MessageEvent<{ type?: string; data?: string; alleenLezen?: boolean }>) => {
+    if (e.origin !== location.origin || e.source !== parent || e.data?.type !== 'woordmerk:laad') return;
+    try {
+      const d = (e.data.data ? JSON.parse(e.data.data) : DATA) as WoordmerkData;
+      valideer(d);
+      if (d.letters.length !== DATA.letters.length) throw new Error(`verwacht ${DATA.letters.length} letters, kreeg er ${d.letters.length}`);
+      staat = vanData(d);
+      terug.length = 0;
+      vooruit.length = 0;
+      sel.frame = 0;
+      sel.punt = null;
+      klem();
+      render();
+      meld(e.data.alleenLezen ? 'Alleen lezen: je kunt hier niets wijzigen.' : '');
+    } catch (err) {
+      meld(`Deze versie kan niet geladen worden: ${(err as Error).message}`, true);
+    }
+  });
+  // Esc sluit het volledige scherm in de Studio (de toets komt in de iframe binnen, niet bij de Studio).
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !(e.target as HTMLElement).matches('input, select, textarea')) parent.postMessage({ type: 'woordmerk:sluit' }, location.origin);
+  });
+  parent.postMessage({ type: 'woordmerk:gereed' }, location.origin);
+}
 if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
   zetTijd(0);
   woord.pauseAnimations();

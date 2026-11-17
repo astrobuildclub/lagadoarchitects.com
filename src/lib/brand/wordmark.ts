@@ -90,21 +90,27 @@ export function maakKlein(l: WoordmerkData['letters'][number], naam = l.id): Kle
   return { standen, stappen, duur, anim: { keyTimes, values } };
 }
 
-export const LETTERS: Letter[] = DATA.letters.map((l, i) => {
-  const vormen = l.standen.map((s) => s.vorm);
-  const d = paden(vormen, l.id);
-  const stappen = vulAan(l.stappen, DUUR, l.id);
-  const { keyTimes, values } = animatie(vormen, stappen, l.id);
-  return {
-    ...l,
-    stappen,
-    duur: DUUR,
-    x: i * 12,
-    standen: l.standen.map((s, n) => ({ ...s, d: d[n] })),
-    anim: { keyTimes, values },
-    klein: maakKlein(l),
-  };
-});
+/** Letters uitrekenen uit woordmerk-data: uit woordmerk.json of uit een woordmerkdocument in Sanity. */
+export function bouwLetters(data: WoordmerkData): Letter[] {
+  return data.letters.map((l, i) => {
+    const vormen = l.standen.map((s) => s.vorm);
+    const d = paden(vormen, l.id);
+    const stappen = vulAan(l.stappen, data.duur, l.id);
+    const { keyTimes, values } = animatie(vormen, stappen, l.id);
+    return {
+      ...l,
+      stappen,
+      duur: data.duur,
+      x: i * 12,
+      standen: l.standen.map((s, n) => ({ ...s, d: d[n] })),
+      anim: { keyTimes, values },
+      klein: maakKlein(l),
+    };
+  });
+}
+
+/** De standaardversie (woordmerk.json): voor /brand, de editor en als er in Sanity niets gekozen is. */
+export const LETTERS: Letter[] = bouwLetters(DATA);
 
 /** Schetsvormen: statisch, andere puntopbouw, niet in de animatie. Index = kolom in de matrix. */
 export const SCHETSEN: (Stand | null)[] = [
@@ -154,4 +160,35 @@ export function contrast(hex: string) {
   const [r, g, b] = [1, 3, 5].map((i) => lin(parseInt(hex.slice(i, i + 2), 16)));
   const y = 0.2126 * r + 0.7152 * g + 0.0722 * b;
   return { wit: 1.05 / (y + 0.05), zwart: (y + 0.05) / 0.05 };
+}
+
+/**
+ * Een versie van het woordmerk op de pagina. Elke versie krijgt eigen ids in de defs (`wm-<sleutel>-L1`), zodat
+ * bv. de intro en de footer elk een andere animatie kunnen spelen. De standaardversie heeft geen sleutel (`wm-L1`).
+ */
+export interface Versie {
+  sleutel: string;
+  letters: Letter[];
+}
+export const STANDAARD: Versie = { sleutel: '', letters: LETTERS };
+
+/** Id in de defs voor een stand of glyph van deze versie. */
+export const idVan = (v: Versie, id: string) => (v.sleutel ? `wm-${v.sleutel}-${id}` : `wm-${id}`);
+
+const versies = new Map<string, Versie>();
+/** Versie uit een woordmerkdocument in Sanity. Ontbreekt hij of klopt de data niet: de standaardversie. */
+export function maakVersie(doc: { id: string; naam?: string; data: WoordmerkData } | null | undefined): Versie {
+  if (!doc) return STANDAARD;
+  const sleutel = `v${doc.id.replace(/[^a-zA-Z0-9]/g, '').slice(0, 12)}`;
+  const cacheSleutel = `${sleutel}:${JSON.stringify(doc.data)}`;
+  const hit = versies.get(cacheSleutel);
+  if (hit) return hit;
+  try {
+    const versie = { sleutel, letters: bouwLetters(doc.data) };
+    versies.set(cacheSleutel, versie);
+    return versie;
+  } catch (e) {
+    console.error(`Woordmerk ${doc.naam || doc.id}: ${(e as Error).message}; standaardversie gebruikt`);
+    return STANDAARD;
+  }
 }

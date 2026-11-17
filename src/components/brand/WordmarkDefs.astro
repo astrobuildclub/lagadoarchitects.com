@@ -5,37 +5,47 @@
 // Kleur via --g op de <use> of een ouder; die erft door in de schaduwboom van de <use>.
 // Kleine variant: eigen standen en een glyph per letter (#wm-k-gL …) die één keer speelt (begin="indefinite"),
 // gestart door het script hieronder bij laden en bij hover of focus. Zonder JavaScript staat hij stil.
-import { LETTERS, SCHETSEN } from '../../lib/brand/wordmark';
+// Versies: de standaardversie (woordmerk.json) staat er altijd; andere versies uit Sanity (`versies`) krijgen
+// eigen ids (`#wm-<sleutel>-L1`, zie idVan in wordmark.ts). De kleine variant en de schetsen alleen standaard.
+import { LETTERS, SCHETSEN, STANDAARD, idVan, type Versie } from '../../lib/brand/wordmark';
+
+interface Props {
+  /** Extra versies naast de standaard (dubbele worden overgeslagen). */
+  versies?: Versie[];
+}
+const { versies = [] } = Astro.props;
+const alle = [STANDAARD, ...versies].filter((v, i, rij) => rij.findIndex((w) => w.sleutel === v.sleutel) === i);
 
 const grootIds = new Set(LETTERS.flatMap((l) => l.standen.map((s) => s.id)));
 const kleinStanden = LETTERS.flatMap((l) => l.klein.standen).filter((s) => !grootIds.has(s.id));
-
 ---
 
 <svg class="wm-defs" width="0" height="0" aria-hidden="true" focusable="false">
   <defs>
     {
-      LETTERS.flatMap((l) =>
-        l.standen.map((s) => <path id={`wm-${s.id}`} class="wm-gp" d={s.d} fill-rule="evenodd" />),
+      alle.flatMap((v) =>
+        v.letters.flatMap((l) => l.standen.map((s) => <path id={idVan(v, s.id)} class="wm-gp" d={s.d} fill-rule="evenodd" />)),
       )
     }
     {SCHETSEN.filter((s) => s !== null).map((s) => <path id={`wm-${s.id}`} class="wm-gp" d={s.d} fill-rule="evenodd" />)}
     {
-      LETTERS.map((l) => (
-        <g id={`wm-${l.id}`}>
-          <path class="wm-gp" d={l.standen[l.stappen[0].stand].d} fill-rule="evenodd">
-            <animate
-              attributeName="d"
-              dur={`${l.duur}s`}
-              begin={`${l.begin}s`}
-              repeatCount="indefinite"
-              calcMode="linear"
-              keyTimes={l.anim.keyTimes}
-              values={l.anim.values}
-            />
-          </path>
-        </g>
-      ))
+      alle.flatMap((v) =>
+        v.letters.map((l) => (
+          <g id={idVan(v, l.id)}>
+            <path class="wm-gp" d={l.standen[l.stappen[0].stand].d} fill-rule="evenodd">
+              <animate
+                attributeName="d"
+                dur={`${l.duur}s`}
+                begin={`${l.begin}s`}
+                repeatCount="indefinite"
+                calcMode="linear"
+                keyTimes={l.anim.keyTimes}
+                values={l.anim.values}
+              />
+            </path>
+          </g>
+        )),
+      )
     }
     {kleinStanden.map((s) => <path id={`wm-${s.id}`} class="wm-gp" d={s.d} fill-rule="evenodd" />)}
     {

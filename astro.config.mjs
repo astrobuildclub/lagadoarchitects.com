@@ -40,6 +40,7 @@ export default defineConfig({
         'sanity/structure',
         'sanity/presentation',
         '@sanity/locale-nl-nl',
+        '@sanity/icons/Bolt',
         '@sanity/icons/Cog',
         '@sanity/icons/Documents',
         '@sanity/icons/Projects',

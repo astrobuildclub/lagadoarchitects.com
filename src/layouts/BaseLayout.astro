@@ -6,8 +6,11 @@ import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import WordmarkDefs from '../components/brand/WordmarkDefs.astro';
 import Interlude from '../components/Interlude.astro';
+import Intro from '../components/Intro.astro';
 import SiteMeta from '../components/SiteMeta.astro';
-import { getContact, getSettings } from '../lib/content';
+import { maakVersie } from '../lib/brand/wordmark';
+import { getContact, getProjects, getSettings } from '../lib/content';
+import { kaartkleur } from '../lib/projectkleur';
 import VisualEditing from '../lib/sanity/VisualEditing';
 import type { SanityImage } from '../lib/schema';
 import { organizationJsonLd, websiteJsonLd } from '../lib/seo';
@@ -35,6 +38,11 @@ const structuredData = [organizationJsonLd(settings, contact), websiteJsonLd(set
 // Alleen in de iframe van de Presentation tool, met een geldige preview-cookie (middleware.ts).
 const visualEditing = Astro.locals.visualEditing;
 const stats = settings.analytics;
+// Woordmerkversies uit de Site-instellingen (leeg = woordmerk.json); de defs krijgen ze allemaal.
+const woordmerk = { intro: maakVersie(settings.woordmerk.intro), header: maakVersie(settings.woordmerk.header), footer: maakVersie(settings.woordmerk.footer) };
+// Intro: niet in de Presentation tool. Kleuren van alle projecten; de browser kiest er één (de CDN-cache is voor iedereen gelijk).
+const introAan = settings.intro.aan && !visualEditing;
+const introKleuren = introAan ? await Promise.all((await getProjects()).map(kaartkleur)) : [];
 ---
 
 <!doctype html>
@@ -85,8 +93,9 @@ const stats = settings.analytics;
   <body>
     <!-- Paginatransities (Interlude, zie TRANSITIONS.md §7): direct kind van <body>. -->
     <Interlude />
+    <Intro aan={introAan} duur={settings.intro.duur} kleuren={introKleuren} versie={woordmerk.intro} />
     <a class="skip-link" href="#inhoud">Naar de inhoud</a>
-    <WordmarkDefs />
+    <WordmarkDefs versies={Object.values(woordmerk)} />
     <Header settings={settings} contact={contact} />
     <main id="inhoud" tabindex="-1">
       <slot />

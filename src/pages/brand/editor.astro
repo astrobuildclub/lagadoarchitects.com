@@ -8,22 +8,33 @@ export const prerender = true;
 ---
 
 <BrandLayout title="Woordmerk-editor" description="Hoekpunten en beweging van het LAGADO-woordmerk bewerken en exporteren.">
-  <header class="kop wrapper--full">
-    <a href="/brand" class="kop__terug">← Brand</a>
+  <script is:inline>
+    if (new URLSearchParams(location.search).has('ingebed')) document.documentElement.dataset.ingebed = '';
+  </script>
+  <header class="kop wrapper wrapper--full">
+    <a href="/brand" class="kop__terug alleen-los">← Brand</a>
     <h1 class="kop__titel">Woordmerk-editor</h1>
     <div class="kop__knoppen">
       <button type="button" class="knop" id="ongedaan" title="⌘Z">Ongedaan maken</button>
       <button type="button" class="knop" id="opnieuw" title="⇧⌘Z">Opnieuw</button>
-      <label class="knop">
+      <details class="downloads">
+        <summary class="knop">Downloaden</summary>
+        <div class="downloads__menu">
+          <button type="button" class="knop" id="dl-frame">SVG: dit moment</button>
+          <button type="button" class="knop" id="dl-anim">SVG: geanimeerd</button>
+          <button type="button" class="knop" id="dl-alles">Alle frames (ZIP)</button>
+        </div>
+      </details>
+      <label class="knop alleen-los">
         Importeren
         <input type="file" id="importeer" accept=".json,application/json" class="visually-hidden" />
       </label>
-      <button type="button" class="knop" id="kopieer">JSON kopiëren</button>
-      <button type="button" class="knop knop--vol" id="exporteer">Exporteren</button>
+      <button type="button" class="knop alleen-los" id="kopieer">JSON kopiëren</button>
+      <button type="button" class="knop knop--vol alleen-los" id="exporteer">Exporteren</button>
     </div>
   </header>
 
-  <main id="inhoud" class="wrapper--full editor" tabindex="-1">
+  <main id="inhoud" class="wrapper wrapper--full editor" tabindex="-1">
     <p id="melding" class="melding" role="status" aria-live="polite"></p>
 
     <div class="kiezer">
@@ -126,17 +137,16 @@ export const prerender = true;
     <section class="woord-vak" aria-labelledby="woord-kop">
       <h2 id="woord-kop" class="vak__kop">Woordmerk</h2>
       <svg id="woord" class="woord" viewBox="0 0 70 10" role="img" aria-label="LAGADO, voorbeeld van alle letters"></svg>
-      <h3 class="vak__kop ware-kop">Op ware grootte</h3>
       <dl class="ware">
-        <div><dt>Klein · header (14 px)</dt><dd><svg data-ware="klein" viewBox="0 0 70 10" style="block-size: 14px" aria-hidden="true"></svg></dd></div>
-        <div><dt>Groot · footer (volle breedte)</dt><dd><svg data-ware="groot" viewBox="0 0 70 10" class="ware__vol" aria-hidden="true"></svg></dd></div>
+        <div><dt>Klein · header, 14 px hoog</dt><dd><svg data-ware="klein" viewBox="0 0 70 10" style="block-size: 14px" aria-hidden="true"></svg></dd></div>
+        <div><dt>Groot · footer en intro, volle breedte</dt><dd><svg data-ware="groot" viewBox="0 0 70 10" class="ware__vol" aria-hidden="true"></svg></dd></div>
       </dl>
       <p class="noot muted">
         <strong>Klein</strong> staat alleen in de header (de nav): rustiger vormen, en hij speelt één keer (bij laden en bij
         hover), niet in een lus. <strong>Groot</strong> staat overal elders, zoals in de footer over de volle breedte. Hier herhaalt hij, zodat je hem kunt beoordelen. De stilstand van
         frame 1 is de wachttijd vóór de beweging; zo lopen de letters na elkaar.
       </p>
-      <p class="noot muted">
+      <p class="noot muted alleen-los">
         Klaar? <strong>Exporteren</strong> geeft <code>woordmerk.json</code>: vervang daarmee <code>src/lib/brand/woordmerk.json</code>,
         of stuur het door. Je werk blijft tussendoor bewaard in deze browser.
         <button type="button" class="linkknop" id="terugzetten">Terugzetten naar de versie van de site</button>
@@ -150,6 +160,32 @@ export const prerender = true;
 </script>
 
 <style>
+  /* In de Studio (?ingebed, schema/components/WoordmerkInput.tsx): Sanity bewaart, dus geen import, export of autosave. */
+  :global(:root[data-ingebed]) .alleen-los {
+    display: none;
+  }
+  .downloads {
+    position: relative;
+  }
+  .downloads > summary {
+    list-style: none;
+    cursor: pointer;
+  }
+  .downloads > summary::-webkit-details-marker {
+    display: none;
+  }
+  .downloads__menu {
+    position: absolute;
+    inset-block-start: calc(100% + 0.25rem);
+    inset-inline-end: 0;
+    z-index: 10;
+    display: grid;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    background: var(--color-bg);
+    border: 1px solid var(--color-line);
+    white-space: nowrap;
+  }
   .kiezer {
     display: flex;
     flex-wrap: wrap;
@@ -164,19 +200,15 @@ export const prerender = true;
   :global(:root[data-ed-klein]) .alleen-groot {
     display: none;
   }
-  .ware-kop {
-    margin-block-start: 1.5rem;
-  }
   .ware {
     display: grid;
-    gap: 0.75rem;
-    margin: 0.75rem 0 0;
+    gap: 2rem;
+    margin: 2rem 0 0;
   }
+  /* Label boven het voorbeeld. */
   .ware > div {
     display: grid;
-    grid-template-columns: minmax(10rem, max-content) 1fr;
-    gap: 1rem;
-    align-items: center;
+    gap: 0.5rem;
   }
   .ware dt {
     font-size: 0.8125rem;

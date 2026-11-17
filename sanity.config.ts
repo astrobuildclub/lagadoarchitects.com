@@ -4,6 +4,7 @@ import { nlNLLocale } from '@sanity/locale-nl-nl';
 import { CogIcon } from '@sanity/icons/Cog';
 import { DocumentsIcon } from '@sanity/icons/Documents';
 import { ProjectsIcon } from '@sanity/icons/Projects';
+import { BoltIcon } from '@sanity/icons/Bolt';
 import { defineConfig } from 'sanity';
 import { presentationTool } from 'sanity/presentation';
 import { structureTool } from 'sanity/structure';
@@ -52,6 +53,7 @@ export default defineConfig({
                   .canHandleIntent((intent, { type }) => ['create', 'edit'].includes(intent) && ['page', 'projectenPagina', 'contact'].includes(type)),
               ),
             S.divider(),
+            S.documentTypeListItem('woordmerk').title('Woordmerkanimaties').icon(BoltIcon),
             S.listItem()
               .title(SINGLETONS.siteSettings.title)
               .id('siteSettings')

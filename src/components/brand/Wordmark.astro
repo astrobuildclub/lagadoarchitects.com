@@ -7,7 +7,8 @@
 // mono: altijd één kleur (kleinste maten, header). Anders volgt de kleur [data-kleur] op de wortel.
 // maat="klein": de kleine variant (rustiger vormen, speelt één keer bij laden en bij hover). Alleen voor de header
 // (de nav); overal elders, zoals de footer, de grote. Alleen bij animated en static.
-import { LETTERS, LETTERKLEUR_DONKER, LETTERKLEUR_LICHT, TEGEL, TEGELS, WOORD_BREEDTE, type Kleur } from '../../lib/brand/wordmark';
+// versie: een woordmerkanimatie uit Sanity (maakVersie); de defs moeten hem ook krijgen (BaseLayout). Leeg = standaard.
+import { LETTERKLEUR_DONKER, LETTERKLEUR_LICHT, STANDAARD, TEGEL, TEGELS, WOORD_BREEDTE, idVan, type Kleur, type Versie } from '../../lib/brand/wordmark';
 
 interface Props {
   variant?: 'animated' | 'static' | 'tiles' | 'hover';
@@ -21,17 +22,20 @@ interface Props {
   invert?: boolean;
   /** Verborgen voor hulptechnologie, als de naam al als tekst ernaast staat (header, footer). */
   decoratief?: boolean;
+  /** Woordmerkanimatie uit Sanity. Leeg = woordmerk.json. De kleine variant bestaat alleen in de standaardversie. */
+  versie?: Versie;
   class?: string;
   style?: string;
 }
 
-const { variant = 'animated', maat = 'groot', mono = false, label = 'LAGADO', href = '/', invert = false, decoratief = false, class: className, style } = Astro.props;
+const { variant = 'animated', maat = 'groot', mono = false, label = 'LAGADO', href = '/', invert = false, decoratief = false, versie = STANDAARD, class: className, style } = Astro.props;
+const LETTERS = versie.letters;
 
 const kleur = (k: Kleur) => `var(--wm-${k})`;
 const letterStijl = (i: number) => (mono ? undefined : `--g-licht: ${kleur(LETTERKLEUR_LICHT[i])}; --g-donker: ${kleur(LETTERKLEUR_DONKER[i])}`);
-const klein = maat === 'klein';
-const animId = (l: (typeof LETTERS)[number]) => (klein ? `wm-k-${l.id}` : `wm-${l.id}`);
-const stilId = (l: (typeof LETTERS)[number]) => `wm-${klein ? l.klein.standen[l.klein.stappen[0].stand].id : l.standen[0].id}`;
+const klein = maat === 'klein' && versie === STANDAARD;
+const animId = (l: (typeof LETTERS)[number]) => (klein ? `wm-k-${l.id}` : idVan(versie, l.id));
+const stilId = (l: (typeof LETTERS)[number]) => (klein ? `wm-${l.klein.standen[l.klein.stappen[0].stand].id}` : idVan(versie, l.standen[l.stappen[0].stand].id));
 const tegelStijl = (i: number) => `--tegel: ${kleur(TEGELS[i][0])}; --letter: ${kleur(TEGELS[i][1])}`;
 ---
 
@@ -75,8 +79,8 @@ const tegelStijl = (i: number) => `--tegel: ${kleur(TEGELS[i][0])}; --letter: ${
         <g style={tegelStijl(i)} data-even={i % 2 === 0 ? '' : undefined} data-zwart={TEGELS[i][0] === 'zwart' ? '' : undefined}>
           <rect class="wm-tegel" x={i * TEGEL + 0.06} y="0.06" width={TEGEL - 0.12} height={TEGEL - 0.12} />
           <g class="wm-tl" transform={`translate(${i * TEGEL + 2} 2)`}>
-            <use class="wm-anim" href={`#wm-${l.id}`} />
-            <use class="wm-still" href={`#wm-${l.standen[0].id}`} />
+            <use class="wm-anim" href={`#${idVan(versie, l.id)}`} />
+            <use class="wm-still" href={`#${idVan(versie, l.standen[0].id)}`} />
           </g>
         </g>
       ))}
@@ -91,7 +95,7 @@ const tegelStijl = (i: number) => `--tegel: ${kleur(TEGELS[i][0])}; --letter: ${
         <span class="wm-hl" style={`--i: ${i}`}>
           {l.hover.map((stand, n) => (
             <svg class:list={['wm', n === 0 ? 'wm-s1' : 'wm-s2', { 'wm--mono': mono }]} viewBox="0 0 10 10" aria-hidden="true">
-              <use href={`#wm-${l.standen[stand].id}`} class="wm-l" style={letterStijl(i)} />
+              <use href={`#${idVan(versie, l.standen[stand].id)}`} class="wm-l" style={letterStijl(i)} />
             </svg>
           ))}
         </span>
