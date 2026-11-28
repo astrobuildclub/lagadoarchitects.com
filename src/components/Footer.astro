@@ -21,7 +21,10 @@ const kolommen = settings.footer.kolommen.filter((k) => heeftTekst(k.tekst));
     <div class="site-footer__grid">
       {
         kolommen.map((k, i) => (
-          <div class:list={['site-footer__kolom', i === 0 && 'site-footer__tekst']}>
+          <div
+            class:list={['site-footer__kolom', i === 0 && 'site-footer__tekst']}
+            data-words-in={i === 0 ? 'split' : undefined}
+          >
             <RichText value={k.tekst} />
           </div>
         ))
@@ -33,28 +36,7 @@ const kolommen = settings.footer.kolommen.filter((k) => heeftTekst(k.tekst));
 </footer>
 
 <script>
-  // Brand story inkleuren: bij elke pagina een willekeurige projectkleur (lijst uit Intro.astro), en zodra de
-  // tekst voor de helft in beeld is groeit het vlak omhoog (CSS). Eén keer per pagina.
-  function initInkleuren() {
-    const tekst = document.querySelector<HTMLElement>('.site-footer__tekst');
-    const kleuren = (window as { lagadoKleuren?: { vlak: string; tekst: string }[] }).lagadoKleuren ?? [];
-    if (!tekst || kleuren.length === 0) return;
-    const kleur = kleuren[Math.floor(Math.random() * kleuren.length)];
-    tekst.style.setProperty('--footer-vlak', kleur.vlak);
-    tekst.style.setProperty('--footer-tekst', kleur.tekst);
-    tekst.dataset.inkleuren = 'uit';
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        io.disconnect();
-        tekst.dataset.inkleuren = 'aan';
-      },
-      { threshold: 0.5 },
-    );
-    io.observe(tekst);
-    document.addEventListener('astro:before-swap', () => io.disconnect(), { once: true });
-  }
-  document.addEventListener('astro:page-load', initInkleuren);
+  import '../scripts/words-in';
 </script>
 
 <style>
@@ -95,37 +77,6 @@ const kolommen = settings.footer.kolommen.filter((k) => heeftTekst(k.tekst));
   }
   .site-footer__tekst {
     max-inline-size: 60ch;
-  }
-  /* Het verhaal achter de naam kleurt in zodra het in beeld komt: een vlak in een projectkleur, zoals de intro,
-     dat van onderen omhoog groeit (script hieronder). De padding staat er altijd, zodat er niets verspringt.
-     Zonder JS of zonder kleuren: gewoon tekst. Bij `prefers-reduced-motion` meteen ingekleurd, zonder animatie. */
-  .site-footer__tekst[data-inkleuren] {
-    position: relative;
-    isolation: isolate;
-    align-self: start;
-    padding: var(--space-s);
-    transition: color 0.6s var(--ease) 0.3s;
-  }
-  .site-footer__tekst[data-inkleuren]::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background: var(--footer-vlak);
-    clip-path: inset(100% 0 0 0);
-    transition: clip-path 1.1s cubic-bezier(0.65, 0, 0.35, 1);
-  }
-  .site-footer__tekst[data-inkleuren='aan'] {
-    color: var(--footer-tekst);
-  }
-  .site-footer__tekst[data-inkleuren='aan']::before {
-    clip-path: inset(0 0 0 0);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .site-footer__tekst[data-inkleuren],
-    .site-footer__tekst[data-inkleuren]::before {
-      transition: none;
-    }
   }
   .site-footer__kolom :global(p + p) {
     margin-block-start: 1.125em;

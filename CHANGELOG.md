@@ -16,8 +16,8 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 
 ### Gewijzigd
 - Paginaovergang: het vlak heeft bij elke navigatie een andere projectkleur, zoals de intro, in plaats van zwart (`curtain-lagado`).
-- Links onder het projectraster op de home groter (`step-3`) via `Doorlinks.astro`.
-- Footer: het verhaal achter de naam kleurt in zodra het in beeld komt: een vlak in een willekeurige projectkleur (zoals de intro) groeit van onderen omhoog, met tekst in de kleur met het meeste contrast. Zonder animatie bij `prefers-reduced-motion`.
+- Links onder het projectraster op de home even groot als de kaarttitel (`step-2`) via `Doorlinks.astro`.
+- Footer: het verhaal achter de naam verschijnt woord voor woord zodra het in beeld komt, zoals de intro op een projectpagina (`words-in.ts`, nu met GSAP SplitText voor rich text via `data-words-in="split"`; lange teksten binnen ~3 s).
 - Header toont het eerste frame van de gekozen woordmerkversie, stil; zonder keuze blijft de kleine variant die één keer speelt.
 - Studio: veld *Kaartgrootte op de home* weg uit projecten. Het deed niets: het projectraster op de home gebruikt een vaste indeling.
 - Home: "Alle projecten" en "Over ons" onder het projectraster als tekstlinks in de stijl van de nav, in twee helften; de tweede begint waar "Projecten" in de nav begint. Projectkaarten komen met een stagger-reveal binnen zodra de eerste in beeld is (niet bij `prefers-reduced-motion`).
