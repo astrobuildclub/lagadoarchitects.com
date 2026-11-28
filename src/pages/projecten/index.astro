@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Doorlinks from '../../components/Doorlinks.astro';
 import PageHeader from '../../components/PageHeader.astro';
 import ProjectFilter from '../../components/ProjectFilter.astro';
 import ProjectList from '../../components/ProjectList.astro';
@@ -30,10 +31,20 @@ const page = { title: pagina.title, seo: pagina.seo, fallbackDescription: `Archi
         <ProjectList projects={projects} headingLevel={2} id="projecten" weergave />
       </div>
     </div>
+    {
+      pagina.links.length > 0 && (
+        <div class="wat__links">
+          <Doorlinks links={pagina.links} />
+        </div>
+      )
+    }
   </div>
 </BaseLayout>
 
 <style>
+  .wat__links {
+    margin-block-start: var(--space-xl);
+  }
   .wat__meta {
     display: flex;
     flex-wrap: wrap;

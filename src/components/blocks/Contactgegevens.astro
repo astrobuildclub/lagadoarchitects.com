@@ -20,7 +20,7 @@ const bedrijf = [
 const H = has(block.kop) ? 'h3' : 'h2';
 ---
 
-<section class="contactgegevens feature" aria-label={has(block.kop) ? undefined : 'Contactgegevens'}>
+<section class="contactgegevens feature" data-indeling={block.indeling} aria-label={has(block.kop) ? undefined : 'Contactgegevens'}>
   {has(block.kop) && <h2 class="contactgegevens__kop">{block.kop}</h2>}
   <div class="contactgegevens__grid">
     <section>
@@ -88,6 +88,12 @@ const H = has(block.kop) ? 'h3' : 'h2';
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
     gap: var(--space-l);
+  }
+  /* Twee kolommen (feedback Victor): vier kolommen over de featurebreedte waren te breed naast de smalle tekst. */
+  @media (min-width: 40rem) {
+    [data-indeling='twee'] .contactgegevens__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
   .contactgegevens__label {
     font-size: var(--step-0);

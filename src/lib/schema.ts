@@ -168,6 +168,12 @@ const projectGridBlock = z.object({
   links: z.array(link).default([]),
 });
 
+/** Grote tekstlinks naar andere pagina's (Doorlinks.astro), bv. onderaan Over. */
+const doorlinksBlock = z.object({
+  type: z.literal('doorlinks'),
+  links: z.array(link).default([]),
+});
+
 /** Grote, vette zin (mantra) over de breedte van de pagina. */
 const statementBlock = z.object({
   type: z.literal('statement'),
@@ -242,6 +248,8 @@ const downloadsBlock = z.object({
 const contactgegevensBlock = z.object({
   type: z.literal('contactgegevens'),
   kop: text,
+  /** `twee`: 2 × 2 (tussen tekst), `rij`: alles naast elkaar (onderaan, boven de footer). */
+  indeling: z.enum(['twee', 'rij']).default('twee'),
 });
 
 export const block = z.discriminatedUnion('type', [
@@ -263,6 +271,7 @@ export const block = z.discriminatedUnion('type', [
   logosBlock,
   downloadsBlock,
   contactgegevensBlock,
+  doorlinksBlock,
 ]);
 export type Block = z.infer<typeof block>;
 export type BlockOf<T extends Block['type']> = Extract<Block, { type: T }>;
@@ -348,6 +357,8 @@ export const projectenPaginaSchema = z.object({
   title: z.string().default('Projecten'),
   intro: rich,
   toonPrijsfilter: z.boolean().default(false),
+  /** Grote tekstlinks onder het overzicht (Doorlinks.astro). */
+  links: z.array(link).default([]),
   seo,
 });
 

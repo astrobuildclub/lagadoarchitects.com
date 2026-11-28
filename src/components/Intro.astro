@@ -35,6 +35,8 @@ const { aan, duur, kleuren, versie = STANDAARD } = Astro.props;
 
 <script is:inline define:vars={{ aan: aan && kleuren.length > 0, duur, kleuren }}>
   (() => {
+    // Vlakkleuren voor de paginaovergang (src/transitions/curtain-lagado.ts), ook als de intro niet speelt.
+    window.lagadoVlakken = kleuren.map((k) => k.vlak);
     // Alleen bij het eerste laden: na een paginawissel draait dit script opnieuw, maar dan is de laag van Interlude.
     if (window.lagadoIntro) return;
     window.lagadoIntro = true;

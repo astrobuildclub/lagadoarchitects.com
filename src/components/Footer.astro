@@ -68,8 +68,15 @@ const kolommen = settings.footer.kolommen.filter((k) => heeftTekst(k.tekst));
       grid-column: span 2;
     }
   }
+  /* Het verhaal achter de naam valt op tussen de praktische info: groter en vet, zoals de wisselende woorden in de
+     hero (feedback Victor). Zwart-wit, net als de rest van de footer. */
   .site-footer__tekst {
-    max-inline-size: 60ch;
+    max-inline-size: 34ch;
+    font-size: var(--step-1);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    text-wrap: pretty;
   }
   .site-footer__kolom :global(p + p) {
     margin-block-start: 1.125em;

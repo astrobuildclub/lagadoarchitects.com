@@ -191,6 +191,14 @@ export const projectenPagina = defineType({
       group: 'content',
       initialValue: false,
     }),
+    defineField({
+      name: 'links',
+      title: 'Links onder de projecten',
+      description: 'Grote tekstlinks onder het overzicht, bv. Over ons en Contact.',
+      type: 'array',
+      of: [{ type: 'link' }],
+      group: 'content',
+    }),
     defineField({ name: 'seo', title: 'SEO', type: 'seo', group: 'seo' }),
   ],
   preview: {

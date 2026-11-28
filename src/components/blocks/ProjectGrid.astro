@@ -1,4 +1,5 @@
 ---
+import Doorlinks from '../Doorlinks.astro';
 import ProjectList from '../ProjectList.astro';
 import { selectProjects } from '../../lib/content';
 import { has, type BlockProps } from './scope';
@@ -59,13 +60,7 @@ const links = [...(block.linkNaarOverzicht ? [block.linkNaarOverzicht] : []), ..
           </button>
         </p>
       )}
-      {links.length > 0 && (
-        <ul role="list" class="project-grid__links">
-          {links.map((l) => (
-            <li><a href={l.href}>{l.label}</a></li>
-          ))}
-        </ul>
-      )}
+      <Doorlinks links={links} />
     </section>
   )
 }
@@ -145,30 +140,6 @@ const links = [...(block.linkNaarOverzicht ? [block.linkNaarOverzicht] : []), ..
       translate 0.8s var(--ease) calc(var(--reveal-i, 0) * 110ms);
   }
 
-  /* Links onder het raster ("Alle projecten", "Over ons"): als de navlinks in de header (step-0, medium,
-     onderstreept bij hover), in twee helften zoals de header (logo en rechterdeel elk flex 1 1 0 met gap m).
-     De tweede link begint zo waar "Projecten" in de nav begint. Onder 48rem (geen nav in de balk) onder elkaar. */
-  .project-grid__links {
-    display: grid;
-    gap: var(--space-2xs) var(--space-m);
-    font-size: var(--step-0);
-    font-weight: 500;
-    letter-spacing: -0.02em;
-    line-height: 1.125;
-  }
-  @media (min-width: 48rem) {
-    .project-grid__links {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-  .project-grid__links a {
-    text-decoration: none;
-  }
-  .project-grid__links a:hover {
-    text-decoration: underline;
-    text-decoration-thickness: 0.07em;
-    text-underline-offset: 0.15em;
-  }
   /* "Meer projecten" (Figma 447:2103): grijze pil over de volle breedte. */
   .project-grid__acties {
     display: grid;
