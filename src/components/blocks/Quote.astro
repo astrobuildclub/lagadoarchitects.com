@@ -1,11 +1,14 @@
 ---
+// Citaat als spreekballon: een vlak in --color-surface (net iets anders dan de achtergrond) met afgeronde hoeken
+// (data-vorm="recht", vorm.css). De hoek linksonder blijft recht en wijst naar de naam eronder.
+// Het openingsaanhalingsteken hangt in de marge (hanging-punctuation), zodat de tekst zelf recht uitlijnt.
 import { has, type BlockProps } from './scope';
 
 type Props = BlockProps<'quote'>;
 const { block } = Astro.props;
 ---
 
-<figure class="quote popout">
+<figure class="quote popout" data-vorm="recht">
   <blockquote>
     <p>{block.tekst}</p>
   </blockquote>
@@ -15,15 +18,40 @@ const { block } = Astro.props;
 </figure>
 
 <style>
+  .quote {
+    --quote-pad: var(--space-m-l);
+  }
+
   blockquote {
+    margin: 0;
+    padding: var(--quote-pad);
+    background: var(--color-surface);
+    border-radius: var(--vorm-radius) var(--vorm-radius) var(--vorm-radius) 0;
     font-size: var(--step-3);
     line-height: var(--leading-tight);
+  }
+
+  blockquote p {
+    margin: 0;
+    text-wrap: balance;
+    /* Alleen Safari kent dit; elders hetzelfde met een negatieve inspringing. */
+    hanging-punctuation: first last;
+  }
+  @supports not (hanging-punctuation: first) {
+    blockquote p {
+      text-indent: -0.42em;
+    }
   }
   blockquote p::before {
     content: '“';
   }
   blockquote p::after {
     content: '”';
+  }
+
+  figcaption {
+    margin-block-start: var(--space-xs);
+    padding-inline-start: var(--quote-pad);
   }
   .quote__naam {
     color: var(--color-fg);

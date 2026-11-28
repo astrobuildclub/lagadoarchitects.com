@@ -13,6 +13,8 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 - Editor: menu *Downloaden* met SVG van het woordmerk op het moment op de tijdlijn, een geanimeerde SVG (SMIL) en een ZIP met alle frames (de momenten waarop alle letters stilstaan) en elke letterstand los (`src/lib/brand/svg.ts`, `zip.ts`).
 
 ### Gewijzigd
+- Studio: blok Contactgegevens verwijst in de beschrijving naar Contact → tabblad Gegevens, waar de gegevens staan.
+- Blok Citaat als spreekballon: vlak in `--color-surface` met afgeronde hoeken (`data-vorm="recht"`), de hoek linksonder recht richting de naam. Het openingsaanhalingsteken hangt in de marge (`hanging-punctuation`, elders een negatieve inspringing) en de regels zijn gebalanceerd.
 - Header toont het eerste frame van de gekozen woordmerkversie, stil; zonder keuze blijft de kleine variant die één keer speelt.
 - Studio: veld *Kaartgrootte op de home* weg uit projecten. Het deed niets: het projectraster op de home gebruikt een vaste indeling.
 - Home: "Alle projecten" en "Over ons" onder het projectraster als tekstlinks in de stijl van de nav, in twee helften; de tweede begint waar "Projecten" in de nav begint. Projectkaarten komen met een stagger-reveal binnen zodra de eerste in beeld is (niet bij `prefers-reduced-motion`).

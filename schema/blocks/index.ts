@@ -363,7 +363,7 @@ export const contactgegevens = defineType({
   title: 'Contactgegevens',
   type: 'object',
   description: 'Contact, bezoekadres, social, bedrijfsgegevens en downloads uit Contact → Gegevens.',
-  fields: [defineField({ name: 'kop', title: 'Kop', description: 'Leeg = geen kop.', type: 'string' })],
+  fields: [defineField({ name: 'kop', title: 'Kop', description: "Leeg = geen kop. De gegevens zelf pas je aan in Pagina's → Contact → tabblad Gegevens.", type: 'string' })],
   preview: { select: { title: 'kop' }, prepare: ({ title }) => ({ title: title || 'Contactgegevens', subtitle: 'Contactgegevens' }) },
 });
 
