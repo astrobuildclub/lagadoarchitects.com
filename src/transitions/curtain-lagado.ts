@@ -19,6 +19,20 @@ const DRIFT = 100; // px die de pagina meebeweegt bij gaan en komen
  * DOM staat (de oude tijdens `leave`, de nieuwe tijdens `enter`). Niets uit de
  * Interlude-laag zelf.
  */
+/**
+ * Bij elke navigatie een andere projectkleur voor het vlak, zoals de intro (lijst uit Intro.astro). Op de laag
+ * gezet, zodat het vlak van `leave` en dat van `enter` dezelfde kleur hebben. Zonder lijst: `--interlude-color`
+ * uit tokens.scss.
+ */
+let vorige = '';
+function kiesKleur(context: TransitionContext) {
+  const kleuren = (window as { lagadoKleuren?: { vlak: string }[] }).lagadoKleuren ?? [];
+  const vlakken = kleuren.map((k) => k.vlak).filter((k) => k !== vorige);
+  if (vlakken.length === 0) return;
+  vorige = vlakken[Math.floor(Math.random() * vlakken.length)];
+  context.root.style.setProperty('--interlude-color', vorige);
+}
+
 const page = (context: TransitionContext) => [
   ...document.querySelectorAll<HTMLElement>('body > :is(.site-header, .site-footer)'),
   context.content,
@@ -30,6 +44,7 @@ export default defineTransition({
 
   leave(context) {
     const up = sign(context) > 0; // terug: alles loopt andersom
+    kiesKleur(context);
     // Het vlak groeit vanaf de onderrand (bij terug: de bovenrand)…
     const el = panel(context, { style: { transformOrigin: up ? '50% 100%' : '50% 0%' } });
     return (

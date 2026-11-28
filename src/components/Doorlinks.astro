@@ -1,0 +1,60 @@
+---
+// Grote tekstlinks naar andere pagina's: onder het projectraster (home), onder het overzicht (Projecten) en als
+// blok Links (bv. onderaan Over). Op desktop in twee helften zoals de header (logo en rechterdeel elk flex 1 1 0
+// met gap m): de tweede link begint waar "Projecten" in de nav begint. Onder 48rem onder elkaar.
+// `blok`: als bouwsteen in een pagina, dan over de volle breedte met alleen de gutter eraf (gelijk met de header).
+interface Props {
+  links: { label: string; href: string }[];
+  blok?: boolean;
+}
+const { links, blok = false } = Astro.props;
+const zichtbaar = links.filter((l) => l.label.trim() && l.href.trim());
+---
+
+{
+  zichtbaar.length > 0 && (
+    <ul role="list" class:list={['doorlinks', { 'doorlinks--blok full': blok }]}>
+      {zichtbaar.map((l) => (
+        <li>
+          <a href={l.href}>{l.label}</a>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  /* Even groot als de titel op een projectkaart (ProjectCard.astro: step-2, gewicht 400). */
+  .doorlinks {
+    display: grid;
+    gap: var(--space-2xs) var(--space-m);
+    margin: 0;
+    padding: 0;
+    font-size: var(--step-2);
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    line-height: 1.125;
+  }
+  .doorlinks--blok {
+    padding-inline: var(--gutter);
+  }
+  @media (min-width: 48rem) {
+    .doorlinks {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .doorlinks a {
+    text-decoration-line: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 0.06em;
+    text-underline-offset: 0.15em;
+    transition: text-decoration-color var(--duration) var(--ease);
+  }
+  .doorlinks a:hover {
+    text-decoration-color: currentColor;
+  }
+  .doorlinks a:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+</style>

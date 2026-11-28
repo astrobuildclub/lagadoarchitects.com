@@ -205,6 +205,27 @@ export const projectGrid = defineType({
   preview: { select: { title: 'kop' }, prepare: ({ title }) => ({ title: title || 'Projecten', subtitle: 'Projecten' }) },
 });
 
+export const doorlinks = defineType({
+  name: 'doorlinks',
+  title: 'Links',
+  type: 'object',
+  description: 'Grote tekstlinks naar andere pagina\'s, bv. Projecten en Contact onderaan Over.',
+  fields: [
+    defineField({
+      name: 'links',
+      title: 'Links',
+      description: 'Eén of twee: op desktop elk in een helft, zoals onder het projectraster op de home.',
+      type: 'array',
+      of: [{ type: 'link' }],
+      validation: (r) => r.min(1).max(4),
+    }),
+  ],
+  preview: {
+    select: { links: 'links' },
+    prepare: ({ links }) => ({ title: (links ?? []).map((l: { label?: string }) => l.label).filter(Boolean).join(' · ') || 'Links', subtitle: 'Links' }),
+  },
+});
+
 export const statement = defineType({
   name: 'statement',
   title: 'Statement',
@@ -363,14 +384,24 @@ export const contactgegevens = defineType({
   title: 'Contactgegevens',
   type: 'object',
   description: 'Contact, bezoekadres, social, bedrijfsgegevens en downloads uit Contact → Gegevens.',
-  fields: [defineField({ name: 'kop', title: 'Kop', description: "Leeg = geen kop. De gegevens zelf pas je aan in Pagina's → Contact → tabblad Gegevens.", type: 'string' })],
+  fields: [
+    defineField({ name: 'kop', title: 'Kop', description: "Leeg = geen kop. De gegevens zelf pas je aan in Pagina's → Contact → tabblad Gegevens.", type: 'string' }),
+    defineField({
+      name: 'indeling',
+      title: 'Indeling',
+      description: 'Twee kolommen past tussen tekst; naast elkaar past onderaan de pagina, boven de footer.',
+      type: 'string',
+      options: { list: [{ title: 'Twee kolommen', value: 'twee' }, { title: 'Naast elkaar', value: 'rij' }], layout: 'radio', direction: 'horizontal' },
+      initialValue: 'twee',
+    }),
+  ],
   preview: { select: { title: 'kop' }, prepare: ({ title }) => ({ title: title || 'Contactgegevens', subtitle: 'Contactgegevens' }) },
 });
 
 /** Sanity-naam → `type` op de site, voor de twee blokken die anders heten. */
 export const BLOK_TYPE: Record<string, string> = { textBlock: 'text', imageBlock: 'image' };
 
-export const blockTypes = [hero, text, image, gallery, columns, quote, video, colors, beforeAfter, projectGrid, statement, team, list, cta, services, logos, downloads, contactgegevens];
+export const blockTypes = [hero, text, image, gallery, columns, quote, video, colors, beforeAfter, projectGrid, statement, team, list, cta, services, logos, downloads, contactgegevens, doorlinks];
 
 /** Bloktypes die op een pagina of in een project mogen. */
 export const blocksField = (name = 'blocks', title = 'Bouwstenen') =>

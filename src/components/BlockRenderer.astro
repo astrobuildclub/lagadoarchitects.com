@@ -18,6 +18,7 @@ import ProjectGrid from './blocks/ProjectGrid.astro';
 import Quote from './blocks/Quote.astro';
 import Services from './blocks/Services.astro';
 import Statement from './blocks/Statement.astro';
+import Doorlinks from './Doorlinks.astro';
 import Team from './blocks/Team.astro';
 import Text from './blocks/Text.astro';
 import Video from './blocks/Video.astro';
@@ -52,6 +53,7 @@ const { blocks, scope = {} } = Astro.props;
       case 'logos': return <Logos block={block} {...props} />;
       case 'downloads': return <Downloads block={block} {...props} />;
       case 'contactgegevens': return <Contactgegevens block={block} {...props} />;
+      case 'doorlinks': return <Doorlinks links={block.links} blok />;
       default: return assertNever(block);
     }
   })

@@ -1,7 +1,7 @@
 ---
 // Footer: vier kolommen uit de
 // site-instellingen in Sanity (Footer → Kolommen). De eerste is twee keer zo breed (herkomst van de naam).
-// Onderaan het kinetische woordmerk over de volle breedte (zwart-wit).
+// Bovenaan het kinetische woordmerk over de volle breedte (zwart-wit), daaronder de kolommen.
 // Een link naar #cookies wordt de knop Cookie-instellingen (richtext/Link.astro).
 import Wordmark from './brand/Wordmark.astro';
 import { maakVersie } from '../lib/brand/wordmark';
@@ -18,19 +18,25 @@ const kolommen = settings.footer.kolommen.filter((k) => heeftTekst(k.tekst));
 
 <footer class="site-footer">
   <div class="wrapper wrapper--full site-footer__inner">
+    <Wordmark mono versie={maakVersie(settings.woordmerk.footer)} class="site-footer__wordmark" label={settings.siteNaam} />
     <div class="site-footer__grid">
       {
         kolommen.map((k, i) => (
-          <div class:list={['site-footer__kolom', i === 0 && 'site-footer__tekst']}>
+          <div
+            class:list={['site-footer__kolom', i === 0 && 'site-footer__tekst']}
+            data-words-in={i === 0 ? 'split' : undefined}
+          >
             <RichText value={k.tekst} />
           </div>
         ))
       }
     </div>
-
-    <Wordmark mono versie={maakVersie(settings.woordmerk.footer)} class="site-footer__wordmark" label={settings.siteNaam} />
   </div>
 </footer>
+
+<script>
+  import '../scripts/words-in';
+</script>
 
 <style>
   /* Pagina-kleuren met een dunne lijn erboven; alles op step--1. */

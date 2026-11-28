@@ -9,9 +9,15 @@
 //   (Hero.astro: data-in 0.25, data-fade 0.1). Eén keer per pagina.
 // - Loopt er een paginatransitie (Interlude, `[data-interlude]` niet `idle`), dan wachten
 //   we op `interlude:idle`: anders is de animatie al klaar voordat de pagina in beeld is.
-// - Met reduced motion gebeurt er niets.
+// - `[data-words-in="split"]` (rich text, bv. het verhaal in de footer): de woorden staan niet
+//   in de HTML; GSAP SplitText knipt ze bij page-load in `.w__i`-spans (alleen fade, geen masker).
+// - Lange teksten: de stagger krimpt zodat het hele blok binnen ~3 s verschijnt.
+// - Met reduced motion gebeurt er niets (en wordt er ook niet geknipt).
 // - ClientRouter: start op astro:page-load, ruimt op bij astro:before-swap.
 import { gsap } from 'gsap';
+import { SplitText } from 'gsap/SplitText';
+
+gsap.registerPlugin(SplitText);
 
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
 let teardown: (() => void) | undefined;
@@ -21,6 +27,10 @@ function init() {
   const blocks = [...document.querySelectorAll<HTMLElement>('[data-words-in]')];
   if (!blocks.length || reduce.matches) return;
 
+  const splits = blocks
+    .filter((block) => block.dataset.wordsIn === 'split')
+    .map((block) => SplitText.create(block, { type: 'words', wordsClass: 'w__i' }));
+
   const words = (block: Element) => block.querySelectorAll('.w__i');
   blocks.forEach((block) => gsap.set(words(block), { opacity: 0 }));
 
@@ -29,10 +39,11 @@ function init() {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
         observer.unobserve(entry.target);
-        gsap.to(words(entry.target), {
+        const w = words(entry.target);
+        gsap.to(w, {
           opacity: 1,
           duration: 0.1,
-          stagger: 0.25,
+          stagger: Math.min(0.25, 3 / w.length),
           ease: 'none',
         });
       });
@@ -49,6 +60,7 @@ function init() {
     document.removeEventListener('interlude:idle', observe);
     observer.disconnect();
     blocks.forEach((block) => gsap.killTweensOf(words(block)));
+    splits.forEach((split) => split.revert());
     teardown = undefined;
   };
 }

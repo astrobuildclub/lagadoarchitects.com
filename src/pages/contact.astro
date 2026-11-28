@@ -12,7 +12,7 @@ import { pageDescription, pageTitle } from '../lib/seo';
 const settings = await getSettings();
 const c = await getContact();
 // Nog geen bouwstenen? Dan in elk geval de gegevens, zodat de contactpagina nooit leeg is.
-const blocks: Block[] = c.blocks.length ? c.blocks : [{ type: 'contactgegevens', kop: '' }];
+const blocks: Block[] = c.blocks.length ? c.blocks : [{ type: 'contactgegevens', kop: '', indeling: 'rij' }];
 ---
 
 <BaseLayout title={pageTitle(settings, c)} description={pageDescription(settings, { ...c, fallbackDescription: platteTekst(c.intro) })} noindex={c.seo?.noindex}>

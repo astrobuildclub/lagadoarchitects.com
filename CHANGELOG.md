@@ -8,11 +8,17 @@ Categorieën: **Toegevoegd**, **Gewijzigd**, **Opgelost**, **Verwijderd**, **Bev
 ## [Unreleased]
 
 ### Toegevoegd
+- Blok **Links**: grote tekstlinks naar andere pagina's (bv. Projecten en Contact onderaan Over), in twee helften zoals onder het projectraster (`src/components/Doorlinks.astro`). Projectenpagina: veld *Links onder de projecten*.
+- Blok Contactgegevens: veld *Indeling* (twee kolommen of naast elkaar). Standaard twee kolommen.
 - Woordmerkanimaties in Sanity: documenttype *Woordmerkanimatie* (één versie per document; nieuwe versie = dupliceren, geschiedenis via Sanity). De woordmerk-editor draait in het document zelf (`/brand/editor?ingebed` in een iframe, `schema/components/WoordmerkInput.tsx`): bewerken wordt een concept, publiceren zet hem live, zonder deploy. Knop *Volledig scherm* (Esc sluit) voor de brede editor. In Site-instellingen → Woordmerk kies je per plek (intro, header, footer) een versie; leeg = `woordmerk.json`.
 - Intro bij het eerste bezoek (één keer per sessie, `sessionStorage`): het woordmerk op een vlak in de kleur van een willekeurig project; na de duur (standaard 5 s, Site-instellingen → Woordmerk) schuift de onderrand omhoog en verdwijnt het woordmerk erachter. Over te slaan met een klik of toets, niet bij `prefers-reduced-motion`, niet in de Presentation tool (`src/components/Intro.astro`, `src/transitions/intro-lagado.ts`).
 - Editor: menu *Downloaden* met SVG van het woordmerk op het moment op de tijdlijn, een geanimeerde SVG (SMIL) en een ZIP met alle frames (de momenten waarop alle letters stilstaan) en elke letterstand los (`src/lib/brand/svg.ts`, `zip.ts`).
 
 ### Gewijzigd
+- Paginaovergang: het vlak heeft bij elke navigatie een andere projectkleur, zoals de intro, in plaats van zwart (`curtain-lagado`).
+- Links onder het projectraster op de home even groot als de kaarttitel (`step-2`) via `Doorlinks.astro`.
+- Footer: het verhaal achter de naam verschijnt woord voor woord zodra het in beeld komt, zoals de intro op een projectpagina (`words-in.ts`, nu met GSAP SplitText voor rich text via `data-words-in="split"`; lange teksten binnen ~3 s).
+- Footer: woordmerk boven de kolommen in plaats van eronder.
 - Studio: blok Contactgegevens verwijst in de beschrijving naar Contact → tabblad Gegevens, waar de gegevens staan.
 - Blok Citaat als spreekballon: vlak in `--color-surface` met afgeronde hoeken (`data-vorm="recht"`), de hoek linksonder recht richting de naam. Het openingsaanhalingsteken hangt in de marge (`hanging-punctuation`, elders een negatieve inspringing) en de regels zijn gebalanceerd.
 - Header toont het eerste frame van de gekozen woordmerkversie, stil; zonder keuze blijft de kleine variant die één keer speelt.

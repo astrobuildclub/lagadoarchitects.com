@@ -41,8 +41,9 @@ const stats = settings.analytics;
 // Woordmerkversies uit de Site-instellingen (leeg = woordmerk.json); de defs krijgen ze allemaal.
 const woordmerk = { intro: maakVersie(settings.woordmerk.intro), header: maakVersie(settings.woordmerk.header), footer: maakVersie(settings.woordmerk.footer) };
 // Intro: niet in de Presentation tool. Kleuren van alle projecten; de browser kiest er één (de CDN-cache is voor iedereen gelijk).
+// Dezelfde kleuren gebruikt de paginaovergang (curtain-lagado) voor zijn vlak.
 const introAan = settings.intro.aan && !visualEditing;
-const introKleuren = introAan ? await Promise.all((await getProjects()).map(kaartkleur)) : [];
+const projectKleuren = await Promise.all((await getProjects()).map(kaartkleur));
 ---
 
 <!doctype html>
@@ -93,7 +94,7 @@ const introKleuren = introAan ? await Promise.all((await getProjects()).map(kaar
   <body>
     <!-- Paginatransities (Interlude, zie TRANSITIONS.md §7): direct kind van <body>. -->
     <Interlude />
-    <Intro aan={introAan} duur={settings.intro.duur} kleuren={introKleuren} versie={woordmerk.intro} />
+    <Intro aan={introAan} duur={settings.intro.duur} kleuren={projectKleuren} versie={woordmerk.intro} />
     <a class="skip-link" href="#inhoud">Naar de inhoud</a>
     <WordmarkDefs versies={Object.values(woordmerk)} />
     <Header settings={settings} contact={contact} />
