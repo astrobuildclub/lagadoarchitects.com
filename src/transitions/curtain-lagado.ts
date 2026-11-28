@@ -26,7 +26,8 @@ const DRIFT = 100; // px die de pagina meebeweegt bij gaan en komen
  */
 let vorige = '';
 function kiesKleur(context: TransitionContext) {
-  const vlakken = ((window as { lagadoVlakken?: string[] }).lagadoVlakken ?? []).filter((k) => k !== vorige);
+  const kleuren = (window as { lagadoKleuren?: { vlak: string }[] }).lagadoKleuren ?? [];
+  const vlakken = kleuren.map((k) => k.vlak).filter((k) => k !== vorige);
   if (vlakken.length === 0) return;
   vorige = vlakken[Math.floor(Math.random() * vlakken.length)];
   context.root.style.setProperty('--interlude-color', vorige);
