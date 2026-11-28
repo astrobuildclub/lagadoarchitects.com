@@ -385,7 +385,7 @@ export const contactgegevens = defineType({
   type: 'object',
   description: 'Contact, bezoekadres, social, bedrijfsgegevens en downloads uit Contact → Gegevens.',
   fields: [
-    defineField({ name: 'kop', title: 'Kop', description: 'Leeg = geen kop.', type: 'string' }),
+    defineField({ name: 'kop', title: 'Kop', description: "Leeg = geen kop. De gegevens zelf pas je aan in Pagina's → Contact → tabblad Gegevens.", type: 'string' }),
     defineField({
       name: 'indeling',
       title: 'Indeling',
